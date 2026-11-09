@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/* ReelBhai brand: dark background, gold accent, Anton headings, Poppins body. */
+@theme {
+  --color-ink: #0b0b0f;
+  --color-panel: #14141b;
+  --color-panel-2: #1c1c25;
+  --color-line: #2a2a35;
+  --color-gold: #ffb627;
+  --color-gold-dim: #c98a0e;
+  --color-muted: #a3a3b2;
+  --color-good: #34d399;
+  --color-bad: #f87171;
+  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  --font-sans: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html {
+  background: var(--color-ink);
+  color: #f4f4f5;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-ink);
+}
+
+/* Reusable pieces */
+@utility btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px;
+  padding: 0 1.5rem;
+  border-radius: 14px;
+  background: var(--color-gold);
+  color: #111;
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: 0 8px 24px -8px rgb(255 182 39 / 0.55);
+  transition: transform 0.12s ease, filter 0.12s ease;
+  &:active {
+    transform: scale(0.98);
+  }
+  &:hover {
+    filter: brightness(1.05);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@utility btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  color: #f4f4f5;
+  font-weight: 600;
+  &:hover {
+    border-color: var(--color-gold);
+  }
+}
+
+@utility card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+}
+
+@utility field {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1rem;
+  border-radius: 12px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  color: #fff;
+  font-size: 16px; /* 16px stops iOS zooming into inputs */
+  &:focus {
+    outline: none;
+    border-color: var(--color-gold);
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  line-height: 1.02;
+}
+
+/* Hide scrollbars on horizontal chip rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
