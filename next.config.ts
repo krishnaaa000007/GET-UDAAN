@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Prisma + pg are server-only Node packages
   serverExternalPackages: ["pg", "@prisma/adapter-pg"],
+  // Until Cloudflare R2 is set up, /api/files serves course files from ./storage — include them in the deploy.
+  outputFileTracingIncludes: { "/api/files": ["./storage/**/*"] },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [{ protocol: "https", hostname: "image.mux.com" }],

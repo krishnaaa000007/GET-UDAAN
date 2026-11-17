@@ -4,12 +4,13 @@
  */
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
+import { appDatabaseUrl } from "@/lib/db-url";
 
 const globalForPrisma = globalThis as unknown as { __prisma?: PrismaClient };
 
 function create() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL is not set — see .env.example");
+  const connectionString = appDatabaseUrl();
+  if (!connectionString) throw new Error("DATABASE_URL (or Supabase POSTGRES_URL) is not set — see .env.example");
   // Serverless: keep the pool tiny; Supabase's pooler does the real pooling.
   const adapter = new PrismaPg({ connectionString, max: process.env.VERCEL ? 1 : 5 });
   return new PrismaClient({ adapter });

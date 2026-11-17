@@ -1,6 +1,7 @@
 // Prisma 7 configuration: where the schema/migrations live and how to reach the DB.
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
+import { directDatabaseUrl } from "./src/lib/db-url";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -10,6 +11,7 @@ export default defineConfig({
   },
   datasource: {
     // Migrations need a DIRECT connection (Supabase: port 5432, not the 6543 pooler).
-    url: env("DIRECT_URL"),
+    // DIRECT_URL locally; POSTGRES_URL_NON_POOLING when the Supabase ↔ Vercel integration set the keys.
+    url: directDatabaseUrl() ?? "",
   },
 });
