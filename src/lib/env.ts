@@ -3,6 +3,7 @@
  * Optional services return null so the app can fall back to dev behaviour.
  */
 import "server-only";
+import { siteUrl } from "@/lib/site-url";
 
 function opt(name: string): string | null {
   const v = process.env[name];
@@ -17,7 +18,7 @@ function req(name: string): string {
 
 export const env = {
   get appUrl() {
-    return (opt("APP_URL") ?? "http://localhost:3000").replace(/\/$/, "");
+    return siteUrl();
   },
   get appSecret() {
     const s = req("APP_SECRET");

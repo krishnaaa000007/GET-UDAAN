@@ -10,6 +10,7 @@
  */
 import "server-only";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/site-url";
 import { addDays, formatIST } from "@/lib/time";
 import { computeOrderCommission } from "@/server/commission";
 import { higherTier } from "@/server/catalog";
@@ -183,7 +184,7 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
         productName: order.items.map((i) => i.name).join(" + "),
         commissionPaise: commission.amountPaise,
         availableOn: formatIST(commission.availableAt, "date"),
-        dashboardUrl: `${process.env.APP_URL ?? ""}/partner`,
+        dashboardUrl: `${siteUrl()}/partner`,
       });
     }
     await sendServerPurchaseEvents(order);

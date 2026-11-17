@@ -16,6 +16,7 @@ import { enforceRateLimit } from "@/server/rate-limit";
 import { notify } from "@/server/notify";
 import { getSetting } from "@/server/settings";
 import type { RoleName } from "@/generated/prisma/enums";
+import { siteUrl } from "@/lib/site-url";
 
 export const SESSION_COOKIE = "rb_session";
 const SESSION_DAYS = 30;
@@ -81,7 +82,7 @@ export async function createMagicLink(rawEmail: string, next = "/dashboard"): Pr
   await db.loginToken.create({
     data: { email, kind: "MAGIC_LINK", tokenHash: hmac(`magic:${token}`), expiresAt: new Date(Date.now() + MAGIC_DAYS * 86_400_000) },
   });
-  const base = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const base = siteUrl();
   return `${base}/auth/magic?token=${token}&next=${encodeURIComponent(next)}`;
 }
 
