@@ -10,8 +10,8 @@ const PAGES = ["terms", "privacy", "refund", "contact"] as const;
 type PageKey = (typeof PAGES)[number];
 const TITLES: Record<PageKey, string> = { terms: "Terms of Use", privacy: "Privacy Policy", refund: "Refund & Cancellation Policy", contact: "Contact Us" };
 
-const P = ({ children }: { children: React.ReactNode }) => <p className="mt-3 text-zinc-300">{children}</p>;
-const H = ({ children }: { children: React.ReactNode }) => <h2 className="mt-8 text-lg font-semibold text-white">{children}</h2>;
+const P = ({ children }: { children: React.ReactNode }) => <p className="mt-3 text-ink-muted">{children}</p>;
+const H = ({ children }: { children: React.ReactNode }) => <h2 className="mt-8 text-lg font-semibold text-ink">{children}</h2>;
 
 export function generateStaticParams() {
   return PAGES.map((page) => ({ page }));
@@ -83,8 +83,8 @@ export default async function LegalPage({ params }: PageProps<"/legal/[page]">) 
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10 text-sm leading-relaxed">
-      <h1 className="font-display text-3xl text-white">{TITLES[page as PageKey]}</h1>
-      <p className="mt-1 text-xs text-muted">Last updated: November 2026</p>
+      <h1 className="font-display text-3xl text-ink">{TITLES[page as PageKey]}</h1>
+      <p className="mt-1 text-xs text-ink-muted">Last updated: November 2026</p>
       {body[page as PageKey]}
     </main>
   );

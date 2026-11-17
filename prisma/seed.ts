@@ -104,7 +104,7 @@ async function main() {
   }
   await db.asset.createMany({
     data: [
-      { courseId: course.id, kind: "PDF", title: "ReelBhai PDF Guide", storageKey: "course/guide.pdf", minTier: "BASIC" },
+      { courseId: course.id, kind: "PDF", title: "Get Udaan PDF Guide", storageKey: "course/guide.pdf", minTier: "BASIC" },
       { courseId: course.id, kind: "PROMPTS", title: "300+ Prompt Pack", storageKey: "course/prompts.txt", minTier: "BASIC" },
       { courseId: course.id, kind: "TEMPLATE", title: "Story Templates", storageKey: "course/story-templates.txt", minTier: "BASIC" },
       { courseId: course.id, kind: "PROMPTS", title: "Pro: Monthly Prompt Update (Nov)", storageKey: "course/pro-prompts-nov.txt", minTier: "PRO" },

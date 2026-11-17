@@ -1,32 +1,81 @@
 /**
- * LANDING PAGE — the sales engine's front door.
- * One job: get the visitor to checkout (or the free lesson). Sections are in the order from the brief;
- * copy comes from src/content/landing.ts + Admin overrides.
+ * LANDING PAGE — the money page (DESIGN.md 7.2).
+ * ONE job: get the visitor to checkout. Second choice: the free lesson.
+ * Sections follow the order of a buyer's doubts. All words come from src/content/hi-Latn/landing.json
+ * (+ Admin → Landing content overrides). Prices, lesson counts and refund days come from real data.
  * Cached and refreshed every 5 minutes (and instantly when Admin saves content/prices).
  */
+import Image from "next/image";
+import {
+  Briefcase,
+  Check,
+  CirclePlay,
+  FileText,
+  Handshake,
+  IndianRupee,
+  LayoutTemplate,
+  Lightbulb,
+  Scissors,
+  ShoppingBag,
+  Sparkles,
+  TrendingDown,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
+import type { ReactNode } from "react";
+import { FunnelTracker, LeadSheet } from "@/components/landing/islands";
+import { Logo } from "@/components/logo";
+import { Accordion, AccordionItem, CurriculumModule } from "@/components/ui/accordion";
+import { Badge, GuaranteeBox, Highlight, IncomeDisclaimer, SectionHeader, SpeedTrails, StatChip, TrustRow } from "@/components/ui/basics";
+import { Button } from "@/components/ui/button";
+import { PriceCard, TestimonialCard, TierCompareTable } from "@/components/ui/commerce";
+import { Countdown, RecentPurchaseToast, ReelPlayer, StickyBuyBar } from "@/components/ui/interactive";
+import { cn } from "@/lib/cn";
 import { db } from "@/lib/db";
 import { formatINR } from "@/lib/money";
 import { formatIST } from "@/lib/time";
-import { getLandingContent, getSocialProof } from "@/server/content";
 import { listProducts } from "@/server/catalog";
+import { getLandingContent, getSocialProof } from "@/server/content";
 import { getSettings } from "@/server/settings";
-import { Countdown, CtaLink, HeroVideo, PageView, StickyBuyBar } from "@/components/landing/client-bits";
+import { getRecentPurchases } from "@/server/testimonials";
 
 export const revalidate = 300;
 
-const Section = ({ id, children, className = "" }: { id?: string; children: React.ReactNode; className?: string }) => (
-  <section id={id} className={`mx-auto max-w-5xl px-4 py-14 md:py-20 ${className}`}>
-    {children}
+// Icon names used in the content file → the actual icons.
+const ICONS: Record<string, LucideIcon> = {
+  "trending-down": TrendingDown,
+  scissors: Scissors,
+  wallet: Wallet,
+  lightbulb: Lightbulb,
+  handshake: Handshake,
+  "circle-play": CirclePlay,
+  briefcase: Briefcase,
+  "shopping-bag": ShoppingBag,
+  sparkles: Sparkles,
+  "file-text": FileText,
+  "layout-template": LayoutTemplate,
+  "indian-rupee": IndianRupee,
+};
+const Icon = ({ name, className }: { name: string; className?: string }) => {
+  const I = ICONS[name] ?? Sparkles;
+  return <I aria-hidden className={className} />;
+};
+
+const Section = ({ id, children, className }: { id?: string; children: ReactNode; className?: string }) => (
+  <section id={id} className={cn("scroll-mt-16 py-12 md:py-20", className)}>
+    <div className="container-page">{children}</div>
   </section>
 );
-const H2 = ({ children }: { children: React.ReactNode }) => <h2 className="font-display text-3xl text-white md:text-5xl">{children}</h2>;
+
+const MONEY_WORDS = /₹|rs\.?\s?\d|income|kama|earn|paisa|paise|lakh/i;
 
 export default async function LandingPage() {
-  const [c, products, proof, settings, course] = await Promise.all([
+  const [c, products, proof, settings, recent, course] = await Promise.all([
     getLandingContent(),
     listProducts(),
     getSocialProof(),
     getSettings(),
+    getRecentPurchases(),
     db.course.findFirst({
       where: { published: true },
       orderBy: { createdAt: "asc" },
@@ -38,277 +87,346 @@ export default async function LandingPage() {
   const entry = tiers[0];
   const entryHref = entry ? `/checkout/${entry.product.slug}` : "#pricing";
   const entryPrice = entry ? formatINR(entry.price.amountPaise) : "";
-  const deadline = tiers.find((t) => t.price.endsAt);
+  const deadline = tiers.find((t) => t.price.endsAt)?.price.endsAt ?? null;
+  const days = settings.refundWindowDays;
+  const wa = `https://wa.me/${settings.supportWhatsapp.replace(/\D/g, "")}`;
+
+  // Real numbers from the course itself.
+  const lessons = course?.modules.flatMap((m) => m.lessons) ?? [];
+  const totalMin = Math.round(lessons.reduce((s, l) => s + l.durationSec, 0) / 60);
+  const freeLesson = lessons.find((l) => l.isFreePreview);
+  const freeHref = freeLesson ? "/free-lesson" : null;
   const showStudentCount = proof.students >= settings.studentCountThreshold;
-  const freeLesson = course?.modules.flatMap((m) => m.lessons).find((l) => l.isFreePreview);
+  const maxCommissionPct = Math.round(Math.max(0, ...tiers.map((t) => t.product.defaultCommissionBps)) / 100);
+
+  const stats = [
+    ...(lessons.length ? [{ value: String(lessons.length), label: c.hero.lessonsLabel }] : []),
+    ...c.hero.stats,
+    ...(showStudentCount ? [{ value: `${proof.students.toLocaleString("en-IN")}+`, label: c.hero.studentsLabel }] : []),
+  ];
+  const heroCta = entry ? c.hero.cta.replace("{price}", entryPrice) : c.stickyBar.cta;
 
   return (
     <main>
-      <PageView />
+      <FunnelTracker />
 
-      {/* 1. HERO */}
-      <section id="hero" className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_70%_20%,rgba(255,182,39,0.18),transparent)]" />
-        <div className="relative mx-auto grid max-w-5xl items-center gap-8 px-4 pt-8 pb-12 md:grid-cols-[1.15fr_1fr] md:pt-16">
-          <div>
-            <p className="mb-3 text-sm font-medium text-gold">{c.hero.eyebrow}</p>
-            <h1 className="font-display text-[2.6rem] text-white md:text-6xl">
-              {c.hero.headline} <span className="text-gold">{c.hero.highlight}</span>
+      {/* 1. HERO — what is it + the two fears answered */}
+      <section id="hero" className="film-grain overflow-hidden">
+        <div className="container-page grid items-center gap-10 pt-6 pb-12 md:grid-cols-[1.15fr_1fr] md:pt-12 md:pb-20">
+          <div className="flex flex-col items-start gap-5">
+            <Badge tone="gold">{c.hero.eyebrow}</Badge>
+            <h1 className="type-display-xl text-ink">
+              <Highlight text={c.hero.headline} />
             </h1>
-            <p className="mt-4 text-base text-zinc-300 md:text-lg">{c.hero.subheadline}</p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <CtaLink href={entryHref} id="hero_primary" className="btn-gold">
-                {c.hero.ctaText} — {entryPrice} →
-              </CtaLink>
-              {freeLesson && (
-                <CtaLink href="#curriculum" id="hero_secondary" className="btn-ghost min-h-[52px]">
+            <p className="type-body-lg max-w-reading text-ink-muted">{c.hero.sub}</p>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+              <Button href={entryHref} size="lg" block arrow data-cta="hero_primary" className="sm:w-auto">
+                {heroCta}
+              </Button>
+              {freeHref && (
+                <Button href={freeHref} variant="ghost" data-cta="hero_free_lesson">
                   {c.hero.secondaryCta}
-                </CtaLink>
+                </Button>
               )}
             </div>
-            <ul className="no-scrollbar mt-6 flex gap-2 overflow-x-auto">
-              {c.hero.stats.map((s) => (
-                <li key={s.label} className="shrink-0 rounded-full border border-line bg-panel px-3 py-1.5 text-sm">
-                  <b className="text-gold">{s.value}</b> <span className="text-muted">{s.label}</span>
+            <p className="type-small text-ink-muted">{c.hero.trust.replace("{days}", String(days))}</p>
+            <ul className="flex flex-wrap gap-2">
+              {stats.map((s) => (
+                <li key={s.label}>
+                  <StatChip value={s.value} label={s.label} />
                 </li>
               ))}
-              {showStudentCount && (
-                <li className="shrink-0 rounded-full border border-line bg-panel px-3 py-1.5 text-sm">
-                  <b className="text-gold">{proof.students.toLocaleString("en-IN")}+</b> <span className="text-muted">students</span>
-                </li>
-              )}
             </ul>
           </div>
-          {/* 9:16 phone frame with the sample reel */}
-          <div className="mx-auto w-[min(72vw,300px)]">
-            <div className="relative aspect-[9/16] overflow-hidden rounded-[2rem] border-4 border-panel-2 bg-gradient-to-b from-zinc-800 to-ink shadow-2xl shadow-gold/10">
-              {c.hero.videoUrl ? (
-                <HeroVideo src={c.hero.videoUrl} poster={c.hero.posterUrl} />
+
+          {/* The product IS the reel: show one in the first screen. */}
+          <div className="relative mx-auto w-[70%] max-w-[300px] py-4 md:w-full">
+            <div aria-hidden className="absolute inset-x-0 inset-y-4 translate-x-[14%] rotate-[5deg] overflow-hidden rounded-md border border-line bg-surface-raised">
+              {c.hero.peekPosterUrl && <Image src={c.hero.peekPosterUrl} alt="" fill sizes="300px" unoptimized className="object-cover opacity-60" />}
+            </div>
+            <div className="relative -rotate-3 overflow-hidden rounded-md border-2 border-gold shadow-lift">
+              {c.hero.videoUrl && c.hero.posterUrl ? (
+                <ReelPlayer src={c.hero.videoUrl} webmSrc={c.hero.videoWebmUrl || undefined} poster={c.hero.posterUrl} label={c.hero.reelLabel} className="rounded-none" />
               ) : (
-                <div className="grid h-full place-items-center p-6 text-center">
-                  <div>
-                    <div className="text-7xl">🦁</div>
-                    <p className="font-display mt-4 text-2xl text-gold">Bhai is back</p>
-                    <p className="mt-2 text-xs text-muted">Sample reel yahan chalegi — Admin → Landing content mein video URL daalein.</p>
-                  </div>
+                // Until a real sample reel is uploaded (Admin → Landing content → Hero), show the brand mark — never a fake.
+                <div className="grid aspect-[9/16] place-items-center bg-surface-sunken p-8">
+                  <Logo href={null} variant="stacked-on-dark" className="h-24" />
                 </div>
               )}
             </div>
           </div>
+        </div>
+        <div className="container-page pb-12">
+          <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
+            {c.hero.doubtKillers.map((d) => (
+              <li key={d} className="flex items-start gap-2 text-ink">
+                <Check aria-hidden className="mt-0.5 size-5 flex-none text-success" strokeWidth={2.5} />
+                {d}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      {/* 2. PROBLEM */}
-      <Section className="border-t border-line/60">
-        <H2>{c.problem.title}</H2>
-        <ul className="mt-6 grid gap-3 md:grid-cols-2">
+      {/* 2. REEL WALL — only when real sample reels have been added */}
+      {c.reels.items.length > 0 && (
+        <Section className="border-t border-line">
+          <SectionHeader eyebrow={c.reels.eyebrow} heading={c.reels.title} sub={c.reels.sub} className="reveal" />
+          <ul className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
+            {c.reels.items.map((r) => (
+              <li key={r.src} className="w-[62%] flex-none snap-start sm:w-[36%] md:w-[23%]">
+                <ReelPlayer src={r.src} webmSrc={r.webmSrc} poster={r.poster} label={r.label} />
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {/* 3. PROBLEM — is it for me? */}
+      <Section className="border-t border-line">
+        <SectionHeader heading={c.problem.title} className="reveal" />
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2">
           {c.problem.points.map((p) => (
-            <li key={p} className="card flex gap-3 p-4">
-              <span className="text-bad">✕</span>
-              <span className="text-zinc-200">{p}</span>
+            <li key={p.text} className="reveal flex items-center gap-4 rounded-md border border-line bg-surface-raised p-4">
+              <Icon name={p.icon} className="size-6 flex-none text-ink-muted" />
+              <span className="text-ink">{p.text}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-lg font-semibold text-gold">{c.problem.answer}</p>
+        <p className="type-display mt-8 flex items-center gap-3 text-gold-text">
+          <SpeedTrails className="h-8 w-9" />
+          {c.problem.answer}
+        </p>
       </Section>
 
-      {/* 3. WAYS CREATORS EARN (with honest disclaimer) */}
+      {/* 4. WAYS CREATORS EARN — always with the honesty line right under it */}
       <Section>
-        <H2>{c.earn.title}</H2>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <SectionHeader eyebrow={c.earn.eyebrow} heading={c.earn.title} className="reveal" />
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
           {c.earn.items.map((e) => (
-            <div key={e.title} className="card p-5">
-              <div className="text-2xl">{e.icon}</div>
-              <h3 className="mt-2 font-semibold text-white">{e.title}</h3>
-              <p className="mt-1 text-sm text-muted">{e.desc}</p>
+            <div key={e.title} className="reveal flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4 md:p-6">
+              <Icon name={e.icon} className="size-6 text-gold-text" />
+              <h3 className="type-title text-ink">{e.title}</h3>
+              <p className="text-ink-muted">{e.desc}</p>
             </div>
           ))}
         </div>
-        <p className="mt-4 rounded-xl border border-line bg-panel-2 p-4 text-sm text-muted">⚠️ {c.earn.disclaimer}</p>
+        <IncomeDisclaimer className="mt-4" />
       </Section>
 
-      {/* 4. HOW IT WORKS */}
-      <Section>
-        <H2>{c.howItWorks.title}</H2>
-        <ol className="mt-6 grid gap-3 md:grid-cols-5">
+      {/* 5. HOW IT WORKS — can I do it? */}
+      <Section className="border-t border-line">
+        <SectionHeader eyebrow={c.howItWorks.eyebrow} heading={c.howItWorks.title} className="reveal" />
+        <ol className="mt-8 grid gap-0 md:grid-cols-5 md:gap-4">
           {c.howItWorks.steps.map((s, i) => (
-            <li key={s.title} className="card p-4">
-              <span className="font-display text-3xl text-gold">{i + 1}</span>
-              <h3 className="mt-1 font-semibold">{s.title}</h3>
-              <p className="mt-1 text-sm text-muted">{s.desc}</p>
+            <li key={s.title} className="reveal relative flex gap-4 pb-8 last:pb-0 md:flex-col md:gap-3 md:pb-0">
+              {/* connector line between steps (mobile: vertical) */}
+              {i < c.howItWorks.steps.length - 1 && <span aria-hidden className="absolute top-12 bottom-0 left-6 w-px bg-line md:hidden" />}
+              <span className="type-heading grid size-12 flex-none place-items-center rounded-pill border border-line bg-surface-raised text-gold-text">{i + 1}</span>
+              <div className="flex flex-col gap-1 pt-1 md:pt-0">
+                <h3 className="type-title text-ink">{s.title}</h3>
+                <p className="text-ink-muted">{s.desc}</p>
+                {s.image && <Image src={s.image} alt="" width={320} height={200} unoptimized loading="lazy" className="mt-2 h-auto w-full max-w-[320px] rounded-md border border-line" />}
+              </div>
             </li>
           ))}
         </ol>
+        <IncomeDisclaimer className="mt-8" />
       </Section>
 
-      {/* 5. CURRICULUM */}
-      {course && (
+      {/* 6. CURRICULUM — what exactly do I get? */}
+      {course && lessons.length > 0 && (
         <Section id="curriculum">
-          <H2>{c.curriculum.title}</H2>
-          <p className="mt-2 text-muted">{c.curriculum.subtitle}</p>
-          <div className="mt-6 space-y-2">
+          <SectionHeader
+            eyebrow={c.curriculum.eyebrow}
+            heading={c.curriculum.title}
+            sub={c.curriculum.summary.replace("{lessons}", String(lessons.length)).replace("{min}", String(totalMin))}
+            className="reveal"
+          />
+          <Accordion className="mt-8">
             {course.modules.map((m, i) => (
-              <details key={m.id} className="card group overflow-hidden" open={i === 0}>
-                <summary className="flex cursor-pointer items-center justify-between gap-3 p-4">
-                  <span>
-                    <span className="text-xs text-gold">Module {i + 1}</span>
-                    <span className="block font-semibold">{m.title}</span>
-                  </span>
-                  <span className="text-sm text-muted">
-                    {m.lessons.length} lessons <span className="inline-block transition group-open:rotate-180">⌄</span>
-                  </span>
-                </summary>
-                <ul className="border-t border-line">
-                  {m.lessons.map((l) => (
-                    <li key={l.id} className="flex items-center justify-between gap-3 border-b border-line/50 px-4 py-3 text-sm last:border-0">
-                      <span className="text-zinc-300">{l.title}</span>
-                      {l.isFreePreview ? (
-                        <CtaLink href={`/preview/${l.id}`} id="free_preview" className="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-xs font-semibold text-gold">
-                          ▶ Free
-                        </CtaLink>
-                      ) : (
-                        <span className="shrink-0 text-xs text-muted">{Math.round(l.durationSec / 60)} min</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </details>
+              <CurriculumModule
+                key={m.id}
+                group="curriculum"
+                defaultOpen={i === 0}
+                title={c.curriculum.moduleLabel.replace("{n}", String(i + 1)).replace("{title}", m.title)}
+                lessons={m.lessons.map((l) => ({
+                  title: l.title,
+                  minutes: Math.round(l.durationSec / 60) || undefined,
+                  state: l.isFreePreview ? ("free" as const) : ("locked" as const),
+                  href: l.isFreePreview ? `/preview/${l.id}` : undefined,
+                }))}
+              />
             ))}
-          </div>
+          </Accordion>
         </Section>
       )}
 
-      {/* 6. BONUSES */}
+      {/* 7. BONUSES */}
       <Section>
-        <H2>{c.bonuses.title}</H2>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {c.bonuses.items.map((b) => (
-            <div key={b.title} className="card flex gap-4 p-5">
-              <div className="text-3xl">{b.icon}</div>
-              <div>
-                <h3 className="font-semibold">{b.title}</h3>
-                <p className="mt-1 text-sm text-muted">{b.desc}</p>
+        <div className="rounded-lg bg-gold-soft p-4 md:p-8">
+          <SectionHeader eyebrow={c.bonuses.eyebrow} heading={c.bonuses.title} className="reveal" />
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {c.bonuses.items.map((b) => (
+              <div key={b.title} className="reveal flex gap-4 rounded-md border border-line bg-surface-raised p-4">
+                <span className="grid size-12 flex-none place-items-center rounded-sm bg-surface-sunken">
+                  <Icon name={b.icon} className="size-6 text-gold-text" />
+                </span>
+                <div>
+                  <h3 className="type-title text-ink">{b.title}</h3>
+                  <p className="text-ink-muted">{b.desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <IncomeDisclaimer className="mt-4" />
         </div>
       </Section>
 
-      {/* 7. TESTIMONIALS — real only, hidden until at least 3 exist */}
+      {/* 8. STUDENT RESULTS — real only, hidden until at least 3 exist */}
       {proof.testimonials.length >= 3 && (
-        <Section>
-          <H2>{c.testimonials.title}</H2>
-          <p className="mt-2 text-sm text-muted">{c.testimonials.subtitle}</p>
-          <div className="no-scrollbar mt-6 flex snap-x gap-3 overflow-x-auto pb-2">
+        <Section className="border-t border-line">
+          <SectionHeader eyebrow={c.testimonials.eyebrow} heading={c.testimonials.title} className="reveal" />
+          <ul className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
             {proof.testimonials.map((t) => (
-              <figure key={t.id} className="card w-[80%] shrink-0 snap-start p-5 sm:w-[45%] md:w-[32%]">
-                {t.imageUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={t.imageUrl} alt={`${t.name} result`} loading="lazy" className="mb-3 aspect-[4/5] w-full rounded-xl object-cover" />
-                )}
-                {t.result && <p className="font-semibold text-gold">{t.result}</p>}
-                <blockquote className="mt-2 text-sm text-zinc-300">“{t.quote}”</blockquote>
-                <figcaption className="mt-3 text-xs text-muted">
-                  — {t.name}
-                  {t.city ? `, ${t.city}` : ""}
-                </figcaption>
-              </figure>
+              <li key={t.id} className="flex w-[80%] flex-none snap-start sm:w-[45%] md:w-[31%]">
+                <TestimonialCard
+                  name={t.name}
+                  handle={t.city ?? undefined}
+                  reelThumbUrl={t.imageUrl ?? undefined}
+                  quote={t.quote}
+                  result={t.result ?? undefined}
+                  showIncomeDisclaimer={MONEY_WORDS.test(`${t.quote} ${t.result ?? ""}`)}
+                />
+              </li>
             ))}
+          </ul>
+        </Section>
+      )}
+
+      {/* 8b. WHO IS BEHIND THIS — real people kill the "scam?" fear. Hidden until a real name + bio are filled in (Admin → Landing content). */}
+      {c.team.name && c.team.bio && (
+        <Section className="border-t border-line">
+          <SectionHeader eyebrow={c.team.eyebrow} heading={c.team.title} className="reveal" />
+          <div className="reveal mt-8 flex flex-col gap-6 rounded-lg border border-line bg-surface-raised p-6 md:flex-row md:items-center md:p-8">
+            {c.team.photoUrl && <Image src={c.team.photoUrl} alt={c.team.name} width={160} height={160} unoptimized loading="lazy" className="size-32 flex-none rounded-lg object-cover md:size-40" />}
+            <div className="flex flex-col items-start gap-2">
+              <h3 className="type-heading text-ink">{c.team.name}</h3>
+              {c.team.role && <p className="type-label text-gold-text">{c.team.role}</p>}
+              <p className="max-w-reading whitespace-pre-line text-ink-muted">{c.team.bio}</p>
+              {c.team.instagramUrl && (
+                <a href={c.team.instagramUrl} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center font-semibold text-gold-text underline underline-offset-4">
+                  {c.team.instagramLabel}
+                </a>
+              )}
+            </div>
           </div>
         </Section>
       )}
 
-      {/* 8. PRICING */}
-      <Section id="pricing">
-        <H2>{c.pricing.title}</H2>
-        <p className="mt-2 text-muted">{c.pricing.subtitle}</p>
-        {deadline?.price.endsAt && (
-          <div className="mt-4">
-            <Countdown endsAt={deadline.price.endsAt.toISOString()} nextPriceLabel={deadline.next ? formatINR(deadline.next.amountPaise) : null} />
-          </div>
-        )}
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+      {/* 9. PRICING — how much? Info order inside each card: what you get → price → CTA */}
+      <Section id="pricing" className="border-t border-line">
+        <SectionHeader eyebrow={c.pricing.eyebrow} heading={c.pricing.title} align="center" className="reveal" />
+        <Countdown deadline={deadline?.toISOString()} className="mt-6" />
+        <div className="mt-8 grid items-stretch gap-4 md:grid-cols-3">
           {tiers.map(({ product, price, next }) => {
-            const popular = product.slug === "pro";
+            const featured = product.slug === "pro";
             const features = Array.isArray(product.features) ? (product.features as string[]) : [];
+            // Only a REAL upcoming price is ever shown — never a made-up "original" price.
+            const later = price.endsAt && next && next.amountPaise > price.amountPaise ? c.pricing.laterPrice.replace("{date}", formatIST(price.endsAt, "date")).replace("{price}", formatINR(next.amountPaise)) : null;
+            const label = (product.kind === "SERVICE" ? c.pricing.serviceCta : c.pricing.cta).replace("{name}", product.name);
             return (
-              <div key={product.id} className={`card relative flex flex-col p-6 ${popular ? "border-gold ring-1 ring-gold" : ""}`}>
-                {popular && <span className="absolute -top-3 left-6 rounded-full bg-gold px-3 py-0.5 text-xs font-bold text-ink">Sabse popular</span>}
-                <h3 className="font-display text-2xl">{product.name}</h3>
-                <p className="text-sm text-muted">{product.tagline}</p>
-                <div className="mt-4 flex items-end gap-2">
-                  <span className="text-4xl font-bold text-white">{formatINR(price.amountPaise)}</span>
-                  {/* Only a REAL upcoming price is shown — never a made-up "original" price. */}
-                  {price.endsAt && next && next.amountPaise > price.amountPaise && (
-                    <span className="pb-1 text-xs text-muted">
-                      {formatIST(price.endsAt, "date")} ke baad {formatINR(next.amountPaise)}
-                    </span>
-                  )}
-                </div>
-                {price.label && <span className="mt-1 text-xs text-gold">{price.label}</span>}
-                <ul className="mt-5 flex-1 space-y-2 text-sm">
-                  {features.map((f) => (
-                    <li key={f} className="flex gap-2">
-                      <span className="text-gold">✓</span>
-                      <span className="text-zinc-300">{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <CtaLink href={`/checkout/${product.slug}`} id={`pricing_${product.slug}`} className={`${popular ? "btn-gold" : "btn-ghost min-h-[52px]"} mt-6 w-full`}>
-                  {product.kind === "SERVICE" ? "Details & join" : `${product.name} join karo`} →
-                </CtaLink>
-              </div>
+              <PriceCard
+                key={product.id}
+                featured={featured}
+                badge={featured ? c.pricing.featuredBadge : (product.tagline ?? undefined)}
+                name={product.name}
+                price={formatINR(price.amountPaise)}
+                priceNote={later ?? c.pricing.oneTime}
+                inclusions={features}
+                className={featured ? "order-first md:order-none" : undefined}
+                cta={
+                  <Button href={product.kind === "SERVICE" ? "/done-with-you" : `/checkout/${product.slug}`} variant={featured ? "primary" : "secondary"} block data-cta={`pricing_${product.slug}`}>
+                    {label}
+                  </Button>
+                }
+              />
             );
           })}
         </div>
-        <p className="mt-4 text-center text-xs text-muted">🔒 Secure payment by Razorpay • UPI • Cards • Netbanking • Wallets</p>
+        {tiers.length === c.pricing.compareRows[0]?.values.length && <TierCompareTable className="mt-6" tiers={tiers.map((t) => t.product.name)} featuredIndex={tiers.findIndex((t) => t.product.slug === "pro")} rows={c.pricing.compareRows} />}
+        <TrustRow className="mt-6 justify-center" refundDays={days} whatsappHref={wa} />
       </Section>
 
-      {/* 9. GUARANTEE */}
+      {/* 10. GUARANTEE — what if I don't like it? */}
       <Section>
-        <div className="card flex flex-col items-center gap-3 border-gold/50 p-8 text-center">
-          <div className="text-5xl">🛡️</div>
-          <H2>{c.guarantee.title}</H2>
-          <p className="max-w-xl text-zinc-300">{c.guarantee.text}</p>
-        </div>
+        <GuaranteeBox days={days} className="reveal" />
       </Section>
 
-      {/* 10. FAQ */}
-      <Section>
-        <H2>{c.faq.title}</H2>
-        <div className="mt-6 space-y-2">
+      {/* 11. FAQ */}
+      <Section id="faq" className="border-t border-line">
+        <SectionHeader eyebrow={c.faq.eyebrow} heading={c.faq.title} className="reveal" />
+        <Accordion className="mt-8 max-w-3xl">
           {c.faq.items.map((f) => (
-            <details key={f.q} className="card group">
-              <summary className="flex cursor-pointer items-center justify-between gap-3 p-4 font-semibold">
-                {f.q}
-                <span className="text-gold transition group-open:rotate-45">+</span>
-              </summary>
-              <p className="px-4 pb-4 text-sm text-zinc-300">{f.a}</p>
-            </details>
+            <AccordionItem key={f.q} group="faq" title={f.q}>
+              {f.a.replace("{days}", String(days))}
+            </AccordionItem>
           ))}
-        </div>
-        <div className="mt-8 text-center">
-          <CtaLink href={entryHref} id="faq_cta" className="btn-gold">
-            {c.hero.ctaText} — {entryPrice} →
-          </CtaLink>
-        </div>
+        </Accordion>
       </Section>
 
-      {/* 11. PARTNER RECRUITMENT */}
+      {/* 12. PARTNER RECRUITMENT */}
       <Section>
-        <div className="card flex flex-col gap-4 bg-gradient-to-br from-panel to-panel-2 p-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="font-display text-2xl text-white md:text-3xl">{c.partner.title}</h2>
-            <p className="mt-2 max-w-xl text-sm text-muted">{c.partner.text}</p>
+        <div className="reveal grid overflow-hidden rounded-lg border border-line md:grid-cols-2">
+          <div className="flex flex-col gap-3 bg-surface-raised p-6 md:p-8">
+            <p className="type-label text-gold-text">{c.partner.eyebrow}</p>
+            <h2 className="type-display text-ink">
+              <Highlight text={c.partner.title} />
+            </h2>
           </div>
-          <CtaLink href="/partners" id="partner_block" className="btn-ghost shrink-0">
-            {c.partner.cta} →
-          </CtaLink>
+          <div className="flex flex-col items-start gap-4 bg-gold-soft p-6 md:p-8">
+            <p className="type-body-lg text-ink">{c.partner.text.replace("{pct}", String(maxCommissionPct))}</p>
+            <Button href="/partners" variant="secondary" arrow data-cta="partner_block">
+              {c.partner.cta}
+            </Button>
+            <IncomeDisclaimer />
+          </div>
         </div>
       </Section>
 
-      {/* 12. STICKY MOBILE BUY BAR */}
-      {entry && <StickyBuyBar priceLabel={entryPrice} href={entryHref} ctaText={c.stickyBar.ctaText} />}
+      {/* 13. FINAL CTA */}
+      <section id="final-cta" className="film-grain border-t border-line py-16 md:py-24">
+        <div className="container-page flex flex-col items-center gap-6 text-center">
+          <SpeedTrails className="h-10 w-12" />
+          <h2 className="type-display-xl text-ink">
+            <Highlight text={c.finalCta.title} />
+          </h2>
+          <p className="type-body-lg max-w-reading text-ink-muted">{c.finalCta.sub}</p>
+          <Button href={entryHref} size="lg" arrow data-cta="final_cta" className="w-full sm:w-auto">
+            {heroCta}
+          </Button>
+          <TrustRow className="justify-center" refundDays={days} whatsappHref={wa} />
+        </div>
+      </section>
+
+      {/* 14. STICKY BUY BAR (mobile) — hidden while another gold button is on screen */}
+      {entry && (
+        <StickyBuyBar
+          price={entryPrice}
+          note={c.stickyBar.note}
+          hideOnIds={["pricing", "final-cta"]}
+          cta={
+            <Button href={entryHref} pill data-cta="sticky_bar">
+              {c.stickyBar.cta}
+            </Button>
+          }
+        />
+      )}
+
+      {freeHref && <LeadSheet freeLessonHref={freeHref} />}
+
+      {/* Real orders only (city + time). Off by default: Admin → Settings → showRecentPurchases. */}
+      <RecentPurchaseToast enabled={settings.showRecentPurchases} orders={recent} text={c.recentPurchase} />
     </main>
   );
 }

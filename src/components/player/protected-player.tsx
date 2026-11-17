@@ -8,11 +8,12 @@
  *  - Right-click disabled; Mux Player has no download button.
  *  - Saves position every 15s, on pause and on leave → resumes where the student stopped.
  */
+import { Maximize } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { track } from "@/lib/track";
 
-const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false, loading: () => <div className="grid h-full place-items-center text-muted">Loading…</div> });
+const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), { ssr: false, loading: () => <div className="grid h-full place-items-center text-ink-muted">Loading…</div> });
 
 type Source =
   | { provider: "mux"; playbackId: string; tokens: { playback?: string; thumbnail?: string; storyboard?: string } }
@@ -126,7 +127,7 @@ export function ProtectedPlayer({
   return (
     <div
       ref={wrap}
-      className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black select-none [&:fullscreen]:rounded-none"
+      className="relative aspect-video w-full overflow-hidden bg-surface-sunken select-none md:rounded-md [&:fullscreen]:rounded-none"
       onContextMenu={(e) => e.preventDefault()}
     >
       {source.provider === "mux" ? (
@@ -138,7 +139,7 @@ export function ProtectedPlayer({
       {/* Watermark — pointer-events none so it never blocks the controls */}
       <div
         aria-hidden
-        className="pointer-events-none absolute z-10 rounded px-1.5 py-0.5 text-[11px] font-semibold tracking-wider text-white/35 transition-all duration-[1500ms] sm:text-sm"
+        className="pointer-events-none absolute z-10 rounded px-1.5 py-0.5 text-xs font-semibold tracking-wider text-ink/35 transition-all duration-[1500ms] sm:text-sm"
         style={{ ...SPOTS[spot], textShadow: "0 0 2px rgba(0,0,0,.6)" }}
       >
         {watermark}
@@ -147,10 +148,10 @@ export function ProtectedPlayer({
       <button
         type="button"
         onClick={toggleFullscreen}
-        className="absolute top-2 right-2 z-20 rounded-lg bg-black/50 px-2 py-1 text-xs text-white backdrop-blur hover:bg-black/70"
+        className="absolute top-1 right-1 z-20 grid size-12 place-items-center rounded-sm bg-surface-sunken/60 text-ink hover:bg-surface-sunken/80"
         aria-label="Fullscreen"
       >
-        ⛶
+        <Maximize aria-hidden className="size-5" />
       </button>
     </div>
   );

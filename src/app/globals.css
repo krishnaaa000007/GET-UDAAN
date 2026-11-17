@@ -1,52 +1,265 @@
 @import "tailwindcss";
 
-/* ReelBhai brand: dark background, gold accent, Anton headings, Poppins body. */
-@theme {
-  --color-ink: #0b0b0f;
-  --color-panel: #14141b;
-  --color-panel-2: #1c1c25;
-  --color-line: #2a2a35;
-  --color-gold: #ffb627;
-  --color-gold-dim: #c98a0e;
-  --color-muted: #a3a3b2;
-  --color-good: #34d399;
-  --color-bad: #f87171;
+/*
+ * GET UDAAN design tokens — the single source of truth (see DESIGN.md section 3).
+ * Night is the default theme. Day is for invoices, emails, certificates and print:
+ * wrap that area in <div data-theme="day">.
+ * Never put a raw hex colour in a page or component — use the classes these tokens create
+ * (bg-surface, text-ink, text-gold-text, border-line ...).
+ */
+:root,
+[data-theme="night"] {
+  color-scheme: dark;
+  --surface: #0d0d12;
+  --surface-raised: #17171f;
+  --surface-sunken: #08080b;
+  --line: #2a2a35;
+  --ink: #f6f1e7;
+  --ink-muted: #a8a3b3;
+  --gold: #ffb627;
+  --gold-deep: #e89c00;
+  --on-gold: #15131a;
+  --gold-text: #ffb627;
+  --gold-soft: #2b2210;
+  --fire: #ff6a45;
+  --on-fire: #15131a;
+  --success: #2dd4a7;
+  --focus-ring: #ffb627;
+  --glow-gold: 0 8px 28px rgba(255, 182, 39, 0.35);
+  --lift: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="day"] {
+  color-scheme: light;
+  --surface: #fbf7ef;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f2ece0;
+  --line: #e5ddcc;
+  --ink: #15131a;
+  --ink-muted: #5d5866;
+  --gold-text: #8a5b00;
+  --gold-soft: #fff1d1;
+  --fire: #c2361a;
+  --on-fire: #ffffff;
+  --success: #0b7a5c;
+  --lift: 0 8px 24px rgba(21, 19, 26, 0.12);
+}
+
+/* Map the tokens to Tailwind classes (Tailwind v4 does this in CSS, not tailwind.config.ts). */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+  --color-on-gold: var(--on-gold);
+  --color-gold-text: var(--gold-text);
+  --color-gold-soft: var(--gold-soft);
+  --color-fire: var(--fire);
+  --color-on-fire: var(--on-fire);
+  --color-success: var(--success);
+  --color-focus-ring: var(--focus-ring);
+
   --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  --font-body: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-sans: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-glow-gold: var(--glow-gold);
+  --shadow-lift: var(--lift);
+
+  /* 13px is the smallest text allowed anywhere, so "text-xs" is 13px here (not Tailwind's 12px). */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
+
+  --container-content: 1120px;
+  --container-reading: 640px;
+
+  --animate-fade-up: fade-up 250ms ease-out both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-sheet-in: sheet-in 220ms ease-out both;
+  --animate-trail: trail 900ms ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes trail {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(6px);
+  }
 }
 
 html {
-  background: var(--color-ink);
-  color: #f4f4f5;
+  background: var(--surface);
+  color: var(--ink);
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: var(--font-sans);
-  background: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 24px;
+  background: var(--surface);
+  color: var(--ink);
+}
+@media (width >= 48rem) {
+  body {
+    font-size: 16px;
+  }
 }
 
-/* Reusable pieces */
+[data-theme] {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* One focus style everywhere: 2px gold ring with a 2px gap. */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---------- Type styles (DESIGN.md 3.2) ---------- */
+@utility type-display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 2.2rem + 4.2vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+@utility type-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 1.85rem + 2vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+@utility type-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.625rem, 1.5rem + 0.6vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+@utility type-price {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 2.45rem + 1.3vw, 3.5rem);
+  line-height: 1;
+}
+@utility type-price-sm {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+/* Hindi-script (Devanagari) headings: Anton has no Devanagari, so use Poppins 800. */
+@utility type-heading-hi {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: clamp(1.625rem, 1.5rem + 0.6vw, 2rem);
+  line-height: 1.25;
+}
+@utility type-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 1.2rem + 0.25vw, 1.375rem);
+  line-height: 28px;
+}
+@utility type-body-lg {
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  line-height: 27px;
+}
+@utility type-body {
+  font-size: 15px;
+  line-height: 24px;
+  @media (width >= 48rem) {
+    font-size: 16px;
+  }
+}
+@utility type-small {
+  font-size: 13px;
+  line-height: 20px;
+}
+@utility type-label {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+@utility type-button {
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+}
+
+/* Page gutter + max width used by every section. */
+@utility container-page {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 48rem) {
+    padding-inline: 24px;
+  }
+}
+
+/* ---------- Older helper classes (pages built before DESIGN.md). ----------
+ * They now use the new tokens so old pages already look on-brand.
+ * New code should use the components in src/components/ui instead. */
 @utility btn-gold {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  min-height: 52px;
-  padding: 0 1.5rem;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
   border-radius: 14px;
-  background: var(--color-gold);
-  color: #111;
+  background: var(--gold);
+  color: var(--on-gold);
   font-weight: 700;
-  font-size: 1.05rem;
-  box-shadow: 0 8px 24px -8px rgb(255 182 39 / 0.55);
-  transition: transform 0.12s ease, filter 0.12s ease;
+  font-size: 16px;
+  line-height: 20px;
+  box-shadow: var(--glow-gold);
+  transition: transform 0.15s ease-out, background 0.15s ease-out;
   &:active {
     transform: scale(0.98);
   }
   &:hover {
-    filter: brightness(1.05);
+    background: var(--gold-deep);
   }
   &:disabled {
     opacity: 0.6;
@@ -58,44 +271,54 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  min-height: 44px;
-  padding: 0 1rem;
-  border-radius: 12px;
-  border: 1px solid var(--color-line);
-  color: #f4f4f5;
-  font-weight: 600;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 14px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-weight: 700;
+  transition: transform 0.15s ease-out, border-color 0.15s ease-out;
+  &:active {
+    transform: scale(0.98);
+  }
   &:hover {
-    border-color: var(--color-gold);
+    border-color: var(--gold);
   }
 }
 
 @utility card {
-  background: var(--color-panel);
-  border: 1px solid var(--color-line);
-  border-radius: 18px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 14px;
 }
 
 @utility field {
   width: 100%;
-  min-height: 52px;
-  padding: 0 1rem;
-  border-radius: 12px;
-  background: var(--color-panel-2);
-  border: 1px solid var(--color-line);
-  color: #fff;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  color: var(--ink);
   font-size: 16px; /* 16px stops iOS zooming into inputs */
   &:focus {
-    outline: none;
-    border-color: var(--color-gold);
+    border-color: var(--gold);
   }
 }
 
 @utility font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   line-height: 1.02;
+}
+
+/* Skeleton shimmer */
+@utility shimmer {
+  background: linear-gradient(90deg, var(--surface-raised) 0%, var(--line) 50%, var(--surface-raised) 100%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
 }
 
 /* Hide scrollbars on horizontal chip rows */
@@ -113,8 +336,80 @@ details > summary::-webkit-details-marker {
   display: none;
 }
 
+/* Accordion: smooth open/close where the browser supports it (Chrome/Android). Others just snap. */
+@supports (interpolate-size: allow-keywords) {
+  .accordion-item {
+    interpolate-size: allow-keywords;
+  }
+  .accordion-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 200ms ease-out, content-visibility 200ms allow-discrete;
+  }
+  .accordion-item[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* Bottom sheet / modal backdrop */
+dialog.sheet::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+/* Reduced motion: turn every animation and transition off. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Subtle film grain for dark hero areas (a tiny inline SVG — no image download). */
+@utility film-grain {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Section reveal: headings/cards fade up 12px as they scroll into view. Pure CSS, no JavaScript.
+ * Browsers without support simply show the content. Reduced-motion users get no animation (rule above). */
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+}
+
+/* Thank-you page: one short gold confetti burst (pieces fly out from the centre and fade). */
+@keyframes confetti {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+  }
+}
+@utility confetti-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti 1100ms ease-out 1 both;
 }

@@ -684,3 +684,48 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([createdAt])
 }
+
+// ─────────────────────────────── Done-with-you client tracker ───────────────────────────────
+// One project per paid Done-with-you order. The client sees it at /dashboard/project,
+// the team runs it from /admin/projects.
+
+model ServiceProject {
+  id        String   @id @default(cuid())
+  userId    String
+  orderId   String   @unique
+  /// 0..4 = which stage is in progress (stage names live in content/hi-Latn/done-with-you.json); 5 = all done
+  stage     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files    ServiceFile[]
+  messages ServiceMessage[]
+
+  @@index([userId])
+}
+
+/// A link to a file the team shares with the client (Drive / private storage link), shown under a stage.
+model ServiceFile {
+  id        String         @id @default(cuid())
+  projectId String
+  stage     Int
+  title     String
+  url       String
+  createdAt DateTime       @default(now())
+  project   ServiceProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ServiceMessage {
+  id        String         @id @default(cuid())
+  projectId String
+  authorId  String
+  /// true = written by the Get Udaan team, false = written by the client
+  fromTeam  Boolean
+  body      String
+  createdAt DateTime       @default(now())
+  project   ServiceProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+}

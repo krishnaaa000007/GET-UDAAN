@@ -100,3 +100,22 @@ export async function getPartnerDashboard(partnerId: string, days: number) {
 }
 
 export type PartnerDashboard = Awaited<ReturnType<typeof getPartnerDashboard>>;
+
+/**
+ * Leaderboard (only shown when admin turns it on): top 10 partners by paid sales in the last 30 days.
+ * Other partners' handles are partly hidden and NO money amounts are shared — only rank and sales count.
+ */
+export async function getPartnerLeaderboard(partnerId: string) {
+  const since = new Date(Date.now() - 30 * 86_400_000);
+  const rows = await db.order.groupBy({ by: ["partnerId"], where: { status: "PAID", partnerId: { not: null }, paidAt: { gte: since } }, _count: { _all: true } });
+  const ranked = rows.filter((r) => r.partnerId).sort((a, b) => b._count._all - a._count._all);
+  const top = ranked.slice(0, 10);
+  const partners = await db.partner.findMany({ where: { id: { in: top.map((r) => r.partnerId as string) } }, select: { id: true, instagramHandle: true } });
+  const handle = new Map(partners.map((p) => [p.id, p.instagramHandle]));
+  const mask = (h: string) => `@${h.slice(0, 3)}${"*".repeat(Math.max(3, Math.min(6, h.length - 3)))}`;
+  const myIndex = ranked.findIndex((r) => r.partnerId === partnerId);
+  return {
+    top: top.map((r, i) => ({ rank: i + 1, name: mask(handle.get(r.partnerId as string) ?? "partner"), sales: r._count._all, me: r.partnerId === partnerId })),
+    me: myIndex >= 0 ? { rank: myIndex + 1, sales: ranked[myIndex]._count._all } : null,
+  };
+}

@@ -118,3 +118,58 @@ export async function getAssetDownloadUrl(assetId: string, userId: string): Prom
   const ext = asset.storageKey.split(".").pop();
   return signedDownloadUrl(asset.storageKey, `${asset.title}.${ext}`);
 }
+
+/** "Mark complete" toggle on the lesson page. Same access check as watching. */
+export async function setLessonCompletion(userId: string, lessonId: string, complete: boolean) {
+  const lesson = await db.lesson.findUnique({ where: { id: lessonId }, include: { module: true } });
+  if (!lesson || !lesson.published) return { ok: false as const };
+  if (!lesson.isFreePreview) {
+    const e = await getActiveEnrollment(userId, lesson.module.courseId);
+    if (!tierAllows(e?.tier, lesson.module.minTier)) return { ok: false as const };
+  }
+  const existing = await db.lessonProgress.findUnique({ where: { userId_lessonId: { userId, lessonId } } });
+  const newlyCompleted = complete && !existing?.completedAt;
+  await db.lessonProgress.upsert({
+    where: { userId_lessonId: { userId, lessonId } },
+    create: { userId, lessonId, positionSec: 0, completedAt: complete ? new Date() : null },
+    update: { completedAt: complete ? (existing?.completedAt ?? new Date()) : null },
+  });
+  if (newlyCompleted) await db.funnelEvent.create({ data: { name: "lesson_completed", userId, props: { lessonId, manual: true } } });
+  return { ok: true as const, completed: complete };
+}
+
+/** How many days in a row (India time) the student has opened a lesson, counting today or yesterday as the latest day. */
+export async function getLearningStreak(userId: string, now = new Date()): Promise<number> {
+  const since = new Date(now.getTime() - 90 * 86_400_000);
+  const events = await db.playbackEvent.findMany({ where: { userId, createdAt: { gt: since } }, select: { createdAt: true } });
+  const dayKey = (d: Date) => new Date(d.getTime() + 5.5 * 3_600_000).toISOString().slice(0, 10);
+  const days = new Set(events.map((e) => dayKey(e.createdAt)));
+  let cursor = now;
+  if (!days.has(dayKey(cursor))) cursor = new Date(cursor.getTime() - 86_400_000); // streak still alive if they studied yesterday
+  let streak = 0;
+  while (days.has(dayKey(cursor))) {
+    streak++;
+    cursor = new Date(cursor.getTime() - 86_400_000);
+  }
+  return streak;
+}
+
+/** Certificate data. A certificate exists only when EVERY published lesson of the course is completed. */
+export async function getCertificate(enrollmentId: string) {
+  const e = await db.enrollment.findUnique({ where: { id: enrollmentId }, include: { user: { select: { id: true, name: true } }, course: { select: { id: true, slug: true, title: true } } } });
+  if (!e || e.revokedAt) return null;
+  const lessons = await db.lesson.findMany({ where: { published: true, module: { courseId: e.courseId } }, select: { id: true } });
+  const done = await db.lessonProgress.findMany({ where: { userId: e.userId, completedAt: { not: null }, lessonId: { in: lessons.map((l) => l.id) } }, select: { completedAt: true } });
+  const complete = lessons.length > 0 && done.length === lessons.length;
+  const completedOn = complete ? new Date(Math.max(...done.map((d) => d.completedAt!.getTime()))) : null;
+  return {
+    ownerId: e.userId,
+    studentName: e.user.name ?? "",
+    course: e.course,
+    complete,
+    completedOn,
+    percent: lessons.length ? Math.round((done.length / lessons.length) * 100) : 0,
+    /** Short, readable ID printed on the certificate */
+    certificateId: `GU-${e.id.slice(-8).toUpperCase()}`,
+  };
+}

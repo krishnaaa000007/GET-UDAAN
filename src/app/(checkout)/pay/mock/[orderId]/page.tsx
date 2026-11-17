@@ -3,7 +3,10 @@
  * purchase flow locally without a Razorpay account. It sends a properly signed
  * webhook to our real webhook endpoint — the same path production uses.
  */
+import { FlaskConical } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import t from "@/content/hi-Latn/checkout.json";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { formatINR } from "@/lib/money";
@@ -41,22 +44,23 @@ export default async function MockPayPage({ params }: PageProps<"/pay/mock/[orde
   if (order.status === "PAID") redirect(`/thank-you/${order.id}`);
 
   return (
-    <main className="mx-auto max-w-md px-4 py-8">
-      <div className="mb-4 rounded-xl border border-gold/50 bg-gold/10 p-3 text-center text-sm text-gold">
-        🧪 TEST MODE — ye asli payment nahi hai. Live site pe yahan Razorpay khulega.
-      </div>
-      <div className="card p-6 text-center">
-        <p className="text-sm text-muted">Pay to ReelBhai Academy</p>
-        <p className="mt-1 text-4xl font-bold">{formatINR(order.totalPaise)}</p>
-        <p className="mt-1 text-sm text-muted">{order.items.map((i) => i.name).join(" + ")}</p>
-        <form action={mockPay} className="mt-6 space-y-3">
+    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 py-8">
+      <p role="note" className="type-small flex items-start gap-2 rounded-sm border border-dashed border-line bg-gold-soft p-3 text-gold-text">
+        <FlaskConical aria-hidden className="mt-0.5 size-5 flex-none" />
+        {t.mock.banner}
+      </p>
+      <div className="flex flex-col items-center gap-1 rounded-lg border border-line bg-surface-raised p-6 text-center">
+        <p className="type-small text-ink-muted">{t.mock.payTo}</p>
+        <p className="type-price text-ink">{formatINR(order.totalPaise)}</p>
+        <p className="type-small text-ink-muted">{order.items.map((i) => i.name).join(" + ")}</p>
+        <form action={mockPay} className="mt-6 flex w-full flex-col gap-3">
           <input type="hidden" name="orderId" value={order.id} />
-          <button name="outcome" value="success" className="btn-gold w-full">
-            ✅ UPI payment successful (test)
-          </button>
-          <button name="outcome" value="fail" className="btn-ghost w-full">
-            ❌ Payment fail karo (test)
-          </button>
+          <Button type="submit" name="outcome" value="success" block>
+            {t.mock.success}
+          </Button>
+          <Button type="submit" name="outcome" value="fail" variant="secondary" block>
+            {t.mock.fail}
+          </Button>
         </form>
       </div>
     </main>

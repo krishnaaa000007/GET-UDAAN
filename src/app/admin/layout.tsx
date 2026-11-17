@@ -8,6 +8,7 @@ const NAV = [
   ["/admin/partners", "Partners"],
   ["/admin/payouts", "Withdrawals"],
   ["/admin/students", "Students"],
+  ["/admin/projects", "DWY projects"],
   ["/admin/courses", "Courses"],
   ["/admin/pricing", "Pricing & coupons"],
   ["/admin/content", "Landing content"],
@@ -21,7 +22,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <div className="mx-auto max-w-7xl px-4 py-4">
         <nav className="no-scrollbar -mx-4 mb-5 flex gap-1 overflow-x-auto px-4 text-sm">
           {NAV.map(([href, label]) => (
-            <Link key={href} href={href} className="shrink-0 rounded-lg border border-line px-3 py-1.5 text-muted hover:border-gold hover:text-white">
+            <Link key={href} href={href} className="shrink-0 rounded-lg border border-line px-3 py-1.5 text-ink-muted hover:border-gold hover:text-ink">
               {label}
             </Link>
           ))}

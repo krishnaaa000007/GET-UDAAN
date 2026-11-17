@@ -9,7 +9,7 @@ export default async function AdminCourses() {
   return (
     <div className="space-y-4">
       <h1 className="font-display text-3xl">Courses</h1>
-      <p className="text-sm text-muted">
+      <p className="text-sm text-ink-muted">
         For each lesson paste the <b>Mux signed playback ID</b> (Mux → Assets → your video → Playback IDs, policy “signed”). Lessons without an ID play a demo video. See README → “Adding a new course”.
       </p>
       {courses.map((c) => (
@@ -18,7 +18,7 @@ export default async function AdminCourses() {
           {c.modules.map((m, mi) => (
             <details key={m.id} className="card p-4" open={mi === 0}>
               <summary className="cursor-pointer font-semibold">
-                {mi + 1}. {m.title} <span className="text-xs text-muted">({m.lessons.length} lessons, min tier {m.minTier})</span>
+                {mi + 1}. {m.title} <span className="text-xs text-ink-muted">({m.lessons.length} lessons, min tier {m.minTier})</span>
               </summary>
               <div className="mt-3 space-y-3">
                 {m.lessons.map((l) => (
@@ -35,7 +35,7 @@ export default async function AdminCourses() {
                     <div className="flex items-center gap-3">
                       <label className="flex items-center gap-1"><input type="checkbox" name="isFreePreview" defaultChecked={l.isFreePreview} /> Free</label>
                       <label className="flex items-center gap-1"><input type="checkbox" name="published" defaultChecked={l.published} /> Live</label>
-                      <button className="text-gold">Save</button>
+                      <button className="text-gold-text">Save</button>
                     </div>
                   </ActionForm>
                 ))}

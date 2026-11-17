@@ -30,7 +30,7 @@ export default async function AdminSettings() {
             return (
               <label key={key} className="block text-sm">
                 <span className="font-semibold">{key}</span>
-                {HELP[key] && <span className="block text-xs text-muted">{HELP[key]}</span>}
+                {HELP[key] && <span className="block text-xs text-ink-muted">{HELP[key]}</span>}
                 {typeof v === "boolean" ? (
                   <input type="checkbox" name={key} defaultChecked={v} className="mt-2 h-5 w-5" />
                 ) : (
@@ -47,8 +47,8 @@ export default async function AdminSettings() {
         <ul className="card divide-y divide-line text-xs">
           {log.map((l) => (
             <li key={l.id} className="p-3">
-              <b>{l.action}</b> <span className="text-muted">{l.entity} {l.entityId?.slice(0, 10)}</span>
-              <span className="block text-muted">{formatIST(l.createdAt)}</span>
+              <b>{l.action}</b> <span className="text-ink-muted">{l.entity} {l.entityId?.slice(0, 10)}</span>
+              <span className="block text-ink-muted">{formatIST(l.createdAt)}</span>
             </li>
           ))}
         </ul>

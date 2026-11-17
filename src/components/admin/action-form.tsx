@@ -22,8 +22,8 @@ export function ActionForm({
       <fieldset disabled={pending} className="contents">
         {children}
       </fieldset>
-      {state.error && <p className="mt-2 text-sm text-bad">{state.error}</p>}
-      {state.ok && !pending && <p className="mt-2 text-sm text-good">{success}</p>}
+      {state.error && <p className="mt-2 text-sm text-fire">{state.error}</p>}
+      {state.ok && !pending && <p className="mt-2 text-sm text-success">{success}</p>}
     </form>
   );
 }

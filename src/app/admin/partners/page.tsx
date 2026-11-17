@@ -22,15 +22,15 @@ export default async function AdminPartners() {
 
       <section>
         <h2 className="mb-3 font-semibold">Applications ({pending.length})</h2>
-        {pending.length === 0 && <p className="text-sm text-muted">No pending applications.</p>}
+        {pending.length === 0 && <p className="text-sm text-ink-muted">No pending applications.</p>}
         <div className="grid gap-3 md:grid-cols-2">
           {pending.map((p) => (
             <div key={p.id} className="card p-4">
               <p className="font-semibold">{p.displayName}</p>
               <p className="text-sm">
-                <a className="text-gold underline" href={`https://instagram.com/${p.instagramHandle}`} target="_blank" rel="noopener">@{p.instagramHandle}</a> • {p.followers.toLocaleString("en-IN")} followers
+                <a className="text-gold-text underline" href={`https://instagram.com/${p.instagramHandle}`} target="_blank" rel="noopener">@{p.instagramHandle}</a> • {p.followers.toLocaleString("en-IN")} followers
               </p>
-              <p className="text-xs text-muted">{p.niche} • {p.user.email} • {p.phone} • applied {formatIST(p.createdAt, "date")}</p>
+              <p className="text-xs text-ink-muted">{p.niche} • {p.user.email} • {p.phone} • applied {formatIST(p.createdAt, "date")}</p>
               <form action={approvePartnerAction} className="mt-3 flex gap-2">
                 <input type="hidden" name="partnerId" value={p.id} />
                 <input name="code" placeholder="Code (auto from handle)" className="field min-h-10 text-sm uppercase" />
@@ -53,9 +53,9 @@ export default async function AdminPartners() {
             <details key={p.id} className="card p-4">
               <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2">
                 <span>
-                  <b>{p.code ?? "—"}</b> {p.displayName} <span className="text-xs text-muted">@{p.instagramHandle} • {p.status}</span>
+                  <b>{p.code ?? "—"}</b> {p.displayName} <span className="text-xs text-ink-muted">@{p.instagramHandle} • {p.status}</span>
                 </span>
-                <span className="text-sm text-muted">
+                <span className="text-sm text-ink-muted">
                   {p._count.clicks} clicks • {p._count.orders} sales • {formatINR(earnedBy.get(p.id) ?? 0)} earned
                 </span>
               </summary>
@@ -71,12 +71,12 @@ export default async function AdminPartners() {
                         <span className="w-28 shrink-0 truncate">{prod.name}</span>
                         <input name="ratePct" type="number" min={0} max={100} step="0.5" defaultValue={(override?.rateBps ?? prod.defaultCommissionBps) / 100} className="field min-h-9 w-20 px-2" aria-label={`${prod.name} commission %`} />
                         <span>%</span>
-                        <button className="text-gold">Save</button>
+                        <button className="text-gold-text">Save</button>
                       </form>
                     );
                   })}
                 </div>
-                <p className="mt-2 text-xs text-muted">Changes apply to new sales only and are written to the audit log. Payout: {p.upiId ?? (p.bankAccountNumber ? `Bank ••${p.bankAccountNumber.slice(-4)} ${p.bankIfsc}` : "not set")}</p>
+                <p className="mt-2 text-xs text-ink-muted">Changes apply to new sales only and are written to the audit log. Payout: {p.upiId ?? (p.bankAccountNumber ? `Bank ••${p.bankAccountNumber.slice(-4)} ${p.bankIfsc}` : "not set")}</p>
                 {p.status === "REJECTED" && (
                   <form action={approvePartnerAction} className="mt-2">
                     <input type="hidden" name="partnerId" value={p.id} />

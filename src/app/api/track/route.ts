@@ -5,7 +5,7 @@ import { hashIp } from "@/lib/crypto";
 import { rateLimit } from "@/server/rate-limit";
 import { decodeRefCookie } from "@/server/attribution";
 
-const ALLOWED = new Set(["page_view", "cta_click", "checkout_view", "lesson_started", "upsell_view", "upsell_click", "share_click"]);
+const ALLOWED = new Set(["page_view", "cta_click", "checkout_view", "lesson_started", "upsell_view", "upsell_click", "share_click", "lead_optin"]);
 
 export async function POST(req: NextRequest) {
   let data: { name?: string; path?: string; props?: Record<string, unknown> };

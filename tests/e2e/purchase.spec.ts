@@ -6,26 +6,26 @@ const buyerEmail = `e2e.${Date.now()}@example.com`;
 test("visitor from a partner reel buys the course and starts lesson 1; partner sees the sale", async ({ page, browser }) => {
   // 1. Arrive from a partner's reel
   await page.goto("/?ref=LIONBHAI&c=e2ereel");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/Bhai/i);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/viral/i);
 
   // 2. Checkout — partner coupon is auto-applied
-  await page.getByRole("link", { name: /Course join karo/ }).first().click();
+  await page.getByRole("link", { name: /mein Join Karo/ }).first().click();
   await expect(page).toHaveURL(/\/checkout\/basic/);
   await expect(page.getByText(/LIONBHAI laga/)).toBeVisible();
   await page.getByPlaceholder("Rahul Kumar").fill("E2E Buyer");
   await page.getByPlaceholder("98765 43210").fill("9811122233");
   await page.getByPlaceholder("aap@gmail.com").fill(buyerEmail);
-  await expect(page.getByRole("button", { name: /₹450 Pay karein/ })).toBeVisible(); // ₹499 − ₹49 (10%, whole rupees)
-  await page.getByRole("button", { name: /Pay karein/ }).click();
+  await expect(page.getByRole("button", { name: /₹450 Pay Karo/ })).toBeVisible(); // ₹499 − ₹49 (10%, whole rupees)
+  await page.getByRole("button", { name: /Pay Karo/ }).click();
 
   // 3. Mock gateway → signed webhook → thank-you
   await expect(page).toHaveURL(/\/pay\/mock\//);
   await page.getByRole("button", { name: /payment successful/i }).click();
-  await expect(page.getByRole("heading", { name: /Payment successful/i })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { name: /Welcome to Get Udaan/i })).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/Pro mein upgrade karo/i)).toBeVisible(); // one upsell
 
   // 4. Same browser is logged in automatically and lands in lesson 1 with a watermark
-  await page.getByRole("button", { name: /Lesson 1 abhi shuru karo/ }).click();
+  await page.getByRole("button", { name: /Lesson 1 Shuru Karo/ }).click();
   await expect(page).toHaveURL(/\/learn\//);
   await expect(page.getByText("98XXXXX233")).toBeVisible();
 

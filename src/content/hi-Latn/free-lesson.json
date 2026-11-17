@@ -1,0 +1,50 @@
+{
+  "eyebrow": "Free lesson",
+  "watermark": "Get Udaan • Free lesson",
+  "progress": "{n} / {total} lessons",
+  "progressLabel": "Course progress",
+  "notesTitle": "Is lesson ke notes",
+  "upgrade": {
+    "title": "YE TOH SIRF *EK LESSON* THA.",
+    "text": "Baaki {remaining} lessons + 300+ prompts {price} mein. Ek baar payment, lifetime access.",
+    "cta": "{price} mein Join Karo",
+    "stickyNote": "Baaki {remaining} lessons unlock karo",
+    "stickyCta": "Abhi Join Karo"
+  },
+  "prompts": {
+    "eyebrow": "Free bonus",
+    "title": "AAPKE *20 PROMPTS*",
+    "text": "Kisi bhi free AI image tool mein copy-paste karo. Ye sirf shuruaat hai — poore course mein 300+ prompts milte hain.",
+    "copy": "Copy",
+    "copyLabel": "Prompt {n} copy karo",
+    "copied": "Prompt copy ho gaya",
+    "copyFailed": "Copy nahi hua. Prompt ko dabakar select karo.",
+    "showAll": "Saare 20 prompts dekho",
+    "download": "20 Prompts Download Karo",
+    "fileName": "get-udaan-20-free-prompts.txt",
+    "fileHeader": "GET UDAAN — 20 FREE PROMPTS\nPhone se Viral tak. getudaan.com\n",
+    "items": [
+      "Cinematic portrait of a lion mafia boss in a black suit, heavy rain, neon city street at night, warm gold rim light, shallow depth of field, 9:16 vertical",
+      "A lion in a black leather jacket leaning on a vintage black car, old Mumbai street at night, wet road reflections, moody film look, 9:16 vertical",
+      "Close-up of a lion's face with intense eyes, half in shadow, gold light from one side, cigar smoke in the air, dark background, 9:16 vertical",
+      "Lion boss sitting on a throne-like chair in a dim warehouse, two wolf bodyguards standing behind him, single hanging lamp, dramatic shadows, 9:16 vertical",
+      "Low-angle shot of a lion in a long coat walking toward the camera, street lights behind him, light fog, slow-motion feel, 9:16 vertical",
+      "A tiger in a white suit stepping out of a luxury car, rival gang arriving, night market background, tense mood, cinematic lighting, 9:16 vertical",
+      "Lion and tiger standing face to face in an empty parking lot at night, headlights behind them, rain falling, wide cinematic frame, 9:16 vertical",
+      "A young lion cub looking up at a tall lion boss, small tea stall in the background, soft morning light, emotional mood, 9:16 vertical",
+      "Lion boss sitting alone, staring out of a rain-covered window in a dark office, city lights blurred outside, lonely mood, 9:16 vertical",
+      "Three animal gangsters, a lion, a bear and a wolf, walking side by side down a narrow lane, backlit by a single street lamp, 9:16 vertical",
+      "Over-the-shoulder shot of a lion looking at an old family photo on a wooden table, warm lamp light, dust in the air, 9:16 vertical",
+      "A lion in a simple white kurta sitting on the steps of an old house at sunrise, peaceful face, golden light, flashback scene, 9:16 vertical",
+      "Extreme close-up of a lion's paw placing a gold ring on a table, dark wooden surface, single beam of light, dramatic detail shot, 9:16 vertical",
+      "A black panther in a hoodie watching from a rooftop at night, city skyline behind, cold blue shadows with one warm gold light, 9:16 vertical",
+      "Lion boss standing alone on a bridge at night, wind moving his coat, river and city lights below, wide shot, cinematic, 9:16 vertical",
+      "A wolf messenger running through a crowded night market, motion blur on the crowd, sharp focus on the wolf, urgent mood, 9:16 vertical",
+      "Lion boss slowly turning his head toward the camera, eyes catching the light, dark room, slow push-in camera move, 9:16 vertical",
+      "Tiger don laughing at a long dinner table with animal gang members, candles and warm light, lion watching silently from the doorway, 9:16 vertical",
+      "A lion helping an old goat shopkeeper lift his fallen cart, rainy street, soft emotional lighting, kind moment, 9:16 vertical",
+      "Final shot: lion boss walking away from the camera into morning light at the end of a long empty road, calm mood, 9:16 vertical"
+    ]
+  },
+  "next": "Poora Curriculum Dekho"
+}

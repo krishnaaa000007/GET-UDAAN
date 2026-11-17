@@ -4,7 +4,7 @@
  */
 import { formatINR } from "@/lib/money";
 
-const BRAND = "ReelBhai Academy";
+const BRAND = "Get Udaan";
 
 function layout(title: string, body: string): string {
   return `<!doctype html><html><body style="margin:0;background:#f4f1ea;font-family:Poppins,Arial,sans-serif;color:#111">
@@ -54,7 +54,7 @@ export const templates = {
   }),
 
   partnerApproved: (d: { name: string; link: string; coupon: string; dashboardUrl: string }): Rendered => ({
-    subject: "Aap ReelBhai partner ban gaye! 🎉",
+    subject: "Aap Get Udaan partner ban gaye! 🎉",
     html: layout(
       "Welcome, partner! 🦁",
       `<p>Hi ${esc(d.name)}, aapki application approve ho gayi.</p>
@@ -96,6 +96,12 @@ export const templates = {
     subject: `New partner application: @${d.instagram}`,
     html: layout("New partner application", `<p>${esc(d.name)} (@${esc(d.instagram)}, ${d.followers.toLocaleString("en-IN")} followers) applied.</p>${button(d.adminUrl, "Review")}`),
     text: `New partner application: ${d.name} @${d.instagram} (${d.followers} followers) ${d.adminUrl}`,
+  }),
+
+  serviceUpdate: (d: { name: string; title: string; text: string; url: string; cta: string }): Rendered => ({
+    subject: d.title,
+    html: layout(esc(d.title), `<p>Namaste ${esc(d.name)},</p><p style="white-space:pre-line">${esc(d.text)}</p>${button(d.url, esc(d.cta))}`),
+    text: `${d.title}\n\n${d.text}\n\n${d.url}`,
   }),
 };
 

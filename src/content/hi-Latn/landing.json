@@ -1,0 +1,336 @@
+{
+  "hero": {
+    "eyebrow": "Hinglish • Phone se • Free tools",
+    "headline": "PHONE SE *VIRAL* TAK",
+    "sub": "Sirf phone aur free AI tools se apna viral AI reel page banao — step by step, Hinglish mein.",
+    "cta": "{price} mein Join Karo",
+    "secondaryCta": "Free Lesson Dekho",
+    "trust": "UPI • {days}-din refund • Lifetime access",
+    "lessonsLabel": "Video lessons",
+    "studentsLabel": "Students",
+    "stats": [
+      {
+        "value": "300+",
+        "label": "AI prompts"
+      },
+      {
+        "value": "₹0",
+        "label": "Tools ka kharcha"
+      }
+    ],
+    "doubtKillers": [
+      "Laptop nahi chahiye.",
+      "Koi paid tool nahi.",
+      "Editing nahi aati? Koi baat nahi.",
+      "Slow internet pe bhi chalega."
+    ],
+    "videoUrl": "",
+    "videoWebmUrl": "",
+    "posterUrl": "",
+    "peekPosterUrl": "",
+    "reelLabel": "Get Udaan team ki banayi sample AI reel"
+  },
+  "reels": {
+    "eyebrow": "Made by Get Udaan team",
+    "title": "YE SAB *PHONE SE* BANA HAI",
+    "sub": "Koi camera nahi, koi studio nahi. Bas phone aur free AI tools.",
+    "items": []
+  },
+  "problem": {
+    "title": "KYA YE AAPKE *SAATH* HO RAHA HAI?",
+    "points": [
+      {
+        "icon": "trending-down",
+        "text": "Reel daalte ho, par views nahi aate."
+      },
+      {
+        "icon": "scissors",
+        "text": "Editing nahi aati, aur seekhna mushkil lagta hai."
+      },
+      {
+        "icon": "wallet",
+        "text": "Har AI tool paid lagta hai."
+      },
+      {
+        "icon": "lightbulb",
+        "text": "2-3 reel ke baad idea khatam ho jaate hain."
+      }
+    ],
+    "answer": "Ab nahi."
+  },
+  "earn": {
+    "eyebrow": "Skill ke baad kya?",
+    "title": "CREATORS *KAISE* KAMATE HAIN",
+    "items": [
+      {
+        "icon": "handshake",
+        "title": "Brand deals",
+        "desc": "Page grow hone par brands promotion ke liye khud approach karte hain."
+      },
+      {
+        "icon": "circle-play",
+        "title": "YouTube / Facebook monetisation",
+        "desc": "Platform ke eligibility rules poore hone par ad revenue milta hai."
+      },
+      {
+        "icon": "briefcase",
+        "title": "Client work",
+        "desc": "Dusre pages aur businesses ke liye reels bana kar fees lete hain."
+      },
+      {
+        "icon": "shopping-bag",
+        "title": "Apne products",
+        "desc": "Apni audience ko apna khud ka product ya service bechte hain."
+      }
+    ]
+  },
+  "howItWorks": {
+    "eyebrow": "5 simple steps",
+    "title": "KAISE *KAAM* KARTA HAI",
+    "steps": [
+      {
+        "title": "Character banao",
+        "desc": "Apna 'bhai' character design karo — prompts ready milte hain.",
+        "image": ""
+      },
+      {
+        "title": "Story likho",
+        "desc": "Hook se cliffhanger tak, templates ke saath.",
+        "image": ""
+      },
+      {
+        "title": "AI se animate karo",
+        "desc": "Free AI tools se video aur voice — phone par hi.",
+        "image": ""
+      },
+      {
+        "title": "Edit + post",
+        "desc": "Simple editing, sahi caption, sahi time par post.",
+        "image": ""
+      },
+      {
+        "title": "Grow + earn",
+        "desc": "Series strategy se page grow karo aur kamaai ke raste seekho.",
+        "image": ""
+      }
+    ]
+  },
+  "curriculum": {
+    "eyebrow": "Course ke andar",
+    "title": "AAP *KYA* SEEKHOGE",
+    "summary": "{lessons} lessons • {min} min • 720p • Hinglish",
+    "moduleLabel": "Module {n} — {title}"
+  },
+  "bonuses": {
+    "eyebrow": "Bonus",
+    "title": "SAATH MEIN *MILEGA*",
+    "items": [
+      {
+        "icon": "sparkles",
+        "title": "300+ Prompt Pack",
+        "desc": "Character, scenes, camera moves, emotions — copy-paste ready."
+      },
+      {
+        "icon": "file-text",
+        "title": "PDF Guide",
+        "desc": "Poora workflow ek jagah, offline padhne ke liye."
+      },
+      {
+        "icon": "layout-template",
+        "title": "Story Templates",
+        "desc": "Mafia, action, emotional — fill-in-the-blank scripts."
+      },
+      {
+        "icon": "indian-rupee",
+        "title": "Income Module",
+        "desc": "Rate card, brand pitch DM template, client work basics."
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "Real students",
+    "title": "STUDENTS KE *RESULTS*"
+  },
+  "team": {
+    "eyebrow": "Asli log, asli team",
+    "title": "GET UDAAN KE *PEECHE* KAUN HAI?",
+    "name": "",
+    "role": "",
+    "bio": "",
+    "photoUrl": "",
+    "instagramUrl": "",
+    "instagramLabel": "Instagram par dekho"
+  },
+  "pricing": {
+    "eyebrow": "Ek baar payment • Lifetime access",
+    "title": "APNA *PLAN* CHUNO",
+    "featuredBadge": "Recommended",
+    "oneTime": "one-time",
+    "laterPrice": "{date} ke baad {price}",
+    "cta": "{name} Join Karo",
+    "serviceCta": "Apna Slot Book Karo",
+    "compareRows": [
+      {
+        "feature": "40 video lessons",
+        "values": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "300+ prompt pack",
+        "values": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "PDF guide + story templates",
+        "values": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "Income module",
+        "values": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "Lifetime access",
+        "values": [
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "Private community (Telegram)",
+        "values": [
+          false,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "Har mahine naye prompts",
+        "values": [
+          false,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "Monthly live Q&A",
+        "values": [
+          false,
+          true,
+          true
+        ]
+      },
+      {
+        "feature": "Character design hamari team se",
+        "values": [
+          false,
+          false,
+          true
+        ]
+      },
+      {
+        "feature": "Pehli 5 videos saath mein",
+        "values": [
+          false,
+          false,
+          true
+        ]
+      },
+      {
+        "feature": "Page setup + 30-din growth plan",
+        "values": [
+          false,
+          false,
+          true
+        ]
+      },
+      {
+        "feature": "2 one-on-one calls",
+        "values": [
+          false,
+          false,
+          true
+        ]
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "Sawaal",
+    "title": "AAPKE *SAWAAL*",
+    "items": [
+      {
+        "q": "Kya laptop chahiye?",
+        "a": "Nahi. Poora workflow Android aur iPhone par dikhaya gaya hai. Laptop ho toh theek, par zaroori nahi."
+      },
+      {
+        "q": "Kya koi paid tool lena padega?",
+        "a": "Nahi. Hum free tools aur free plans use karte hain. Kuch tools ki daily limit hoti hai — uske tareeke course mein bataye gaye hain."
+      },
+      {
+        "q": "Mujhe editing nahi aati. Kya main kar paunga?",
+        "a": "Haan. Course zero se shuru hota hai aur har step screen recording ke saath hai."
+      },
+      {
+        "q": "Kya course Hindi mein hai?",
+        "a": "Course Hinglish mein hai — jaise hum roz baat karte hain. Tools ke English words waise hi rakhe gaye hain."
+      },
+      {
+        "q": "Kitna time lagega?",
+        "a": "Har lesson chhota hai. Aap apni speed se dekh sakte hain — lifetime access hai, jab chahe dobara dekho."
+      },
+      {
+        "q": "Kya payment safe hai?",
+        "a": "Haan. Payment Razorpay ke through hota hai — UPI, card ya netbanking. Hum aapke card ya UPI ki details store nahi karte."
+      },
+      {
+        "q": "Refund kaise milega?",
+        "a": "{days} din ke andar WhatsApp ya email par message karein. Refund 5–7 working days mein aapke original payment method par aata hai. Refund ke baad course access band ho jaata hai."
+      },
+      {
+        "q": "Access kab tak rahega?",
+        "a": "Lifetime. Ek account ek time par 2 devices par login reh sakta hai (jaise phone + laptop)."
+      },
+      {
+        "q": "Kya income guarantee hai?",
+        "a": "Nahi. Koi bhi honest course income ki guarantee nahi de sakta. Hum skill aur system sikhate hain — kamaai aapki mehnat, consistency aur content par depend karti hai."
+      },
+      {
+        "q": "Koi problem aaye toh support milega?",
+        "a": "Haan. Hamari team ko WhatsApp ya email kar sakte hain — number page ke neeche diya hai."
+      }
+    ]
+  },
+  "partner": {
+    "eyebrow": "Partner program",
+    "title": "VIRAL PAGE HAI? *PARTNER* BANO",
+    "text": "Tumhara page, tumhari kamaai — apne link ya coupon se aayi har sale pe {pct}% tak commission.",
+    "cta": "Partner Apply Karo"
+  },
+  "finalCta": {
+    "title": "UDAAN *BHARO.*",
+    "sub": "Pehli reel aaj hi banao. Phone hai? Bas itna kaafi hai."
+  },
+  "stickyBar": {
+    "note": "Lifetime access • UPI",
+    "cta": "Abhi Join Karo"
+  },
+  "recentPurchase": {
+    "minutes": "{city} se kisi ne {n} min pehle join kiya",
+    "hours": "{city} se kisi ne {n} ghante pehle join kiya",
+    "dismiss": "Hatao"
+  }
+}

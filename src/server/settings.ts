@@ -14,7 +14,7 @@ export const DEFAULTS = {
   maxDevices: 2,
   gstRegistered: false,
   gstin: "",
-  sellerLegalName: "ReelBhai Academy",
+  sellerLegalName: "Get Udaan",
   sellerAddress: "",
   supportWhatsapp: "+91 90000 00000",
   supportEmail: "support@yourdomain.com",
@@ -30,6 +30,9 @@ export const DEFAULTS = {
   studentCountThreshold: 100,
   /** Partner leaderboard visible to partners */
   showLeaderboard: false,
+  /** Full links to your social pages. Leave empty to hide them in the footer. */
+  instagramUrl: "",
+  youtubeUrl: "",
   metaPixelId: "",
   ga4Id: "",
 };

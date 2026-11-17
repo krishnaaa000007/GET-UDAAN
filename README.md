@@ -1,4 +1,4 @@
-# ReelBhai Academy
+# Get Udaan
 
 A course-selling platform built as a sales engine: landing page → checkout (Razorpay, UPI first) → protected course player, plus a partner (affiliate) program with a live dashboard and withdrawals.
 

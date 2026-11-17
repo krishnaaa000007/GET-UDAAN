@@ -27,7 +27,7 @@ export default async function AdminStudents({ searchParams }: PageProps<"/admin/
       </form>
       <div className="card overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
-          <thead className="border-b border-line text-left text-xs text-muted">
+          <thead className="border-b border-line text-left text-xs text-ink-muted">
             <tr>{["Student", "Enrolment", "Lessons done", "Active devices", "IPs (24h)", "Joined"].map((h) => <th key={h} className="p-3 font-medium">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -35,11 +35,11 @@ export default async function AdminStudents({ searchParams }: PageProps<"/admin/
               const ips = ipsPerUser.get(s.id) ?? 0;
               return (
                 <tr key={s.id}>
-                  <td className="p-3">{s.name ?? "—"}<span className="block text-xs text-muted">{s.email} • {s.phone}</span></td>
+                  <td className="p-3">{s.name ?? "—"}<span className="block text-xs text-ink-muted">{s.email} • {s.phone}</span></td>
                   <td className="p-3">{s.enrollments.map((e) => `${e.tier}${e.revokedAt ? " (revoked)" : ""}`).join(", ") || "—"}</td>
                   <td className="p-3 tabular-nums">{s._count.progress}</td>
                   <td className="p-3 tabular-nums">{s._count.sessions}</td>
-                  <td className={`p-3 tabular-nums ${ips >= 4 ? "font-bold text-bad" : ""}`}>{ips}{ips >= 4 ? " ⚠ check sharing" : ""}</td>
+                  <td className={`p-3 tabular-nums ${ips >= 4 ? "font-bold text-fire" : ""}`}>{ips}{ips >= 4 ? " ⚠ check sharing" : ""}</td>
                   <td className="p-3">{formatIST(s.createdAt, "date")}</td>
                 </tr>
               );

@@ -49,6 +49,21 @@ describe("Razorpay webhook", () => {
     expect(await db.enrollment.count()).toBe(0);
   });
 
+  it("a Done-with-you purchase opens exactly one client-tracker project (even if the payment event repeats)", async () => {
+    const { course } = await makeCatalog();
+    const dwy = await db.product.create({ data: { slug: "done-with-you", name: "Done-with-you", kind: "SERVICE", tier: "DONE_WITH_YOU", courseId: course.id, defaultCommissionBps: 2500, prices: { create: { amountPaise: 1499900 } } } });
+    const order = await makeOrder({ productId: dwy.id, price: 1499900, email: "client@x.in", gatewayOrderId: "o_dwy" });
+    const pay = payment("o_dwy", 1499900, "pay_dwy");
+    await sendWebhook("payment.captured", pay, "evt_dwy_1");
+    await sendWebhook("order.paid", pay, "evt_dwy_2");
+
+    const user = await db.user.findUniqueOrThrow({ where: { email: "client@x.in" }, include: { roles: true } });
+    expect(user.roles.map((r) => r.role)).toContain("SERVICE_CLIENT");
+    const projects = await db.serviceProject.findMany();
+    expect(projects).toHaveLength(1);
+    expect(projects[0]).toMatchObject({ orderId: order.id, userId: user.id, stage: 0 });
+  });
+
   it("upgrading Basic → Pro keeps one enrolment at the higher tier", async () => {
     const { basic, pro } = await makeCatalog();
     await makeOrder({ productId: basic.id, price: 49900, email: "u@x.in", gatewayOrderId: "o_b" });

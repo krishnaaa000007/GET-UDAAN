@@ -41,6 +41,6 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/admin/export
   } else return new NextResponse("Not found", { status: 404 });
 
   return new NextResponse(body, {
-    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="reelbhai-${kind}-${new Date().toISOString().slice(0, 10)}.csv"`, "Cache-Control": "no-store" },
+    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="getudaan-${kind}-${new Date().toISOString().slice(0, 10)}.csv"`, "Cache-Control": "no-store" },
   });
 }

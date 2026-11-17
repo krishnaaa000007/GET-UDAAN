@@ -1,26 +1,25 @@
 /**
- * THANK-YOU PAGE: confirmation → "Start lesson 1" → ONE upsell.
+ * THANK-YOU PAGE (DESIGN.md 7.5) — the happiest page on the site.
+ * ONE action: "Lesson 1 Shuru Karo". Then ONE upsell card, then the share card.
  * While the webhook hasn't arrived yet, it shows "confirming…" and polls.
  */
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
+import { Check, CircleCheck, MessageCircle } from "lucide-react";
+import { Badge, Highlight } from "@/components/ui/basics";
+import { Button, buttonClass } from "@/components/ui/button";
+import t from "@/content/hi-Latn/checkout.json";
 import { db } from "@/lib/db";
-import { hmac } from "@/lib/crypto";
+import { env } from "@/lib/env";
 import { formatINR } from "@/lib/money";
+import { formatIST } from "@/lib/time";
 import { createSession, getCurrentUser } from "@/server/auth";
 import { getProductWithPrice } from "@/server/catalog";
-import { WaitForPayment, PurchasePixel } from "./client";
+import { browserOwnsOrder } from "@/server/order-cookie";
+import { getSettings } from "@/server/settings";
+import { ConfettiOnce, PurchasePixel, ShareLink, WaitForPayment } from "./client";
 
 export const metadata: Metadata = { title: "Payment successful", robots: { index: false } };
-
-/** Is this browser the one that started this order? (signed cookie set at checkout) */
-async function browserOwnsOrder(orderId: string): Promise<boolean> {
-  const v = (await cookies()).get("rb_order")?.value ?? "";
-  const [id, sig] = v.split(".");
-  return id === orderId && sig === hmac(`order:${orderId}`).slice(0, 24);
-}
 
 async function firstLessonPath(userId: string) {
   const e = await db.enrollment.findFirst({ where: { userId, revokedAt: null }, include: { course: true } });
@@ -46,13 +45,14 @@ async function startLearning(form: FormData) {
 
 export default async function ThankYouPage({ params }: PageProps<"/thank-you/[orderId]">) {
   const { orderId } = await params;
-  const order = await db.order.findUnique({ where: { id: orderId }, include: { items: { include: { product: true } } } });
+  const [order, settings] = await Promise.all([db.order.findUnique({ where: { id: orderId }, include: { items: { include: { product: true } } } }), getSettings()]);
   if (!order) notFound();
+  const wa = `https://wa.me/${settings.supportWhatsapp.replace(/\D/g, "")}`;
 
   if (order.status !== "PAID") {
     return (
-      <main className="mx-auto max-w-md px-4 py-16 text-center">
-        <WaitForPayment orderId={order.id} />
+      <main className="mx-auto max-w-md px-4 py-16">
+        <WaitForPayment orderId={order.id} whatsappHref={wa} />
       </main>
     );
   }
@@ -62,42 +62,86 @@ export default async function ThankYouPage({ params }: PageProps<"/thank-you/[or
   const upsellSlug = main?.tier === "BASIC" ? "pro" : main?.tier === "PRO" ? "done-with-you" : null;
   const upsell = upsellSlug ? await getProductWithPrice(upsellSlug) : null;
   const ownsIt = await browserOwnsOrder(order.id);
+  const firstName = order.name.trim().split(/\s+/)[0] ?? "";
+  const maskedEmail = order.email.replace(/^(.{2}).*@/, "$1***@");
+  const shareHref = `https://wa.me/?text=${encodeURIComponent(`${t.thankYou.share.message} ${env.appUrl}`)}`;
 
   return (
-    <main className="mx-auto max-w-md px-4 py-8">
+    <main className="mx-auto flex max-w-md flex-col gap-8 px-4 py-8">
       {ownsIt && <PurchasePixel orderId={order.id} valuePaise={order.totalPaise} />}
-      <div className="text-center">
-        <div className="text-6xl">🎉</div>
-        <h1 className="font-display mt-3 text-4xl text-white">Payment successful!</h1>
-        <p className="mt-2 text-muted">
-          Welcome {order.name.split(" ")[0]}! Order #{order.number} • {formatINR(order.totalPaise)}
-        </p>
-        <p className="mt-1 text-sm text-muted">Login link aur receipt {order.email.replace(/^(.{2}).*@/, "$1***@")} pe bhej diya hai.</p>
+
+      <div className="flex flex-col items-center gap-4 text-center">
+        <ConfettiOnce orderId={order.id}>
+          <CircleCheck aria-hidden className="size-20 text-success" strokeWidth={1.5} />
+        </ConfettiOnce>
+        <Badge tone="success">{t.thankYou.badge}</Badge>
+        <h1 className="type-display text-ink">
+          <Highlight text={t.thankYou.title.replace("{name}", firstName)} />
+        </h1>
+        <p className="text-ink-muted">{t.thankYou.sub.replace("{email}", maskedEmail)}</p>
       </div>
 
-      <form action={startLearning} className="mt-6">
+      {/* Order details */}
+      <dl className="flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4">
+        <div className="flex justify-between gap-3">
+          <dt className="font-semibold text-ink">{t.thankYou.order.replace("{number}", String(order.number))}</dt>
+          <dd className="type-small text-ink-muted">{formatIST(order.paidAt ?? order.createdAt, "date")}</dd>
+        </div>
+        {order.items.map((i) => (
+          <div key={i.id} className="flex justify-between gap-3">
+            <dt className="text-ink-muted">{i.name}</dt>
+            <dd className="text-ink">{formatINR(i.unitPaise)}</dd>
+          </div>
+        ))}
+        {order.discountPaise > 0 && (
+          <div className="flex justify-between gap-3 text-success">
+            <dt>{t.summary.coupon.replace("{code}", "").trim()}</dt>
+            <dd>−{formatINR(order.discountPaise)}</dd>
+          </div>
+        )}
+        <div className="flex items-end justify-between gap-3 border-t border-line pt-2">
+          <dt className="font-semibold text-ink">{t.thankYou.paid}</dt>
+          <dd className="type-heading text-gold-text">{formatINR(order.totalPaise)}</dd>
+        </div>
+      </dl>
+
+      {/* The one action */}
+      <form action={startLearning}>
         <input type="hidden" name="orderId" value={order.id} />
-        <button className="btn-gold w-full text-lg">▶ Lesson 1 abhi shuru karo</button>
+        <Button type="submit" size="lg" block arrow>
+          {t.thankYou.start}
+        </Button>
       </form>
 
+      {/* ONE upsell. The checkout opens with this buyer's details already filled in. */}
       {upsell && (
-        <div className="card mt-8 border-gold/60 p-5">
-          <p className="text-xs font-semibold text-gold">EK SPECIAL OFFER — sirf naye students ke liye</p>
-          <h2 className="font-display mt-1 text-2xl">{upsell.product.name} mein upgrade karo</h2>
-          <p className="mt-1 text-sm text-muted">{upsell.product.tagline}</p>
-          <ul className="mt-3 space-y-1 text-sm">
+        <section className="flex flex-col gap-3 rounded-lg bg-gold-soft p-6">
+          <p className="type-label text-gold-text">{t.thankYou.upsell.eyebrow}</p>
+          <h2 className="type-heading text-ink">{t.thankYou.upsell.title.replace("{name}", upsell.product.name)}</h2>
+          <ul className="flex flex-col gap-1">
             {(Array.isArray(upsell.product.features) ? (upsell.product.features as string[]) : []).slice(0, 4).map((f) => (
-              <li key={f}>
-                <span className="text-gold">✓</span> {f}
+              <li key={f} className="flex gap-2 text-ink">
+                <Check aria-hidden className="mt-0.5 size-5 flex-none text-success" strokeWidth={2.5} />
+                {f}
               </li>
             ))}
           </ul>
-          <Link href={`/checkout/${upsell.product.slug}`} className="btn-ghost mt-4 w-full">
-            {upsell.product.name} dekho — {formatINR(upsell.price.amountPaise)}
-          </Link>
-          <p className="mt-2 text-center text-xs text-muted">Abhi nahi chahiye? Koi baat nahi — upar se course shuru karein.</p>
-        </div>
+          <Button href={`/checkout/${upsell.product.slug}?from=${order.id}`} variant="secondary" block data-cta="thank_you_upsell">
+            {t.thankYou.upsell.cta.replace("{name}", upsell.product.name).replace("{price}", formatINR(upsell.price.amountPaise))}
+          </Button>
+          <p className="type-small text-center text-ink-muted">{t.thankYou.upsell.skip}</p>
+        </section>
       )}
+
+      {/* Share card */}
+      <section className="flex flex-col gap-3 rounded-md border border-line bg-surface-raised p-6">
+        <h2 className="type-title text-ink">{t.thankYou.share.title}</h2>
+        <p className="text-ink-muted">{t.thankYou.share.text}</p>
+        <ShareLink href={shareHref} className={buttonClass({ variant: "secondary", block: true })}>
+          <MessageCircle aria-hidden className="size-5" />
+          {t.thankYou.share.cta}
+        </ShareLink>
+      </section>
     </main>
   );
 }

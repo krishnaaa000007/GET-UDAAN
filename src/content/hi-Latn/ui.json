@@ -1,0 +1,33 @@
+{
+  "brand": { "name": "Get Udaan", "tagline": "Phone se Viral tak.", "signOff": "Udaan bharo.", "homeLabel": "Get Udaan home" },
+  "incomeDisclaimer": {
+    "strong": "Results vary.",
+    "text": "Income ki koi guarantee nahi — kamaai aapki mehnat, consistency aur content par depend karti hai."
+  },
+  "reel": { "play": "Reel chalao", "pause": "Reel roko", "soundOn": "Sound ke liye tap karo", "soundOff": "Sound band karo" },
+  "sheet": { "close": "Band karo" },
+  "accordion": { "open": "Kholo", "close": "Band karo" },
+  "curriculum": { "lessons": "lessons", "min": "min", "freePreview": "Free Preview", "locked": "Join karne ke baad khulega", "play": "Lesson dekho", "done": "Poora ho gaya" },
+  "compare": { "toggle": "Plans Compare Karo", "included": "Milega", "notIncluded": "Nahi milega", "feature": "Kya milega" },
+  "countdown": { "label": "Offer khatam hone mein", "days": "din", "hours": "ghante", "minutes": "min", "seconds": "sec" },
+  "recentPurchase": { "text": "{city} se kisi ne {min} min pehle join kiya", "dismiss": "Hatao" },
+  "trust": { "secure": "100% secure payment", "methods": "UPI • Card • Netbanking", "refund": "{days}-din refund policy", "support": "WhatsApp support" },
+  "guarantee": {
+    "title": "{days} din mein pasand nahi aaya? Refund. Simple.",
+    "text": "Course kharidne ke {days} din ke andar humein WhatsApp ya email karo. Hum aapka poora paisa wapas kar denge.",
+    "link": "Refund policy padho"
+  },
+  "testimonial": { "resultsVary": "Results vary. Ye is student ka apna result hai." },
+  "form": {
+    "phonePrefix": "+91",
+    "couponLabel": "Coupon code",
+    "couponPlaceholder": "Code daalo",
+    "couponApply": "Apply Karo",
+    "required": "Ye bharna zaroori hai",
+    "phoneInvalid": "10 digit ka mobile number daalo"
+  },
+  "progress": { "label": "Progress" },
+  "statCard": { "up": "badha", "down": "kam hua", "vsPrevious": "pichhle period se" },
+  "toast": { "success": "Ho gaya", "error": "Dikkat aayi", "info": "Dhyan do", "dismiss": "Hatao" },
+  "loading": "Ruko, ho raha hai…"
+}

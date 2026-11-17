@@ -1,0 +1,54 @@
+{
+  "header": {
+    "nav": [
+      { "label": "Curriculum", "href": "/#curriculum" },
+      { "label": "Pricing", "href": "/#pricing" },
+      { "label": "FAQ", "href": "/#faq" },
+      { "label": "Partner Bano", "href": "/partners" }
+    ],
+    "navLabel": "Main menu",
+    "login": "Login",
+    "join": "Join"
+  },
+  "footer": {
+    "tagline": "Phone se Viral tak.",
+    "linksLabel": "Links",
+    "links": [
+      { "label": "Courses", "href": "/#pricing" },
+      { "label": "Done-with-you", "href": "/done-with-you" },
+      { "label": "Partner Program", "href": "/partners" },
+      { "label": "Refund Policy", "href": "/legal/refund" },
+      { "label": "Privacy", "href": "/legal/privacy" },
+      { "label": "Terms", "href": "/legal/terms" },
+      { "label": "Contact", "href": "/legal/contact" }
+    ],
+    "supportLabel": "Support",
+    "whatsapp": "WhatsApp karo: {number}",
+    "instagram": "Instagram",
+    "youtube": "YouTube",
+    "copyright": "© {year} Get Udaan",
+    "legalName": "{name} ka brand.",
+    "trademarks": "Instagram, YouTube aur Facebook apni companies ke trademarks hain; hum unse affiliated nahi hain."
+  },
+  "banner": {
+    "partner": "🎉 @{handle} ka coupon {code} apply ho gaya — {off} off",
+    "coupon": "🎉 Coupon {code} apply ho gaya — {off} off"
+  },
+  "leadSheet": {
+    "title": "Pehla lesson FREE + 20 prompts",
+    "text": "Naam aur WhatsApp number daalo, lesson aur prompts turant khul jaayenge.",
+    "name": "Aapka naam",
+    "namePlaceholder": "Jaise: Rahul Kumar",
+    "phone": "WhatsApp number",
+    "consent": "Haan, Get Udaan mujhe WhatsApp par course ki jaankari bhej sakta hai.",
+    "cta": "Free Lesson Pao",
+    "noSpam": "Spam nahi karenge.",
+    "errors": {
+      "name": "Apna naam likho (kam se kam 2 akshar)",
+      "phone": "10 digit ka sahi mobile number daalo",
+      "consent": "Aage badhne ke liye is box ko tick karo",
+      "rate": "Bahut zyada koshish ho gayi. Thodi der baad try karo.",
+      "generic": "Kuch gadbad ho gayi. Ek baar phir try karo."
+    }
+  }
+}

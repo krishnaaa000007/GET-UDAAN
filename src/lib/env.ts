@@ -54,7 +54,7 @@ export const env = {
     get bucket() { return req("R2_BUCKET"); },
   },
   get resendKey() { return opt("RESEND_API_KEY"); },
-  get emailFrom() { return opt("EMAIL_FROM") ?? "ReelBhai Academy <onboarding@resend.dev>"; },
+  get emailFrom() { return opt("EMAIL_FROM") ?? "Get Udaan <onboarding@resend.dev>"; },
   get adminEmail() { return opt("ADMIN_EMAIL"); },
   get metaPixelId() { return opt("NEXT_PUBLIC_META_PIXEL_ID"); },
   get metaCapiToken() { return opt("META_CAPI_ACCESS_TOKEN"); },

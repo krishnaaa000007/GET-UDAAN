@@ -1,0 +1,196 @@
+{
+  "landing": {
+    "eyebrow": "Get Udaan Partner Program",
+    "title": "TUMHARA PAGE. *TUMHARI KAMAAI.*",
+    "sub": "Reel page chalate ho? Apne followers ko Get Udaan batao aur apne link ya coupon se aayi har sale par commission kamao.",
+    "cta": "Partner Apply Karo",
+    "steps": {
+      "eyebrow": "3 simple steps",
+      "title": "KAISE *KAAM* KARTA HAI",
+      "items": [
+        { "title": "Apply karo", "desc": "2 minute ka form bharo. Hum tumhara page dekh kar reply karte hain." },
+        { "title": "Link share karo", "desc": "Approve hone par apna link aur coupon milta hai. Reel, story ya bio mein lagao." },
+        { "title": "Commission kamao", "desc": "Har sale dashboard mein dikhti hai — kaunsi reel ne kitna becha, sab kuch." }
+      ]
+    },
+    "calc": {
+      "eyebrow": "Calculator",
+      "title": "KITNA *BAN* SAKTA HAI?",
+      "slider": "Mahine mein kitni sales?",
+      "sales": "{n} sales / mahina",
+      "estimate": "Andaazan commission",
+      "perSale": "Har {product} sale par lagbhag {amount} ({pct}% commission, coupon discount aur payment fee ke baad).",
+      "note": "Ye sirf ek andaaza hai, vaada nahi."
+    },
+    "payout": {
+      "eyebrow": "Payout",
+      "title": "PAISA *KAB* MILTA HAI",
+      "items": [
+        { "title": "{days} din pending", "desc": "Har sale ki commission pehle {days} din pending rehti hai, kyunki buyer itne din mein refund le sakta hai." },
+        { "title": "Phir available", "desc": "Refund window ke baad commission tumhare wallet mein available ho jaati hai." },
+        { "title": "Withdraw request", "desc": "Kam se kam {min} hone par withdraw request bhejo. Hum check karke UPI ya bank mein bhejte hain." }
+      ]
+    },
+    "faq": {
+      "title": "PARTNER *SAWAAL*",
+      "items": [
+        { "q": "Kitne followers chahiye?", "a": "Koi fixed number nahi hai. Hum har application mein page aur content dekh kar decide karte hain." },
+        { "q": "Commission kis amount par milti hai?", "a": "Buyer ne jo pay kiya, usme se GST (agar lagu ho) aur payment gateway fee hata kar jo bachta hai, us par. Course par {pct}% tak." },
+        { "q": "Sale mere naam kaise judti hai?", "a": "Agar buyer tumhara coupon lagata hai toh sale tumhari. Warna jis partner ke link par usne aakhri baar click kiya ({window} din ke andar), use credit milta hai." },
+        { "q": "Buyer refund le le toh?", "a": "Us sale ki commission wapas ho jaati hai. Isi liye commission pehle {days} din pending rehti hai." },
+        { "q": "Kya main khud apne link se kharid sakta hoon?", "a": "Kharid sakte ho, par apni khud ki purchase par commission nahi milti." },
+        { "q": "Kya earning ki guarantee hai?", "a": "Nahi. Kamaai tumhare page, content aur audience par depend karti hai." }
+      ]
+    }
+  },
+  "apply": {
+    "title": "APPLY *KARO*",
+    "sub": "3 chhote steps. 2 minute lagenge.",
+    "step": "Step {n} / 3",
+    "steps": ["Tumhare baare mein", "Tumhara page", "Payout"],
+    "name": "Poora naam",
+    "email": "Email",
+    "emailHint": "Isi email se dashboard mein login hoga.",
+    "phone": "WhatsApp number",
+    "handle": "Instagram handle",
+    "handlePlaceholder": "yourpage",
+    "followers": "Followers",
+    "followersPlaceholder": "50000",
+    "niche": "Page kis baare mein hai? (optional)",
+    "nichePlaceholder": "AI animal / action reels",
+    "upi": "UPI ID",
+    "upiPlaceholder": "name@okaxis",
+    "upiHint": "Commission isi par bheji jaayegi. Abhi nahi pata toh khaali chhod do — baad mein dashboard se daal sakte ho.",
+    "bankToggle": "UPI nahi hai? Bank account daalo",
+    "bankName": "Account holder ka naam",
+    "bankNumber": "Account number",
+    "bankIfsc": "IFSC",
+    "next": "Aage Badho",
+    "back": "Peeche",
+    "submit": "Application Bhejo",
+    "errors": {
+      "name": "Apna naam likho",
+      "email": "Sahi email daalo",
+      "phone": "10 digit ka mobile number daalo",
+      "handle": "Sahi Instagram handle daalo",
+      "followers": "Followers ki sankhya daalo"
+    },
+    "success": {
+      "title": "Application mil gayi!",
+      "text": "48 ghante mein reply karenge. Approve hone par isi email se login karke apna dashboard dekh sakte ho.",
+      "cta": "Free Lesson Dekho"
+    }
+  },
+  "dashboard": {
+    "title": "PARTNER *DASHBOARD*",
+    "none": { "text": "Tumhara partner account abhi nahi bana hai.", "cta": "Partner Apply Karo" },
+    "pending": { "title": "APPLICATION *REVIEW* MEIN HAI", "text": "48 ghante mein email aayega." },
+    "rejected": { "title": "APPLICATION *APPROVE* NAHI HUI" },
+    "newSales": "🎉 {n} nayi sales! +{amount}",
+    "newSale": "🎉 1 nayi sale! +{amount}",
+    "total": "Total earnings",
+    "split": { "available": "Available", "pending": "Pending", "requested": "Processing", "paid": "Paid" },
+    "splitHint": { "available": "Withdraw kar sakte ho", "pending": "{days}-din refund window", "requested": "Request chal rahi hai", "paid": "Ab tak mila" },
+    "actions": {
+      "label": "Quick actions",
+      "copyLink": "Link Copy Karo",
+      "copyCoupon": "Coupon Copy Karo",
+      "whatsapp": "WhatsApp",
+      "instagram": "Instagram",
+      "linkCopied": "Link copy ho gaya",
+      "couponCopied": "Coupon copy ho gaya",
+      "captionCopied": "Caption copy ho gaya",
+      "copyFailed": "Copy nahi hua. Dabakar select karo.",
+      "shareMessage": "AI se viral reels banana seekho — sirf phone aur free tools se.{coupon} {link}",
+      "shareCoupon": " Coupon {code} se discount milega."
+    },
+    "range": "{n} din",
+    "rangeLabel": "Date range",
+    "stats": { "clicks": "Clicks", "leads": "Leads", "sales": "Sales", "conversion": "Conversion" },
+    "chart": "Rozana earnings (₹)",
+    "chartLabel": "Rozana earnings ka chart",
+    "campaigns": {
+      "title": "KAUNSI REEL NE *SABSE ZYADA* BECHA",
+      "campaign": "Campaign",
+      "clicks": "Clicks",
+      "sales": "Sales",
+      "earned": "Kamaai",
+      "best": "Best",
+      "empty": "Is range mein abhi koi click nahi. Neeche se har reel ka alag link banao.",
+      "builder": "Har reel ke liye alag link",
+      "builderPlaceholder": "reel23",
+      "builderHint": "Reel ka chhota naam likho. Is link se aayi sales us reel ke naam par dikhengi.",
+      "copy": "Copy"
+    },
+    "salesList": {
+      "title": "SALES",
+      "privacy": "Privacy ke liye buyer ka naam aur number chhupa hota hai.",
+      "empty": "Is range mein abhi koi sale nahi. Ek nayi reel post karo!",
+      "pending": "Pending",
+      "approved": "Approved",
+      "paid": "Paid",
+      "refunded": "Refund hua",
+      "availableOn": "{date} ko available"
+    },
+    "milestones": {
+      "title": "MILESTONES",
+      "items": [
+        { "kind": "sales", "target": 1, "label": "Pehli sale" },
+        { "kind": "sales", "target": 10, "label": "10 sales" },
+        { "kind": "earnings", "target": 1000000, "label": "₹10k club" },
+        { "kind": "earnings", "target": 5000000, "label": "₹50k club" }
+      ],
+      "unlocked": "Mil gaya",
+      "locked": "Abhi locked"
+    },
+    "leaderboard": { "title": "LEADERBOARD", "sub": "Pichhle 30 din ki sales ke hisaab se top 10.", "you": "Tum", "rank": "#{n}", "sales": "{n} sales" },
+    "promo": {
+      "title": "PROMO *KIT*",
+      "captions": "Captions (copy karke apni reel ke neeche lagao)",
+      "hooks": "Reel ke hooks",
+      "captionItems": [
+        "Ye reel maine sirf phone se banayi hai. Koi camera nahi, koi laptop nahi. Seekhna hai? Link bio mein. {coupon}",
+        "AI se aisi reels banana seekho — step by step, Hinglish mein. Free tools, sirf phone. Link bio mein. {coupon}",
+        "Editing nahi aati? Mujhe bhi nahi aati thi. Ye course zero se shuru hota hai. Link bio mein. {coupon}"
+      ],
+      "hookItems": ["Ye reel phone se bani hai. Haan, sach mein.", "Ye sher AI ne banaya hai — aur tum bhi bana sakte ho.", "Camera nahi, laptop nahi. Phir bhi ye reel kaise bani?"],
+      "couponLine": "Coupon {code} lagao.",
+      "copy": "Copy"
+    },
+    "withdraw": {
+      "title": "WITHDRAW",
+      "available": "Available: {amount}",
+      "amount": "Kitna withdraw karna hai? (₹)",
+      "tds": "TDS {pct}% ({tds}) katega — tumhe milega {net}.",
+      "min": "Minimum {min}.",
+      "cta": "Withdraw Request Bhejo",
+      "sent": "Withdraw request bhej di. Check karke payment bhejenge — email aayega.",
+      "needDetails": "Pehle neeche payout details daalo.",
+      "locked": "Payout details abhi badle hain — 24 ghante baad withdraw kar paoge.",
+      "open": "Ek request pehle se chal rahi hai.",
+      "history": "Pichhli requests",
+      "status": { "REQUESTED": "Request bheji", "APPROVED": "Approve hui", "REJECTED": "Reject hui", "PAID": "Paid" },
+      "ref": "Ref {ref}",
+      "tdsCut": "TDS {amount}"
+    },
+    "payoutDetails": {
+      "title": "PAYOUT DETAILS",
+      "hint": "Payment yahin bheji jaayegi. Badalne par security ke liye 24 ghante withdraw band rehta hai.",
+      "upi": "UPI ID",
+      "or": "ya bank account",
+      "bankName": "Account holder ka naam",
+      "bankNumber": "Account number",
+      "bankIfsc": "IFSC",
+      "save": "Details Save Karo",
+      "saved": "Save ho gaya. Security ke liye agle 24 ghante withdraw band rahega."
+    },
+    "formula": {
+      "title": "Commission kaise calculate hoti hai?",
+      "lines": [
+        "Commission = (buyer ne jo pay kiya − GST − payment fee) × tumhara rate.",
+        "Commission {days} din pending rehti hai (refund window). Uske baad available ho jaati hai. Refund hone par commission wapas ho jaati hai.",
+        "Coupon use hua toh sale hamesha coupon wale partner ki. Warna aakhri click ({window} din tak) ko credit milta hai. Khud ki purchase par commission nahi milti."
+      ]
+    }
+  }
+}

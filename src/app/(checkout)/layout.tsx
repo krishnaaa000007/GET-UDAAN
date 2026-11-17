@@ -1,16 +1,22 @@
-// Distraction-free layout for checkout, payment and thank-you pages (no menu, no footer links).
+// Distraction-free layout for checkout, payment and thank-you pages: logo + "Secure checkout" only.
+// No menu and no footer links, so nothing pulls the buyer away from paying.
+import { Lock } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { TrackingScripts } from "@/components/tracking-scripts";
+import t from "@/content/hi-Latn/checkout.json";
 import { getSettings } from "@/server/settings";
 
 export default async function CheckoutLayout({ children }: LayoutProps<"/">) {
   const s = await getSettings();
   return (
     <>
-      <header className="border-b border-line/60">
-        <div className="mx-auto flex h-14 max-w-xl items-center justify-between px-4">
-          <Logo />
-          <span className="text-xs text-muted">🔒 Secure checkout</span>
+      <header className="border-b border-line">
+        <div className="container-page flex h-16 items-center justify-between">
+          <Logo priority />
+          <span className="type-small inline-flex items-center gap-2 text-ink-muted">
+            <Lock aria-hidden className="size-5" />
+            {t.secure}
+          </span>
         </div>
       </header>
       {children}

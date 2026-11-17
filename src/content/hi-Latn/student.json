@@ -1,0 +1,189 @@
+{
+  "shell": {
+    "courses": "Courses",
+    "partner": "Partner",
+    "admin": "Admin",
+    "logout": "Logout",
+    "navLabel": "Account menu",
+    "tabsLabel": "Student menu",
+    "tabs": {
+      "home": "Home",
+      "courses": "Courses",
+      "downloads": "Downloads",
+      "profile": "Profile"
+    }
+  },
+  "dashboard": {
+    "greeting": "Namaste, {name} 👋",
+    "greetingNoName": "Namaste 👋",
+    "denied": "Us page ka access aapke account mein nahi hai.",
+    "continue": {
+      "eyebrow": "Continue watching",
+      "eyebrowStart": "Yahan se shuru karo",
+      "cta": "Wahi se Shuru Karo",
+      "ctaStart": "Lesson 1 Shuru Karo",
+      "lessonProgress": "Is lesson ka progress"
+    },
+    "complete": {
+      "eyebrow": "Course complete",
+      "title": "Shabaash! Aapne poora course dekh liya.",
+      "cta": "Certificate Dekho"
+    },
+    "stats": {
+      "streak": "Din ki streak",
+      "lessons": "Lessons poore",
+      "progress": "Course progress"
+    },
+    "milestones": {
+      "25": "Badhiya start! 25% ho gaya. 🚀",
+      "50": "Aadha safar poora! 🚀",
+      "75": "Bas thoda aur — 75% ho gaya! 🔥",
+      "100": "Course complete! Ab apni series shuru karo. 🏆"
+    },
+    "empty": {
+      "text": "Abhi aapke account mein koi course nahi hai. Payment kiya tha? Usi email se login karein jo checkout par daala tha.",
+      "cta": "Course Dekho"
+    },
+    "courses": {
+      "title": "MERE *COURSES*",
+      "lessonsDone": "{done} / {total} lessons poore",
+      "moduleLabel": "Module {n} — {title}",
+      "certificateLocked": "100% poora karne par certificate milega.",
+      "certificate": "Certificate Dekho"
+    },
+    "downloads": {
+      "title": "DOWNLOADS",
+      "empty": "Abhi koi download nahi hai.",
+      "locked": "{title} — sirf Pro mein",
+      "download": "{title} download karo"
+    },
+    "profile": {
+      "title": "PROFILE",
+      "purchases": "Purchase history",
+      "order": "Order #{number}",
+      "refunded": "Refund ho gaya",
+      "partRefunded": "Kuch refund hua",
+      "devices": "Logged-in devices ({n}/{max})",
+      "devicesHint": "Ek account zyada se zyada {max} devices par chal sakta hai. Naye device par login karne se sabse purana device logout ho jaata hai.",
+      "thisDevice": "ye device",
+      "partner": "Instagram page chalate ho?",
+      "partnerCta": "Partner Bano"
+    },
+    "shareResult": {
+      "title": "Apna result share karo",
+      "text": "Aapki reel ya page ka result naye students ko himmat deta hai. Hum ise check karke hi website par dikhayenge.",
+      "quote": "Aapka experience",
+      "quotePlaceholder": "Jaise: Pehli reel 3 din mein ban gayi…",
+      "result": "Result (agar koi hai)",
+      "resultPlaceholder": "Jaise: Pehli reel par 12k views",
+      "resultHint": "Sirf sachcha number likhiye. Screenshot hum aapse WhatsApp par maang sakte hain.",
+      "city": "Sheher",
+      "link": "Reel ya page ka link (optional)",
+      "consent": "Haan, Get Udaan mera naam, sheher aur ye baat apni website aur ads mein dikha sakta hai.",
+      "cta": "Result Bhejo",
+      "thanks": "Shukriya! Aapka result hamein mil gaya. Check hone ke baad website par dikhega.",
+      "errors": {
+        "quote": "Kam se kam 20 akshar mein apna experience likhiye",
+        "link": "Link https:// se shuru hona chahiye",
+        "consent": "Bhejne ke liye is box ko tick kijiye",
+        "rate": "Aap pehle hi result bhej chuke hain.",
+        "generic": "Save nahi hua. Dobara try kijiye."
+      }
+    },
+    "projectCard": {
+      "eyebrow": "Done-with-you",
+      "title": "Aapka project",
+      "stage": "Abhi: {stage}",
+      "done": "Project poora ho gaya",
+      "cta": "Project Tracker Dekho"
+    }
+  },
+  "lesson": {
+    "count": "Lesson {n} / {total}",
+    "markComplete": "Complete Mark Karo",
+    "completed": "Complete ho gaya",
+    "markError": "Save nahi hua. Internet check karke dobara try karo.",
+    "doneBanner": "Lesson complete! Shabaash.",
+    "next": "Agla Lesson",
+    "prev": "Pichla lesson",
+    "toDashboard": "Dashboard par Jao",
+    "notes": "Notes",
+    "resources": "Resources",
+    "allLessons": "Saare Lessons Dekho",
+    "outlineTitle": "Course ke lessons",
+    "percent": "{n}% complete",
+    "moduleLabel": "{n}. {title}",
+    "upsell": {
+      "eyebrow": "Aage ka step",
+      "title": "Apna page hamari team se banwana hai?",
+      "text": "Character design, pehli videos aur growth plan — hamari team ke saath.",
+      "cta": "{name} Dekho"
+    }
+  },
+  "certificate": {
+    "eyebrow": "Certificate of completion",
+    "certifies": "Ye certificate diya jaata hai",
+    "for": "is course ko poora karne ke liye",
+    "date": "Date",
+    "id": "Certificate ID",
+    "verify": "Verify karne ke liye scan karo",
+    "verified": "Ye certificate asli hai — Get Udaan ne ise jaari kiya hai.",
+    "print": "Print / PDF Save Karo",
+    "share": "WhatsApp par Share Karo",
+    "shareMessage": "Maine Get Udaan ka course poora kar liya! Mera certificate dekho:",
+    "back": "Dashboard par Jao",
+    "notYet": {
+      "title": "CERTIFICATE ABHI *LOCKED* HAI",
+      "text": "Aapne {percent}% course poora kiya hai. Saare lessons complete karte hi certificate khul jaayega.",
+      "cta": "Course Continue Karo"
+    },
+    "notFound": {
+      "title": "YE CERTIFICATE *NAHI MILA*",
+      "text": "Ye link galat hai ya certificate abhi jaari nahi hua.",
+      "cta": "Home par Jao"
+    }
+  },
+  "project": {
+    "eyebrow": "Done-with-you",
+    "title": "AAPKA *PROJECT*",
+    "order": "Order #{number}",
+    "stages": {
+      "done": "Poora ho gaya",
+      "current": "Abhi chal raha hai",
+      "upcoming": "Aage aayega"
+    },
+    "allDone": "Saare stages poore ho gaye. Shabaash!",
+    "filesNone": "Is stage ki files yahan dikhengi.",
+    "fileOpen": "{title} kholo",
+    "messages": {
+      "title": "TEAM SE *BAAT* KARO",
+      "empty": "Abhi koi message nahi. Koi sawaal ho toh yahan likhiye — hamari team jawab degi.",
+      "team": "Get Udaan team",
+      "you": "Aap",
+      "label": "Aapka message",
+      "placeholder": "Yahan likhiye…",
+      "send": "Message Bhejo",
+      "hint": "Jawab aane par aapko email milega."
+    },
+    "errors": {
+      "empty": "Message khaali hai. Kuch likhiye.",
+      "rate": "Bahut zyada messages. Thodi der baad try kijiye.",
+      "generic": "Message nahi gaya. Dobara try kijiye."
+    },
+    "none": {
+      "title": "ABHI KOI *PROJECT* NAHI",
+      "text": "Done-with-you book karne ke baad aapka project yahan dikhega.",
+      "cta": "Done-with-you Dekho"
+    },
+    "email": {
+      "messageTitle": "Get Udaan team ka naya message",
+      "stageTitle": "Aapka project aage badha: {stage}",
+      "stageText": "Hamari team ne aapke project ka stage update kiya hai. Ab chal raha hai: {stage}.",
+      "doneTitle": "Aapka Done-with-you project poora ho gaya",
+      "doneText": "Saare stages poore ho gaye hain. Files aur messages aapke tracker mein hamesha milenge.",
+      "fileTitle": "Aapke project mein nayi file aayi hai",
+      "fileText": "Nayi file: {title}",
+      "cta": "Project Tracker Kholo"
+    }
+  }
+}

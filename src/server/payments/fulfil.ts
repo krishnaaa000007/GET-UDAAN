@@ -120,6 +120,8 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
       if (prod.kind === "SERVICE") {
         await tx.userRole.upsert({ where: { userId_role: { userId: user.id, role: "SERVICE_CLIENT" } }, create: { userId: user.id, role: "SERVICE_CLIENT" }, update: {} });
         tier = "DONE_WITH_YOU";
+        // Client tracker: one project per paid Done-with-you order.
+        await tx.serviceProject.upsert({ where: { orderId: order.id }, create: { orderId: order.id, userId: user.id }, update: {} });
       }
       if (prod.courseId && tier) {
         const existing = await tx.enrollment.findUnique({ where: { userId_courseId: { userId: user.id, courseId: prod.courseId } } });

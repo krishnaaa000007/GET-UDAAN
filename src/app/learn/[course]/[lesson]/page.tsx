@@ -1,15 +1,26 @@
-/** LESSON PAGE (mobile-first): player → title/notes → downloads → next → contextual upgrade → lesson list. */
+/**
+ * LESSON PAGE (DESIGN.md 7.6). ONE action: go to the next lesson.
+ * Phone order: video (sticks to the top) → lesson number + title → mark complete + next →
+ * all-lessons drawer → notes → resources → contextual upgrade.
+ * Desktop: the lesson list sits in a column on the right.
+ */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { requireUser } from "@/server/auth";
-import { getCourseOutline, getLessonForPlayback, tierAllows } from "@/server/learning";
-import { getProductWithPrice } from "@/server/catalog";
-import { formatINR } from "@/lib/money";
+import { ArrowLeft, Download } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { LessonPlayer } from "./lesson-client";
+import { Accordion, CurriculumModule } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/ui/data";
+import t from "@/content/hi-Latn/student.json";
+import { requireUser } from "@/server/auth";
+import { getProductWithPrice } from "@/server/catalog";
+import { getCourseOutline, getLessonForPlayback, tierAllows } from "@/server/learning";
+import { LessonDrawer, LessonPlayer } from "./lesson-client";
 
 export const metadata: Metadata = { title: "Lesson", robots: { index: false } };
+
+const L = t.lesson;
 
 export default async function LessonPage({ params }: PageProps<"/learn/[course]/[lesson]">) {
   const { course: courseSlug, lesson: lessonId } = await params;
@@ -33,11 +44,39 @@ export default async function LessonPage({ params }: PageProps<"/learn/[course]/
   const upsell = view.lesson.upsellProductSlug ? await getProductWithPrice(view.lesson.upsellProductSlug) : null;
   const showUpsell = upsell?.product.tier && !tierAllows(outline.enrollment?.tier, upsell.product.tier);
 
+  // The full lesson list. `where` keeps the accordion groups of the drawer and the side column apart.
+  const lessonList = (where: string) => (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
+        <p className="font-semibold text-ink">{outline.course.title}</p>
+        <ProgressBar value={outline.percent} />
+      </div>
+      <Accordion>
+        {outline.modules.map((m, mi) => (
+          <CurriculumModule
+            key={m.id}
+            group={`outline-${where}`}
+            defaultOpen={m.lessons.some((l) => l.id === lessonId)}
+            title={L.moduleLabel.replace("{n}", String(mi + 1)).replace("{title}", m.title)}
+            lessons={m.lessons.map((l) => ({
+              title: l.title,
+              minutes: Math.round(l.durationSec / 60) || undefined,
+              state: !l.unlocked ? ("locked" as const) : l.completed ? ("done" as const) : ("play" as const),
+              current: l.id === lessonId,
+              href: l.unlocked ? href(l.id) : undefined,
+            }))}
+          />
+        ))}
+      </Accordion>
+    </div>
+  );
+
   return (
-    <AppShell user={user} wide>
-      <main className="mx-auto grid max-w-7xl gap-6 px-0 pb-10 sm:px-4 sm:pt-4 lg:grid-cols-[1fr_340px]">
-        <div>
+    <AppShell user={user} wide sticky={false}>
+      <main className="mx-auto grid w-full max-w-7xl gap-8 pb-12 md:px-6 md:pt-6 lg:grid-cols-[1fr_360px]">
+        <div className="flex min-w-0 flex-col gap-6">
           <LessonPlayer
+            key={view.lesson.id}
             lessonId={view.lesson.id}
             source={view.playback}
             watermark={view.watermark}
@@ -45,88 +84,64 @@ export default async function LessonPage({ params }: PageProps<"/learn/[course]/
             title={view.lesson.title}
             viewerId={user.id}
             nextHref={next ? href(next.id) : null}
+            initialCompleted={current.completed}
+            header={
+              <div className="flex flex-col gap-1">
+                <p className="type-label text-gold-text">{L.count.replace("{n}", String(idx + 1)).replace("{total}", String(outline.lessons.length))}</p>
+                <h1 className="type-title text-ink">{view.lesson.title}</h1>
+              </div>
+            }
           />
-          <div className="px-4 sm:px-0">
-            <p className="mt-4 text-xs text-gold">
-              Lesson {idx + 1} / {outline.lessons.length}
-            </p>
-            <h1 className="mt-1 text-xl font-semibold">{view.lesson.title}</h1>
-            {view.lesson.body && <p className="mt-2 text-sm whitespace-pre-line text-zinc-300">{view.lesson.body}</p>}
 
-            {current.assets.length > 0 && (
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                {current.assets.map((a) => (
-                  <li key={a.id}>
-                    <a href={`/api/assets/${a.id}`} className="flex items-center gap-2 rounded-xl border border-line p-3 text-sm hover:border-gold">
-                      ⬇ {a.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          <div className="flex flex-col gap-6 px-4 md:px-0">
+            {prev && (
+              <Link href={href(prev.id)} className="inline-flex min-h-12 items-center gap-2 self-start font-semibold text-ink-muted hover:text-ink">
+                <ArrowLeft aria-hidden className="size-5" />
+                {L.prev}
+              </Link>
             )}
 
-            <div className="mt-6 flex gap-3">
-              {prev && (
-                <Link href={href(prev.id)} className="btn-ghost flex-1">
-                  ← Pichla
-                </Link>
-              )}
-              {next ? (
-                <Link href={href(next.id)} className="btn-gold flex-[2]">
-                  Agla lesson →
-                </Link>
-              ) : (
-                <Link href="/dashboard" className="btn-gold flex-[2]">
-                  Dashboard pe jao
-                </Link>
-              )}
-            </div>
+            <LessonDrawer>{lessonList("drawer")}</LessonDrawer>
+
+            {view.lesson.body && (
+              <section className="flex flex-col gap-2">
+                <h2 className="type-title text-ink">{L.notes}</h2>
+                <p className="max-w-reading whitespace-pre-line text-ink-muted">{view.lesson.body}</p>
+              </section>
+            )}
+
+            {current.assets.length > 0 && (
+              <section className="flex flex-col gap-2">
+                <h2 className="type-title text-ink">{L.resources}</h2>
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {current.assets.map((a) => (
+                    <li key={a.id}>
+                      <a href={`/api/assets/${a.id}`} className="flex min-h-14 items-center gap-3 rounded-md border border-line bg-surface-raised p-3 text-ink transition-colors duration-150 hover:border-gold">
+                        <Download aria-hidden className="size-5 flex-none text-gold-text" />
+                        {a.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {showUpsell && upsell && (
-              <div className="card mt-6 border-gold/50 p-5">
-                <p className="text-xs font-semibold text-gold">AAGE KA STEP</p>
-                <h2 className="mt-1 text-lg font-semibold">Chahte ho humari team aapka page banaye?</h2>
-                <p className="mt-1 text-sm text-muted">{upsell.product.tagline}. Character design, pehli videos aur growth plan — saath mein.</p>
-                <Link href={`/checkout/${upsell.product.slug}`} className="btn-ghost mt-4 w-full">
-                  {upsell.product.name} dekho — {formatINR(upsell.price.amountPaise)}
-                </Link>
-              </div>
+              <section className="flex flex-col items-start gap-3 rounded-lg bg-gold-soft p-6">
+                <p className="type-label text-gold-text">{L.upsell.eyebrow}</p>
+                <h2 className="type-title text-ink">{L.upsell.title}</h2>
+                <p className="text-ink-muted">{L.upsell.text}</p>
+                <Button href={upsell.product.kind === "SERVICE" ? "/done-with-you" : `/checkout/${upsell.product.slug}`} variant="secondary" data-cta="lesson_upsell">
+                  {L.upsell.cta.replace("{name}", upsell.product.name)}
+                </Button>
+              </section>
             )}
           </div>
         </div>
 
-        {/* Lesson list */}
-        <aside className="px-4 sm:px-0">
-          <div className="card overflow-hidden lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto">
-            <div className="border-b border-line p-4">
-              <p className="text-sm font-semibold">{outline.course.title}</p>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-panel-2">
-                <div className="h-full bg-gold" style={{ width: `${outline.percent}%` }} />
-              </div>
-              <p className="mt-1 text-xs text-muted">{outline.percent}% complete</p>
-            </div>
-            {outline.modules.map((m, mi) => (
-              <details key={m.id} open={m.lessons.some((l) => l.id === lessonId)} className="border-b border-line last:border-0">
-                <summary className="cursor-pointer px-4 py-3 text-sm font-semibold">
-                  {mi + 1}. {m.title}
-                </summary>
-                <ul className="pb-2">
-                  {m.lessons.map((l) => (
-                    <li key={l.id}>
-                      {l.unlocked ? (
-                        <Link href={href(l.id)} className={`flex gap-2 px-4 py-2 text-sm ${l.id === lessonId ? "bg-gold/10 text-gold" : "text-zinc-300 hover:text-white"}`}>
-                          <span className={l.completed ? "text-good" : "text-muted"}>{l.completed ? "✓" : "○"}</span>
-                          {l.title}
-                        </Link>
-                      ) : (
-                        <span className="flex gap-2 px-4 py-2 text-sm text-muted">🔒 {l.title}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ))}
-          </div>
+        {/* Desktop: lesson list always visible */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-md border border-line bg-surface-raised p-4">{lessonList("side")}</div>
         </aside>
       </main>
     </AppShell>

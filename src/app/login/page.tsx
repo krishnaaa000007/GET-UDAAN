@@ -22,8 +22,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       <Logo />
       <div className="mt-10 card p-6">
         <h1 className="font-display text-3xl">Login karein</h1>
-        <p className="mt-1 mb-6 text-sm text-muted">Apne course, progress aur downloads tak pahunchein.</p>
-        {reason && <p className="mb-4 rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm text-gold">{reason}</p>}
+        <p className="mt-1 mb-6 text-sm text-ink-muted">Apne course, progress aur downloads tak pahunchein.</p>
+        {reason && <p className="mb-4 rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm text-gold-text">{reason}</p>}
         <LoginForm next={next} />
       </div>
     </main>

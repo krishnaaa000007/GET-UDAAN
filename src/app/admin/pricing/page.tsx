@@ -14,7 +14,7 @@ export default async function AdminPricing() {
     <div className="space-y-8">
       <section className="space-y-3">
         <h1 className="font-display text-3xl">Pricing</h1>
-        <p className="text-sm text-muted">
+        <p className="text-sm text-ink-muted">
           A new price applies immediately. Add a <b>deadline</b> only for a REAL launch offer: the landing page shows a countdown and the price switches back automatically when it ends. Price history is kept for audit.
         </p>
         <div className="grid gap-3 md:grid-cols-2">
@@ -23,21 +23,21 @@ export default async function AdminPricing() {
             return (
               <div key={p.id} className="card p-4">
                 <div className="flex justify-between">
-                  <p className="font-semibold">{p.name} <span className="text-xs text-muted">/{p.slug} • {p.kind}</span></p>
+                  <p className="font-semibold">{p.name} <span className="text-xs text-ink-muted">/{p.slug} • {p.kind}</span></p>
                   <p className="text-xl font-bold">{cur ? formatINR(cur.amountPaise) : "—"}</p>
                 </div>
-                {cur?.endsAt && <p className="text-xs text-gold">{cur.label ?? "Offer"} ends {formatIST(cur.endsAt)}</p>}
+                {cur?.endsAt && <p className="text-xs text-gold-text">{cur.label ?? "Offer"} ends {formatIST(cur.endsAt)}</p>}
                 <ActionForm action={addPriceAction} className="mt-3 grid grid-cols-2 gap-2 text-sm" success="Price updated ✓">
                   <input type="hidden" name="productId" value={p.id} />
                   <input name="amountRupees" type="number" min={1} required placeholder="New price ₹" className="field min-h-10" />
                   <input name="label" placeholder="Label (e.g. Launch price)" className="field min-h-10" />
-                  <label className="col-span-2 text-xs text-muted">
+                  <label className="col-span-2 text-xs text-ink-muted">
                     Deadline (IST, optional)
                     <input name="endsAt" type="datetime-local" className="field mt-1 min-h-10" />
                   </label>
                   <button className="btn-ghost col-span-2 min-h-10">Set price</button>
                 </ActionForm>
-                <details className="mt-2 text-xs text-muted">
+                <details className="mt-2 text-xs text-ink-muted">
                   <summary className="cursor-pointer">History ({p.prices.length})</summary>
                   <ul className="mt-1 space-y-1">
                     {p.prices.map((r) => (
@@ -66,7 +66,7 @@ export default async function AdminPricing() {
         </ActionForm>
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[600px] text-sm">
-            <thead className="border-b border-line text-left text-xs text-muted">
+            <thead className="border-b border-line text-left text-xs text-ink-muted">
               <tr>{["Code", "Discount", "Partner", "Used", "Expires", "Status", ""].map((h) => <th key={h} className="p-3 font-medium">{h}</th>)}</tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -81,7 +81,7 @@ export default async function AdminPricing() {
                   <td className="p-3">
                     <form action={toggleCouponAction}>
                       <input type="hidden" name="couponId" value={c.id} />
-                      <button className="text-gold">{c.active ? "Disable" : "Enable"}</button>
+                      <button className="text-gold-text">{c.active ? "Disable" : "Enable"}</button>
                     </form>
                   </td>
                 </tr>

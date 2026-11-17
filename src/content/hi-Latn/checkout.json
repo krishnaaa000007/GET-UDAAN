@@ -1,0 +1,82 @@
+{
+  "secure": "Secure checkout",
+  "summary": {
+    "eyebrow": "Aapka order",
+    "product": "Get Udaan {name}",
+    "coupon": "Coupon {code}",
+    "total": "Total",
+    "oneTime": "Ek baar payment • Lifetime access"
+  },
+  "fields": {
+    "title": "Aapki details",
+    "name": "Poora naam",
+    "namePlaceholder": "Rahul Kumar",
+    "phone": "WhatsApp number",
+    "phonePlaceholder": "98765 43210",
+    "email": "Email",
+    "emailPlaceholder": "aap@gmail.com",
+    "emailHint": "Course ka login link isi email par aayega."
+  },
+  "bump": "Haan, {name} bhi add karo — {price}",
+  "coupon": {
+    "applied": "{code} laga — {off} ki bachat",
+    "empty": "Coupon code daaliye"
+  },
+  "pay": "{total} Pay Karo",
+  "paying": "Payment khul raha hai…",
+  "refund": "{days}-din refund policy — pasand na aaye toh poora paisa wapas.",
+  "help": "Help chahiye? WhatsApp karo: {number}",
+  "terms": {
+    "before": "Pay karke aap hamari",
+    "terms": "Terms",
+    "and": "aur",
+    "refund": "Refund policy",
+    "after": "se agree karte hain."
+  },
+  "failed": {
+    "title": "Payment complete nahi hua.",
+    "text": "Ghabraiye mat. Agar paise kate hain toh 5–7 working days mein aapke account mein wapas aa jaayenge. Aap abhi dobara try kar sakte hain.",
+    "retry": "Dobara Try Karo",
+    "whatsapp": "WhatsApp par help lo"
+  },
+  "errors": {
+    "load": "Payment window load nahi hua. Internet check karke dobara try karein.",
+    "generic": "Kuch gadbad ho gayi. Dobara try karein ya WhatsApp par message karein."
+  },
+  "waiting": {
+    "title": "PAYMENT CONFIRM HO RAHA HAI…",
+    "text": "Is page ko band mat kijiye. Isme kuch second lagte hain.",
+    "slow": "Zyada time lag raha hai? Paisa kat gaya ho toh chinta mat kijiye — confirmation email aa jaayega. Phir bhi problem ho toh WhatsApp par order number bhejiye.",
+    "whatsapp": "WhatsApp par help lo"
+  },
+  "thankYou": {
+    "badge": "Payment successful",
+    "title": "WELCOME TO GET UDAAN, *{name}!*",
+    "sub": "Login link aur receipt {email} par bhej diya hai.",
+    "order": "Order #{number}",
+    "paid": "Paid",
+    "start": "Lesson 1 Shuru Karo",
+    "upsell": {
+      "eyebrow": "Aur aage badhna hai?",
+      "title": "{name} mein upgrade karo",
+      "cta": "{name} Dekho — {price}",
+      "skip": "Abhi nahi chahiye? Koi baat nahi — upar se course shuru kijiye."
+    },
+    "share": {
+      "title": "Apne dost ko bhejo",
+      "text": "Koi dost reels banana seekhna chahta hai? Use Get Udaan ka link WhatsApp par bhejo.",
+      "cta": "WhatsApp par Share Karo",
+      "message": "Main Get Udaan se AI reels banana seekh raha hoon — sirf phone aur free AI tools se. Tu bhi dekh:"
+    }
+  },
+  "mock": {
+    "banner": "TEST MODE — ye asli payment nahi hai. Live site par yahan Razorpay khulega.",
+    "payTo": "Pay to Get Udaan",
+    "success": "UPI payment successful (test)",
+    "fail": "Payment fail karo (test)"
+  },
+  "proof": {
+    "eyebrow": "Students kya kehte hain",
+    "resultsVary": "Results vary. Ye is student ka apna experience hai."
+  }
+}

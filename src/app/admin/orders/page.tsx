@@ -37,7 +37,7 @@ export default async function AdminOrders({ searchParams }: PageProps<"/admin/or
       </form>
       <div className="card overflow-x-auto">
         <table className="w-full min-w-[900px] text-sm">
-          <thead className="border-b border-line text-left text-xs text-muted">
+          <thead className="border-b border-line text-left text-xs text-ink-muted">
             <tr>
               {["#", "Date (IST)", "Buyer", "Items", "Total", "Fee", "Status", "Source", "Commission"].map((h) => (
                 <th key={h} className="p-3 font-medium">{h}</th>
@@ -51,19 +51,19 @@ export default async function AdminOrders({ searchParams }: PageProps<"/admin/or
                 <td className="p-3 whitespace-nowrap">{formatIST(o.paidAt ?? o.createdAt)}</td>
                 <td className="p-3">
                   {o.name}
-                  <span className="block text-xs text-muted">{o.email} • {o.phone}</span>
+                  <span className="block text-xs text-ink-muted">{o.email} • {o.phone}</span>
                 </td>
                 <td className="p-3">{o.items.map((i) => i.name).join(" + ")}</td>
                 <td className="p-3 tabular-nums">
                   {formatINR(o.totalPaise)}
-                  {o.coupon && <span className="block text-xs text-muted">{o.coupon.code} −{formatINR(o.discountPaise)}</span>}
+                  {o.coupon && <span className="block text-xs text-ink-muted">{o.coupon.code} −{formatINR(o.discountPaise)}</span>}
                 </td>
-                <td className="p-3 tabular-nums text-muted">{o.gatewayFeePaise != null ? formatINR(o.gatewayFeePaise) : "—"}</td>
+                <td className="p-3 tabular-nums text-ink-muted">{o.gatewayFeePaise != null ? formatINR(o.gatewayFeePaise) : "—"}</td>
                 <td className="p-3">{o.status}</td>
                 <td className="p-3">
                   {o.partner ? `${o.partner.code} (${o.attributionSource.toLowerCase()})` : "direct"}
-                  {o.campaign && <span className="block text-xs text-muted">{o.campaign}</span>}
-                  {o.utmSource && <span className="block text-xs text-muted">utm: {o.utmSource}/{o.utmCampaign}</span>}
+                  {o.campaign && <span className="block text-xs text-ink-muted">{o.campaign}</span>}
+                  {o.utmSource && <span className="block text-xs text-ink-muted">utm: {o.utmSource}/{o.utmCampaign}</span>}
                 </td>
                 <td className="p-3 tabular-nums">{o.commissions[0] ? `${formatINR(o.commissions[0].amountPaise)} ${o.commissions[0].status.toLowerCase()}` : "—"}</td>
               </tr>
@@ -71,7 +71,7 @@ export default async function AdminOrders({ searchParams }: PageProps<"/admin/or
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-muted">Refunds: Phase 2 adds a Refund button here (via Razorpay API). Until then, refund from the Razorpay dashboard — the webhook marks the order refunded and reverses the commission automatically.</p>
+      <p className="text-xs text-ink-muted">Refunds: Phase 2 adds a Refund button here (via Razorpay API). Until then, refund from the Razorpay dashboard — the webhook marks the order refunded and reverses the commission automatically.</p>
     </div>
   );
 }
