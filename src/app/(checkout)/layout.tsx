@@ -11,9 +11,9 @@ export default async function CheckoutLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <header className="border-b border-line">
-        <div className="container-page flex h-16 items-center justify-between">
+        <div className="container-page flex h-16 items-center justify-between gap-4">
           <Logo priority />
-          <span className="type-small inline-flex items-center gap-2 text-ink-muted">
+          <span className="type-small inline-flex flex-none items-center gap-2 whitespace-nowrap text-ink-muted">
             <Lock aria-hidden className="size-5" />
             {t.secure}
           </span>

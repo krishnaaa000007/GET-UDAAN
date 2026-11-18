@@ -5,6 +5,7 @@ import { Check, Info, MessageCircle, RotateCcw, ShieldCheck } from "lucide-react
 import type { ReactNode } from "react";
 import ui from "@/content/hi-Latn/ui.json";
 import { cn } from "@/lib/cn";
+import { CountUp } from "@/components/theme/count-up";
 
 /* ---------- SpeedTrails: the brand motif (short-long-short bars, tilted −20°) ---------- */
 export function SpeedTrails({ className, animated = false }: { className?: string; animated?: boolean }) {
@@ -32,7 +33,7 @@ const badgeTones: Record<BadgeTone, string> = {
 /** tone "success" always shows a tick so the meaning never depends on colour alone. */
 export function Badge({ tone = "gold", children, className }: { tone?: BadgeTone; children: ReactNode; className?: string }) {
   return (
-    <span className={cn("type-label inline-flex items-center gap-1 rounded-sm px-2 py-1", badgeTones[tone], className)}>
+    <span className={cn("type-label inline-flex items-center gap-1 rounded-pill px-3 py-1.5", badgeTones[tone], className)}>
       {tone === "success" && <Check aria-hidden className="size-3.5" strokeWidth={3} />}
       {children}
     </span>
@@ -42,8 +43,10 @@ export function Badge({ tone = "gold", children, className }: { tone?: BadgeTone
 /* ---------- StatChip ---------- */
 export function StatChip({ value, label, className }: { value: string; label: string; className?: string }) {
   return (
-    <div className={cn("inline-flex flex-col items-start rounded-pill border border-line bg-surface-raised px-4 py-2", className)}>
-      <span className="font-display text-[22px] leading-none text-gold-text">{value}</span>
+    <div className={cn("inline-flex flex-col items-start gap-2", className)}>
+      <span className="type-stat text-gold-text">
+        <CountUp value={value} />
+      </span>
       <span className="type-label text-ink-muted">{label}</span>
     </div>
   );
@@ -60,7 +63,7 @@ export function SectionHeader({
   sub,
   as: Tag = "h2",
   size = "display",
-  align = "left",
+  align = "auto",
   className,
 }: {
   eyebrow?: string;
@@ -68,14 +71,22 @@ export function SectionHeader({
   sub?: ReactNode;
   as?: "h1" | "h2" | "h3";
   size?: "display-xl" | "display" | "heading";
-  align?: "left" | "center";
+  /** auto = centred on phones, left-aligned from tablet up (content sections). center = always centred. */
+  align?: "auto" | "left" | "center";
   className?: string;
 }) {
   const sizeClass = { "display-xl": "type-display-xl", display: "type-display", heading: "type-heading" }[size];
   return (
-    <div className={cn("flex flex-col gap-3", align === "center" && "items-center text-center", className)}>
-      {eyebrow && <p className="type-label text-gold-text">{eyebrow}</p>}
-      <Tag className={cn(sizeClass, "text-balance text-ink")}>
+    <div
+      className={cn(
+        "flex flex-col gap-4",
+        align === "center" && "items-center text-center",
+        align === "auto" && "items-center text-center md:items-start md:text-left",
+        className,
+      )}
+    >
+      {eyebrow && <p className="type-label inline-flex rounded-pill bg-gold-soft px-3 py-2 text-gold-text">{eyebrow}</p>}
+      <Tag className={cn(sizeClass, "text-ink")}>
         <Highlight text={heading} />
       </Tag>
       {sub && <p className="type-body-lg max-w-reading text-ink-muted">{sub}</p>}
@@ -84,13 +95,13 @@ export function SectionHeader({
 }
 
 /** Turns "PHONE SE *VIRAL* TAK" into text with the starred word in gold. */
-export function Highlight({ text }: { text: string }) {
+export function Highlight({ text, shimmer = false }: { text: string; shimmer?: boolean }) {
   const parts = text.split("*");
   return (
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <span key={i} className="text-gold-text">
+          <span key={i} className={shimmer ? "shimmer-once text-gold-text" : "text-gold-text"}>
             {p}
           </span>
         ) : (
@@ -117,12 +128,14 @@ export function IncomeDisclaimer({ className }: { className?: string }) {
 export function GuaranteeBox({ days, policyHref = "/legal/refund", className }: { days: number; policyHref?: string; className?: string }) {
   const fill = (s: string) => s.replaceAll("{days}", String(days));
   return (
-    <div className={cn("flex flex-col items-start gap-4 rounded-lg border border-line bg-surface-raised p-6 md:flex-row md:items-center md:gap-6 md:p-8", className)}>
-      <ShieldCheck aria-hidden className="size-14 flex-none text-gold-text" strokeWidth={1.5} />
-      <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col items-center gap-6 rounded-lg border border-line bg-surface-raised p-6 text-center md:flex-row md:items-center md:gap-8 md:p-10 md:text-left", className)}>
+      <span aria-hidden className="grid size-24 flex-none place-items-center rounded-pill bg-gold-soft">
+        <ShieldCheck className="size-12 text-gold-text" strokeWidth={1.75} />
+      </span>
+      <div className="flex flex-col items-center gap-3 md:items-start">
         <h3 className="type-heading text-ink">{fill(ui.guarantee.title)}</h3>
-        <p className="text-ink-muted">{fill(ui.guarantee.text)}</p>
-        <Link href={policyHref} className="inline-flex min-h-12 items-center self-start text-gold-text underline underline-offset-4">
+        <p className="max-w-reading text-ink-muted">{fill(ui.guarantee.text)}</p>
+        <Link href={policyHref} className="type-small inline-flex min-h-12 items-center text-gold-text underline decoration-2 underline-offset-4">
           {ui.guarantee.link}
         </Link>
       </div>
@@ -163,7 +176,7 @@ export function TrustRow({ refundDays, whatsappHref, className }: { refundDays?:
 /* ---------- EmptyState: one sentence + one next step ---------- */
 export function EmptyState({ text, action, className }: { text: string; action?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex flex-col items-center gap-4 rounded-md border border-line bg-surface-raised px-6 py-10 text-center", className)}>
+    <div className={cn("flex flex-col items-center gap-4 rounded-lg border border-line bg-surface-raised px-6 py-10 text-center", className)}>
       <SpeedTrails className="h-10 w-12" />
       <p className="max-w-sm text-ink-muted">{text}</p>
       {action}

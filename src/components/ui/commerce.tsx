@@ -33,25 +33,37 @@ export function PriceCard({
   className?: string;
 }) {
   return (
-    <article className={cn("flex flex-col gap-4 rounded-lg p-6", featured ? "border-2 border-gold bg-gold-soft" : "border border-line bg-surface-raised", className)}>
-      {badge && (
-        <Badge tone={featured ? "solid" : "neutral"} className="self-start">
-          {badge}
-        </Badge>
+    <article
+      className={cn(
+        "relative flex flex-col gap-5 rounded-lg p-6 md:p-8",
+        featured ? "border-[1.5px] border-gold bg-surface-raised shadow-glow-gold md:-translate-y-4" : "border border-line bg-surface-raised",
+        className,
       )}
-      <h3 className="type-heading text-ink">{name}</h3>
-      <ul className="flex flex-col gap-2">
+    >
+      {badge &&
+        (featured ? (
+          // ribbon across the top edge of the recommended plan
+          <Badge tone="solid" className="absolute -top-4 left-6">
+            {badge}
+          </Badge>
+        ) : (
+          <Badge tone="neutral" className="self-start">
+            {badge}
+          </Badge>
+        ))}
+      <h3 className={cn("type-heading text-ink", featured && badge && "pt-2")}>{name}</h3>
+      <ul className="type-body-s flex flex-col gap-3">
         {inclusions.map((line) => (
-          <li key={line} className="flex gap-2">
+          <li key={line} className="flex gap-3 text-ink-muted">
             <Check aria-hidden className="mt-0.5 size-5 flex-none text-success" strokeWidth={2.5} />
             <span>{line}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-auto flex items-baseline gap-2 pt-2">
-        <span className="type-price text-gold-text">{price}</span>
+      <div className="mt-auto flex flex-col gap-1 border-t border-line pt-5">
+        <span className="type-stat text-gold-text">{price}</span>
         {priceNote && <span className="type-small text-ink-muted">{priceNote}</span>}
-      </p>
+      </div>
       {cta}
     </article>
   );
@@ -81,10 +93,10 @@ export function TierCompareTable({ tiers, rows, featuredIndex, className }: { ti
     <div className={className}>
       {/* Mobile */}
       <details className="accordion-item md:hidden">
-        <summary className="type-button flex min-h-12 cursor-pointer items-center justify-center rounded-md border-2 border-ink px-6 text-ink">{ui.compare.toggle}</summary>
+        <summary className="type-button flex min-h-12 cursor-pointer items-center justify-center rounded-md border-[1.5px] border-ink/20 px-6 text-ink">{ui.compare.toggle}</summary>
         <div className="mt-4 flex flex-col gap-4">
           {tiers.map((tier, t) => (
-            <div key={tier} className={cn("rounded-md p-4", t === featuredIndex ? "border-2 border-gold bg-gold-soft" : "border border-line bg-surface-raised")}>
+            <div key={tier} className={cn("rounded-lg p-4", t === featuredIndex ? "border-[1.5px] border-gold bg-surface-raised" : "border border-line bg-surface-raised")}>
               <h4 className="type-heading mb-3 text-ink">{tier}</h4>
               <ul className="flex flex-col gap-2">
                 {rows.map((r) => (
@@ -156,7 +168,7 @@ export function TestimonialCard({
   className?: string;
 }) {
   return (
-    <figure className={cn("flex w-full flex-col gap-4 rounded-md border border-line bg-surface-raised p-4", className)}>
+    <figure className={cn("flex w-full flex-col gap-4 rounded-lg border border-line bg-surface-raised p-6", className)}>
       {reelThumbUrl && (
         <div className="relative aspect-[9/16] w-full overflow-hidden rounded-md bg-surface-sunken">
           <Image src={reelThumbUrl} alt="" fill sizes="(max-width: 768px) 80vw, 320px" unoptimized className="object-cover" />

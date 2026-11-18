@@ -10,7 +10,7 @@ import { cleanIndianMobile } from "@/lib/phone";
 import { Button } from "./button";
 
 const fieldBox =
-  "min-h-12 w-full rounded-sm border bg-surface-sunken px-4 text-[16px] text-ink placeholder:text-ink-muted/70 transition-colors duration-150 focus:border-gold";
+  "min-h-[52px] w-full rounded-input border bg-surface-raised-2 px-4 text-[16px] text-ink placeholder:text-ink-muted transition-colors duration-150 focus:border-gold";
 
 type FieldProps = {
   label: string;
@@ -23,7 +23,7 @@ type FieldProps = {
 function FieldShell({ id, label, hint, error, children }: FieldProps & { id: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="font-semibold text-ink">
+      <label htmlFor={id} className="text-sm font-semibold text-ink">
         {label}
       </label>
       {children}
@@ -63,7 +63,7 @@ export function PhoneInput({ label, hint, error, className, id: idProp, onChange
   const id = idProp ?? auto;
   return (
     <FieldShell id={id} label={label} hint={hint} error={error}>
-      <div className={cn("flex min-h-12 items-stretch overflow-hidden rounded-sm border bg-surface-sunken focus-within:border-gold", error ? "border-fire" : "border-line")}>
+      <div className={cn("flex min-h-[52px] items-stretch overflow-hidden rounded-input border bg-surface-raised-2 focus-within:border-gold focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus-ring", error ? "border-fire" : "border-line")}>
         <span aria-hidden className="grid place-items-center border-r border-line px-3 font-semibold text-ink-muted">
           {ui.form.phonePrefix}
         </span>
@@ -144,7 +144,7 @@ export function CouponField({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <label htmlFor={id} className="font-semibold text-ink">
+      <label htmlFor={id} className="text-sm font-semibold text-ink">
         {ui.form.couponLabel}
       </label>
       <div className="flex gap-2">

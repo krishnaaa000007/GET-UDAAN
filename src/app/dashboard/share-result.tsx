@@ -45,7 +45,7 @@ export function ShareResult({ alreadySent }: { alreadySent: boolean }) {
             defaultValue={v?.quote}
             placeholder={s.quotePlaceholder}
             aria-invalid={err.quote ? true : undefined}
-            className={cn("w-full rounded-sm border bg-surface-sunken px-4 py-3 text-[16px] text-ink placeholder:text-ink-muted/70 focus:border-gold", err.quote ? "border-fire" : "border-line")}
+            className={cn("w-full rounded-input border bg-surface-raised-2 px-4 py-3 text-[16px] text-ink placeholder:text-ink-muted focus:border-gold", err.quote ? "border-fire" : "border-line")}
           />
           {err.quote && (
             <p role="alert" className="type-small text-fire">

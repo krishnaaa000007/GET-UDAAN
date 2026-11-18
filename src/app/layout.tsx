@@ -7,7 +7,7 @@ import { siteUrl } from "@/lib/site-url";
 // Only the Latin files are preloaded (Hinglish is Roman script). The Devanagari files are still shipped and the
 // browser fetches them only when a page really shows Hindi script — this keeps slow-4G loads fast.
 const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton", display: "swap" });
-const poppins = Poppins({ weight: ["400", "600", "700", "800"], subsets: ["latin"], variable: "--font-poppins", display: "swap" });
+const poppins = Poppins({ weight: ["400", "600", "700"], subsets: ["latin"], variable: "--font-poppins", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),

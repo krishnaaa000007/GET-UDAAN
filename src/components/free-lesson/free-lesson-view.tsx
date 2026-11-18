@@ -112,6 +112,7 @@ export async function FreeLessonView({ lessonId }: { lessonId: string }) {
           price={price}
           note={fill(t.upgrade.stickyNote)}
           afterId="upgrade"
+          hideOnIds={["site-footer"]}
           cta={
             <Button href={checkoutHref} pill data-cta="free_lesson_sticky">
               {t.upgrade.stickyCta}

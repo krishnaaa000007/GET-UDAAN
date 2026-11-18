@@ -13,7 +13,7 @@ export function SiteFooter({ settings }: { settings: Settings }) {
   const wa = settings.supportWhatsapp.replace(/\D/g, "");
   return (
     // Extra bottom space on mobile so the sticky buy bar never covers the footer.
-    <footer className="border-t border-line pt-12 pb-32 md:pb-12">
+    <footer id="site-footer" className="border-t border-line bg-surface-raised pt-16 pb-32 md:pb-16">
       <div className="container-page grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="flex flex-col items-start gap-3">
           <Logo />

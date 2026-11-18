@@ -161,7 +161,7 @@ export default async function DoneWithYouPage() {
       <StickyBuyBar
         price={price}
         note={t.sticky.note}
-        hideOnIds={["final-cta"]}
+        hideOnIds={["final-cta", "site-footer"]}
         cta={
           <Button href={href} pill data-cta="dwy_sticky">
             {t.sticky.cta}

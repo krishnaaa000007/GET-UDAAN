@@ -2,6 +2,7 @@
 import { PartnerBanner } from "@/components/shell/partner-banner";
 import { SiteFooter } from "@/components/shell/site-footer";
 import { SiteHeader } from "@/components/shell/site-header";
+import { RevealObserver } from "@/components/theme/reveal-observer";
 import { TrackingScripts } from "@/components/tracking-scripts";
 import { getSettings } from "@/server/settings";
 
@@ -9,6 +10,7 @@ export default async function PublicLayout({ children }: LayoutProps<"/">) {
   const s = await getSettings();
   return (
     <>
+      <RevealObserver />
       <SiteHeader />
       <PartnerBanner />
       {children}

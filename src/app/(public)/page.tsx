@@ -24,12 +24,15 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { FunnelTracker, LeadSheet } from "@/components/landing/islands";
-import { Logo } from "@/components/logo";
+import { CountUp } from "@/components/theme/count-up";
+import { FlightMeasured, FlightSpark } from "@/components/theme/flight-measured";
+import { FlightPath } from "@/components/theme/flight-path";
+import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { Accordion, AccordionItem, CurriculumModule } from "@/components/ui/accordion";
 import { Badge, GuaranteeBox, Highlight, IncomeDisclaimer, SectionHeader, SpeedTrails, StatChip, TrustRow } from "@/components/ui/basics";
 import { Button } from "@/components/ui/button";
 import { PriceCard, TestimonialCard, TierCompareTable } from "@/components/ui/commerce";
-import { Countdown, RecentPurchaseToast, ReelPlayer, StickyBuyBar } from "@/components/ui/interactive";
+import { Countdown, RecentPurchaseToast, StickyBuyBar } from "@/components/ui/interactive";
 import { cn } from "@/lib/cn";
 import { db } from "@/lib/db";
 import { formatINR } from "@/lib/money";
@@ -61,9 +64,11 @@ const Icon = ({ name, className }: { name: string; className?: string }) => {
   return <I aria-hidden className={className} />;
 };
 
-const Section = ({ id, children, className }: { id?: string; children: ReactNode; className?: string }) => (
-  <section id={id} className={cn("scroll-mt-16 py-12 md:py-20", className)}>
-    <div className="container-page">{children}</div>
+/** A landing section: brief §4 rhythm (72px / 112px), its own flight-path segment, content above it. */
+const Section = ({ id, children, className, bend = "left" }: { id?: string; children: ReactNode; className?: string; bend?: "left" | "right" | "straight" }) => (
+  <section id={id} className={cn("section-y relative scroll-mt-16", className)}>
+    <FlightPath bend={bend} />
+    <div className="container-page relative z-[1]">{children}</div>
   </section>
 );
 
@@ -106,20 +111,29 @@ export default async function LandingPage() {
   ];
   const heroCta = entry ? c.hero.cta.replace("{price}", entryPrice) : c.stickyBar.cta;
 
+  const heroHasReel = !!(c.hero.videoUrl && c.hero.posterUrl);
+  const curriculumChips = c.curriculum.summary
+    .replace("{lessons}", String(lessons.length))
+    .replace("{min}", String(totalMin))
+    .split("•")
+    .map((x) => x.trim())
+    .filter(Boolean);
+
   return (
     <main>
       <FunnelTracker />
 
-      {/* 1. HERO — what is it + the two fears answered */}
-      <section id="hero" className="film-grain overflow-hidden">
-        <div className="container-page grid items-center gap-10 pt-6 pb-12 md:grid-cols-[1.15fr_1fr] md:pt-12 md:pb-20">
-          <div className="flex flex-col items-start gap-5">
+      {/* 1. HERO — night sky with stars; the flight path starts here */}
+      <section id="hero" className="sky-stars film-grain relative overflow-hidden">
+        <FlightPath bend="right" />
+        <div className="container-page relative z-[1] grid items-center gap-12 pt-6 pb-16 lg:min-h-[calc(88vh-64px)] lg:grid-cols-2 lg:gap-10 lg:py-16">
+          <div className="flex flex-col items-start">
             <Badge tone="gold">{c.hero.eyebrow}</Badge>
-            <h1 className="type-display-xl text-ink">
-              <Highlight text={c.hero.headline} />
+            <h1 className="type-display-xl mt-5 text-ink">
+              <Highlight text={c.hero.headline} shimmer />
             </h1>
-            <p className="type-body-lg max-w-reading text-ink-muted">{c.hero.sub}</p>
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+            <p className="type-body-lg mt-4 max-w-[34ch] text-ink-muted">{c.hero.sub}</p>
+            <div className="mt-7 flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row sm:gap-6 md:mt-9">
               <Button href={entryHref} size="lg" block arrow data-cta="hero_primary" className="sm:w-auto">
                 {heroCta}
               </Button>
@@ -129,38 +143,52 @@ export default async function LandingPage() {
                 </Button>
               )}
             </div>
-            <p className="type-small text-ink-muted">{c.hero.trust.replace("{days}", String(days))}</p>
-            <ul className="flex flex-wrap gap-2">
+            <p className="type-small mt-3 w-full text-center text-ink-muted sm:text-left">{c.hero.trust.replace("{days}", String(days))}</p>
+            <ul className={cn("mt-10 grid w-full", stats.length === 4 ? "grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-line" : "grid-cols-3 divide-x divide-line")}>
               {stats.map((s) => (
-                <li key={s.label}>
+                <li key={s.label} className="px-3 first:pl-0">
                   <StatChip value={s.value} label={s.label} />
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* The product IS the reel: show one in the first screen. */}
-          <div className="relative mx-auto w-[70%] max-w-[300px] py-4 md:w-full">
-            <div aria-hidden className="absolute inset-x-0 inset-y-4 translate-x-[14%] rotate-[5deg] overflow-hidden rounded-md border border-line bg-surface-raised">
-              {c.hero.peekPosterUrl && <Image src={c.hero.peekPosterUrl} alt="" fill sizes="300px" unoptimized className="object-cover opacity-60" />}
-            </div>
-            <div className="relative -rotate-3 overflow-hidden rounded-md border-2 border-gold shadow-lift">
-              {c.hero.videoUrl && c.hero.posterUrl ? (
-                <ReelPlayer src={c.hero.videoUrl} webmSrc={c.hero.videoWebmUrl || undefined} poster={c.hero.posterUrl} label={c.hero.reelLabel} className="rounded-none" />
-              ) : (
-                // Until a real sample reel is uploaded (Admin → Landing content → Hero), show the brand mark — never a fake.
-                <div className="grid aspect-[9/16] place-items-center bg-surface-sunken p-8">
-                  <Logo href={null} variant="stacked-on-dark" className="h-24" />
+          {heroHasReel ? (
+            // The product IS the reel: two tilted phones, the back one dimmed.
+            <div className="relative mx-auto w-[70%] max-w-[320px] py-6 lg:w-[78%]">
+              {c.hero.peekPosterUrl && (
+                <div aria-hidden className="phone-frame absolute inset-y-6 left-[18%] w-full rotate-[6deg] opacity-70">
+                  <div className="relative h-full overflow-hidden rounded-[26px]">
+                    <Image src={c.hero.peekPosterUrl} alt="" fill sizes="320px" unoptimized className="object-cover" />
+                  </div>
                 </div>
               )}
+              <PhoneMockup src={c.hero.videoUrl} webmSrc={c.hero.videoWebmUrl} poster={c.hero.posterUrl} label={c.hero.reelLabel} tilt={-4} float className="relative" />
             </div>
-          </div>
+          ) : (
+            // No reel uploaded yet: never an empty phone. The four doubt-killers become the hero visual instead.
+            <ul className="hidden flex-col gap-4 lg:flex" aria-label={c.hero.eyebrow}>
+              {c.hero.doubtKillers.map((d, i) => (
+                <li
+                  key={d}
+                  className="flex w-[86%] items-center gap-4 rounded-lg border border-line bg-surface-raised p-5"
+                  style={{ marginLeft: `${[0, 10, 3, 14][i % 4]}%`, transform: `rotate(${[-2, 1.5, -1, 2][i % 4]}deg)` }}
+                >
+                  <span className="grid size-11 flex-none place-items-center rounded-md bg-gold-soft">
+                    <Check aria-hidden className="size-5 text-gold-text" strokeWidth={2.5} />
+                  </span>
+                  <span className="type-body-lg text-ink">{d}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        <div className="container-page pb-12">
-          <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Phones (and desktop when a reel exists): the doubt-killers as a simple list under the hero */}
+        <div className={cn("container-page relative z-[1] pb-16", !heroHasReel && "lg:hidden")}>
+          <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
             {c.hero.doubtKillers.map((d) => (
-              <li key={d} className="flex items-start gap-2 text-ink">
-                <Check aria-hidden className="mt-0.5 size-5 flex-none text-success" strokeWidth={2.5} />
+              <li key={d} className="flex items-start gap-3 text-ink">
+                <Check aria-hidden className="mt-1 size-5 flex-none text-success" strokeWidth={2.5} />
                 {d}
               </li>
             ))}
@@ -170,124 +198,143 @@ export default async function LandingPage() {
 
       {/* 2. REEL WALL — only when real sample reels have been added */}
       {c.reels.items.length > 0 && (
-        <Section className="border-t border-line">
+        <Section bend="left" className="bg-surface-raised">
           <SectionHeader eyebrow={c.reels.eyebrow} heading={c.reels.title} sub={c.reels.sub} className="reveal" />
-          <ul className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
+          <ul className="no-scrollbar -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2">
             {c.reels.items.map((r) => (
               <li key={r.src} className="w-[62%] flex-none snap-start sm:w-[36%] md:w-[23%]">
-                <ReelPlayer src={r.src} webmSrc={r.webmSrc} poster={r.poster} label={r.label} />
+                <PhoneMockup src={r.src} webmSrc={r.webmSrc} poster={r.poster} label={r.label} />
               </li>
             ))}
           </ul>
         </Section>
       )}
 
-      {/* 3. PROBLEM — is it for me? */}
-      <Section className="border-t border-line">
+      {/* 3. PROBLEM — compact tiles, each pain icon crossed out in fire */}
+      <Section bend="left">
         <SectionHeader heading={c.problem.title} className="reveal" />
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+        <ul className="mt-10 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {c.problem.points.map((p) => (
-            <li key={p.text} className="reveal flex items-center gap-4 rounded-md border border-line bg-surface-raised p-4">
-              <Icon name={p.icon} className="size-6 flex-none text-ink-muted" />
-              <span className="text-ink">{p.text}</span>
+            <li key={p.text} className="reveal flex flex-col gap-4 rounded-lg border border-line bg-surface-raised p-4 md:p-6">
+              <span aria-hidden className="relative grid size-11 place-items-center rounded-md bg-surface-raised-2">
+                <Icon name={p.icon} className="size-5 text-ink-muted" />
+                <span className="absolute h-0.5 w-9 -rotate-45 rounded-pill bg-fire" />
+              </span>
+              <span className="type-body-s text-ink">{p.text}</span>
             </li>
           ))}
         </ul>
-        <p className="type-display mt-8 flex items-center gap-3 text-gold-text">
-          <SpeedTrails className="h-8 w-9" />
-          {c.problem.answer}
-        </p>
+        <p className="type-heading reveal mt-12 text-center text-gold-text">{c.problem.answer}</p>
       </Section>
 
-      {/* 4. WAYS CREATORS EARN — always with the honesty line right under it */}
-      <Section>
+      {/* 4. WAYS CREATORS EARN — numbered cards on a raised band; honesty line right under it */}
+      <Section bend="right" className="bg-surface-raised">
         <SectionHeader eyebrow={c.earn.eyebrow} heading={c.earn.title} className="reveal" />
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          {c.earn.items.map((e) => (
-            <div key={e.title} className="reveal flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4 md:p-6">
-              <Icon name={e.icon} className="size-6 text-gold-text" />
-              <h3 className="type-title text-ink">{e.title}</h3>
-              <p className="text-ink-muted">{e.desc}</p>
-            </div>
-          ))}
-        </div>
-        <IncomeDisclaimer className="mt-4" />
-      </Section>
-
-      {/* 5. HOW IT WORKS — can I do it? */}
-      <Section className="border-t border-line">
-        <SectionHeader eyebrow={c.howItWorks.eyebrow} heading={c.howItWorks.title} className="reveal" />
-        <ol className="mt-8 grid gap-0 md:grid-cols-5 md:gap-4">
-          {c.howItWorks.steps.map((s, i) => (
-            <li key={s.title} className="reveal relative flex gap-4 pb-8 last:pb-0 md:flex-col md:gap-3 md:pb-0">
-              {/* connector line between steps (mobile: vertical) */}
-              {i < c.howItWorks.steps.length - 1 && <span aria-hidden className="absolute top-12 bottom-0 left-6 w-px bg-line md:hidden" />}
-              <span className="type-heading grid size-12 flex-none place-items-center rounded-pill border border-line bg-surface-raised text-gold-text">{i + 1}</span>
-              <div className="flex flex-col gap-1 pt-1 md:pt-0">
-                <h3 className="type-title text-ink">{s.title}</h3>
-                <p className="text-ink-muted">{s.desc}</p>
-                {s.image && <Image src={s.image} alt="" width={320} height={200} unoptimized loading="lazy" className="mt-2 h-auto w-full max-w-[320px] rounded-md border border-line" />}
+        <ol className="mt-10 grid gap-4 md:grid-cols-2 md:gap-6">
+          {c.earn.items.map((e, i) => (
+            <li key={e.title} className="card-lift reveal flex gap-5 rounded-lg border border-line bg-surface p-6 md:p-8">
+              <span aria-hidden className="type-heading w-10 flex-none text-gold-text tabular-nums">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <div className="flex flex-col gap-2">
+                <h3 className="type-title text-ink">{e.title}</h3>
+                <p className="type-body-s text-ink-muted">{e.desc}</p>
               </div>
             </li>
           ))}
         </ol>
-        <IncomeDisclaimer className="mt-8" />
+        <IncomeDisclaimer className="mx-auto mt-8 max-w-reading" />
       </Section>
 
-      {/* 6. CURRICULUM — what exactly do I get? */}
-      {course && lessons.length > 0 && (
-        <Section id="curriculum">
-          <SectionHeader
-            eyebrow={c.curriculum.eyebrow}
-            heading={c.curriculum.title}
-            sub={c.curriculum.summary.replace("{lessons}", String(lessons.length)).replace("{min}", String(totalMin))}
-            className="reveal"
-          />
-          <Accordion className="mt-8">
-            {course.modules.map((m, i) => (
-              <CurriculumModule
-                key={m.id}
-                group="curriculum"
-                defaultOpen={i === 0}
-                title={c.curriculum.moduleLabel.replace("{n}", String(i + 1)).replace("{title}", m.title)}
-                lessons={m.lessons.map((l) => ({
-                  title: l.title,
-                  minutes: Math.round(l.durationSec / 60) || undefined,
-                  state: l.isFreePreview ? ("free" as const) : ("locked" as const),
-                  href: l.isFreePreview ? `/preview/${l.id}` : undefined,
-                }))}
-              />
+      {/* 5. HOW IT WORKS — the flight path IS the timeline: it runs through the gold numbered nodes */}
+      <section className="sky-horizon section-y relative">
+        <FlightMeasured />
+        <div className="container-page relative z-[1]">
+          <SectionHeader eyebrow={c.howItWorks.eyebrow} heading={c.howItWorks.title} className="reveal" />
+          <ol className="mt-12 flex flex-col gap-10 md:grid md:grid-cols-5 md:gap-6">
+            {c.howItWorks.steps.map((s, i) => (
+              <li key={s.title} className="reveal flex gap-5 md:flex-col md:gap-4">
+                <span data-flight-anchor className="type-heading grid size-12 flex-none place-items-center rounded-pill border-[1.5px] border-gold bg-surface text-gold-text">
+                  {i + 1}
+                </span>
+                <div className="flex flex-col gap-1 pt-2 md:pt-0">
+                  <h3 className="type-title text-ink">{s.title}</h3>
+                  <p className="type-body-s text-ink-muted">{s.desc}</p>
+                  {s.image && <Image src={s.image} alt="" width={320} height={200} unoptimized loading="lazy" className="mt-2 h-auto w-full max-w-[320px] rounded-lg border border-line" />}
+                </div>
+              </li>
             ))}
-          </Accordion>
+          </ol>
+          <IncomeDisclaimer className="mx-auto mt-12 max-w-reading" />
+        </div>
+      </section>
+
+      {/* 6. CURRICULUM — summary chips, then the modules inside one raised panel */}
+      {course && lessons.length > 0 && (
+        <Section id="curriculum" bend="left">
+          <SectionHeader eyebrow={c.curriculum.eyebrow} heading={c.curriculum.title} className="reveal" />
+          <ul className="reveal mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
+            {curriculumChips.map((chip) => (
+              <li key={chip} className="type-small rounded-pill border border-line bg-surface-raised-2 px-4 py-2 font-semibold text-ink">
+                {chip}
+              </li>
+            ))}
+          </ul>
+          <div className="reveal mt-8 rounded-sheet border border-line bg-surface-raised p-4 md:p-8">
+            <Accordion>
+              {course.modules.map((m, i) => (
+                <CurriculumModule
+                  key={m.id}
+                  group="curriculum"
+                  defaultOpen={i === 0}
+                  title={c.curriculum.moduleLabel.replace("{n}", String(i + 1)).replace("{title}", m.title)}
+                  lessons={m.lessons.map((l) => ({
+                    title: l.title,
+                    minutes: Math.round(l.durationSec / 60) || undefined,
+                    state: l.isFreePreview ? ("free" as const) : ("locked" as const),
+                    href: l.isFreePreview ? `/preview/${l.id}` : undefined,
+                  }))}
+                />
+              ))}
+            </Accordion>
+          </div>
         </Section>
       )}
 
-      {/* 7. BONUSES */}
-      <Section>
-        <div className="rounded-lg bg-gold-soft p-4 md:p-8">
+      {/* 7. BONUSES — product covers, slightly fanned */}
+      <Section bend="right">
+        <div className="rounded-sheet bg-gold-soft p-6 md:p-12">
           <SectionHeader eyebrow={c.bonuses.eyebrow} heading={c.bonuses.title} className="reveal" />
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {c.bonuses.items.map((b) => (
-              <div key={b.title} className="reveal flex gap-4 rounded-md border border-line bg-surface-raised p-4">
-                <span className="grid size-12 flex-none place-items-center rounded-sm bg-surface-sunken">
-                  <Icon name={b.icon} className="size-6 text-gold-text" />
-                </span>
-                <div>
-                  <h3 className="type-title text-ink">{b.title}</h3>
-                  <p className="text-ink-muted">{b.desc}</p>
+          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-6">
+            {c.bonuses.items.map((b, i) => (
+              <li key={b.title} className="reveal flex flex-col gap-3">
+                <div
+                  aria-hidden
+                  className="relative flex aspect-[3/4] flex-col justify-between overflow-hidden rounded-lg border border-line bg-surface p-4 md:p-5"
+                  style={{ transform: `rotate(${[-3, 2, -2, 3][i % 4]}deg)` }}
+                >
+                  <span className="grid size-11 place-items-center rounded-md bg-gold-soft">
+                    <Icon name={b.icon} className="size-5 text-gold-text" />
+                  </span>
+                  <SpeedTrails className="absolute top-4 right-4 h-5 w-6 opacity-60" />
+                  <span className="font-display text-[22px] leading-[1.05] tracking-[0.3px] text-ink uppercase md:text-[26px]">{b.title}</span>
                 </div>
-              </div>
+                <div className="flex flex-col gap-1">
+                  <h3 className="type-title sr-only">{b.title}</h3>
+                  <p className="type-body-s text-ink-muted">{b.desc}</p>
+                </div>
+              </li>
             ))}
-          </div>
-          <IncomeDisclaimer className="mt-4" />
+          </ul>
+          <IncomeDisclaimer className="mx-auto mt-10 max-w-reading" />
         </div>
       </Section>
 
       {/* 8. STUDENT RESULTS — real only, hidden until at least 3 exist */}
       {proof.testimonials.length >= 3 && (
-        <Section className="border-t border-line">
+        <Section bend="left" className="bg-surface-raised">
           <SectionHeader eyebrow={c.testimonials.eyebrow} heading={c.testimonials.title} className="reveal" />
-          <ul className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2">
+          <ul className="no-scrollbar -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2">
             {proof.testimonials.map((t) => (
               <li key={t.id} className="flex w-[80%] flex-none snap-start sm:w-[45%] md:w-[31%]">
                 <TestimonialCard
@@ -304,18 +351,18 @@ export default async function LandingPage() {
         </Section>
       )}
 
-      {/* 8b. WHO IS BEHIND THIS — real people kill the "scam?" fear. Hidden until a real name + bio are filled in (Admin → Landing content). */}
+      {/* 8b. WHO IS BEHIND THIS — hidden until a real name + bio are filled in (Admin → Landing content) */}
       {c.team.name && c.team.bio && (
-        <Section className="border-t border-line">
+        <Section bend="right">
           <SectionHeader eyebrow={c.team.eyebrow} heading={c.team.title} className="reveal" />
-          <div className="reveal mt-8 flex flex-col gap-6 rounded-lg border border-line bg-surface-raised p-6 md:flex-row md:items-center md:p-8">
+          <div className="reveal mt-10 flex flex-col gap-6 rounded-lg border border-line bg-surface-raised p-6 md:flex-row md:items-center md:p-8">
             {c.team.photoUrl && <Image src={c.team.photoUrl} alt={c.team.name} width={160} height={160} unoptimized loading="lazy" className="size-32 flex-none rounded-lg object-cover md:size-40" />}
             <div className="flex flex-col items-start gap-2">
               <h3 className="type-heading text-ink">{c.team.name}</h3>
               {c.team.role && <p className="type-label text-gold-text">{c.team.role}</p>}
               <p className="max-w-reading whitespace-pre-line text-ink-muted">{c.team.bio}</p>
               {c.team.instagramUrl && (
-                <a href={c.team.instagramUrl} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center font-semibold text-gold-text underline underline-offset-4">
+                <a href={c.team.instagramUrl} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center font-semibold text-gold-text underline decoration-2 underline-offset-4">
                   {c.team.instagramLabel}
                 </a>
               )}
@@ -324,67 +371,78 @@ export default async function LandingPage() {
         </Section>
       )}
 
-      {/* 9. PRICING — how much? Info order inside each card: what you get → price → CTA */}
-      <Section id="pricing" className="border-t border-line">
-        <SectionHeader eyebrow={c.pricing.eyebrow} heading={c.pricing.title} align="center" className="reveal" />
-        <Countdown deadline={deadline?.toISOString()} className="mt-6" />
-        <div className="mt-8 grid items-stretch gap-4 md:grid-cols-3">
-          {tiers.map(({ product, price, next }) => {
-            const featured = product.slug === "pro";
-            const features = Array.isArray(product.features) ? (product.features as string[]) : [];
-            // Only a REAL upcoming price is ever shown — never a made-up "original" price.
-            const later = price.endsAt && next && next.amountPaise > price.amountPaise ? c.pricing.laterPrice.replace("{date}", formatIST(price.endsAt, "date")).replace("{price}", formatINR(next.amountPaise)) : null;
-            const label = (product.kind === "SERVICE" ? c.pricing.serviceCta : c.pricing.cta).replace("{name}", product.name);
-            return (
-              <PriceCard
-                key={product.id}
-                featured={featured}
-                badge={featured ? c.pricing.featuredBadge : (product.tagline ?? undefined)}
-                name={product.name}
-                price={formatINR(price.amountPaise)}
-                priceNote={later ?? c.pricing.oneTime}
-                inclusions={features}
-                className={featured ? "order-first md:order-none" : undefined}
-                cta={
-                  <Button href={product.kind === "SERVICE" ? "/done-with-you" : `/checkout/${product.slug}`} variant={featured ? "primary" : "secondary"} block data-cta={`pricing_${product.slug}`}>
-                    {label}
-                  </Button>
-                }
-              />
-            );
-          })}
+      {/* 9. PRICING — sunrise begins: a big soft sun behind the cards */}
+      <Section id="pricing" bend="left" className="sky-sunrise-start">
+        <span aria-hidden className="sun-glow top-[30%]" />
+        <div className="relative">
+          <SectionHeader eyebrow={c.pricing.eyebrow} heading={c.pricing.title} align="center" className="reveal" />
+          <Countdown deadline={deadline?.toISOString()} className="mt-6" />
+          <div className="mt-14 grid items-stretch gap-8 md:grid-cols-3 md:gap-6">
+            {tiers.map(({ product, price, next }) => {
+              const featured = product.slug === "pro";
+              const features = Array.isArray(product.features) ? (product.features as string[]) : [];
+              // Only a REAL upcoming price is ever shown — never a made-up "original" price.
+              const later = price.endsAt && next && next.amountPaise > price.amountPaise ? c.pricing.laterPrice.replace("{date}", formatIST(price.endsAt, "date")).replace("{price}", formatINR(next.amountPaise)) : null;
+              const label = (product.kind === "SERVICE" ? c.pricing.serviceCta : c.pricing.cta).replace("{name}", product.name);
+              return (
+                <PriceCard
+                  key={product.id}
+                  featured={featured}
+                  badge={featured ? c.pricing.featuredBadge : (product.tagline ?? undefined)}
+                  name={product.name}
+                  price={formatINR(price.amountPaise)}
+                  priceNote={later ?? c.pricing.oneTime}
+                  inclusions={features}
+                  className={cn("reveal", featured && "order-first md:order-none")}
+                  cta={
+                    <Button href={product.kind === "SERVICE" ? "/done-with-you" : `/checkout/${product.slug}`} variant={featured ? "primary" : "secondary"} size={featured ? "lg" : "md"} block data-cta={`pricing_${product.slug}`}>
+                      {label}
+                    </Button>
+                  }
+                />
+              );
+            })}
+          </div>
+          {tiers.length === c.pricing.compareRows[0]?.values.length && <TierCompareTable className="mt-10" tiers={tiers.map((t) => t.product.name)} featuredIndex={tiers.findIndex((t) => t.product.slug === "pro")} rows={c.pricing.compareRows} />}
+          <TrustRow className="mt-8 justify-center" refundDays={days} whatsappHref={wa} />
         </div>
-        {tiers.length === c.pricing.compareRows[0]?.values.length && <TierCompareTable className="mt-6" tiers={tiers.map((t) => t.product.name)} featuredIndex={tiers.findIndex((t) => t.product.slug === "pro")} rows={c.pricing.compareRows} />}
-        <TrustRow className="mt-6 justify-center" refundDays={days} whatsappHref={wa} />
       </Section>
 
-      {/* 10. GUARANTEE — what if I don't like it? */}
-      <Section>
+      {/* 10. GUARANTEE */}
+      <Section bend="right" className="sky-dusk">
         <GuaranteeBox days={days} className="reveal" />
       </Section>
 
-      {/* 11. FAQ */}
-      <Section id="faq" className="border-t border-line">
-        <SectionHeader eyebrow={c.faq.eyebrow} heading={c.faq.title} className="reveal" />
-        <Accordion className="mt-8 max-w-3xl">
-          {c.faq.items.map((f) => (
-            <AccordionItem key={f.q} group="faq" title={f.q}>
-              {f.a.replace("{days}", String(days))}
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </Section>
+      {/* 11. FAQ — narrow reading column */}
+      <section id="faq" className="sky-dusk section-y relative scroll-mt-16">
+        <FlightPath bend="left" />
+        <div className="container-narrow relative z-[1]">
+          <SectionHeader eyebrow={c.faq.eyebrow} heading={c.faq.title} className="reveal" />
+          <Accordion className="mt-10">
+            {c.faq.items.map((f) => (
+              <AccordionItem key={f.q} group="faq" title={f.q}>
+                {f.a.replace("{days}", String(days))}
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
 
-      {/* 12. PARTNER RECRUITMENT */}
-      <Section>
-        <div className="reveal grid overflow-hidden rounded-lg border border-line md:grid-cols-2">
-          <div className="flex flex-col gap-3 bg-surface-raised p-6 md:p-8">
-            <p className="type-label text-gold-text">{c.partner.eyebrow}</p>
+      {/* 12. PARTNER RECRUITMENT — split card: night headline | gold-soft commission figure */}
+      <Section bend="right" className="sky-dusk">
+        <div className="reveal grid overflow-hidden rounded-sheet border border-line md:grid-cols-2">
+          <div className="flex flex-col justify-center gap-4 bg-surface p-6 md:p-12">
+            <p className="type-label self-start rounded-pill bg-gold-soft px-3 py-2 text-gold-text">{c.partner.eyebrow}</p>
             <h2 className="type-display text-ink">
               <Highlight text={c.partner.title} />
             </h2>
           </div>
-          <div className="flex flex-col items-start gap-4 bg-gold-soft p-6 md:p-8">
+          <div className="flex flex-col items-start gap-5 bg-gold-soft p-6 md:p-12">
+            {maxCommissionPct > 0 && (
+              <p className="type-stat text-gold-text">
+                <CountUp value={`${maxCommissionPct}%`} />
+              </p>
+            )}
             <p className="type-body-lg text-ink">{c.partner.text.replace("{pct}", String(maxCommissionPct))}</p>
             <Button href="/partners" variant="secondary" arrow data-cta="partner_block">
               {c.partner.cta}
@@ -394,27 +452,32 @@ export default async function LandingPage() {
         </div>
       </Section>
 
-      {/* 13. FINAL CTA */}
-      <section id="final-cta" className="film-grain border-t border-line py-16 md:py-24">
-        <div className="container-page flex flex-col items-center gap-6 text-center">
-          <SpeedTrails className="h-10 w-12" />
+      {/* 13. FINAL CTA — full sunrise; the flight path arrives at the button with a spark */}
+      <section id="final-cta" className="sky-sunrise film-grain section-y relative">
+        <span aria-hidden className="sun-glow -bottom-[45%]" />
+        <FlightMeasured mode="end" />
+        <div className="container-page relative z-[1] flex flex-col items-center gap-6 text-center">
           <h2 className="type-display-xl text-ink">
             <Highlight text={c.finalCta.title} />
           </h2>
           <p className="type-body-lg max-w-reading text-ink-muted">{c.finalCta.sub}</p>
-          <Button href={entryHref} size="lg" arrow data-cta="final_cta" className="w-full sm:w-auto">
-            {heroCta}
-          </Button>
+          <div data-flight-anchor className="mt-3 w-full sm:w-auto">
+            <FlightSpark>
+              <Button href={entryHref} size="lg" arrow block data-cta="final_cta" className="sm:w-auto">
+                {heroCta}
+              </Button>
+            </FlightSpark>
+          </div>
           <TrustRow className="justify-center" refundDays={days} whatsappHref={wa} />
         </div>
       </section>
 
-      {/* 14. STICKY BUY BAR (mobile) — hidden while another gold button is on screen */}
+      {/* 14. STICKY BUY BAR (mobile) — hidden while pricing, the final CTA or the footer is on screen */}
       {entry && (
         <StickyBuyBar
           price={entryPrice}
           note={c.stickyBar.note}
-          hideOnIds={["pricing", "final-cta"]}
+          hideOnIds={["pricing", "final-cta", "site-footer"]}
           cta={
             <Button href={entryHref} pill data-cta="sticky_bar">
               {c.stickyBar.cta}

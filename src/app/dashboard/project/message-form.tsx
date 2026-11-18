@@ -26,7 +26,7 @@ export function MessageForm() {
         defaultValue={state.ok ? "" : state.draft}
         placeholder={m.placeholder}
         aria-invalid={state.error ? true : undefined}
-        className="w-full rounded-sm border border-line bg-surface-sunken px-4 py-3 text-[16px] text-ink placeholder:text-ink-muted/70 focus:border-gold"
+        className="w-full rounded-input border border-line bg-surface-raised-2 px-4 py-3 text-[16px] text-ink placeholder:text-ink-muted focus:border-gold"
       />
       {state.error && (
         <p role="alert" className="type-small flex items-center gap-1 text-fire">

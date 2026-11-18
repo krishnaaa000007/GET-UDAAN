@@ -12,6 +12,7 @@
   color-scheme: dark;
   --surface: #0d0d12;
   --surface-raised: #17171f;
+  --surface-raised-2: #1e1e28; /* hover, inputs, nested cards */
   --surface-sunken: #08080b;
   --line: #2a2a35;
   --ink: #f6f1e7;
@@ -20,19 +21,27 @@
   --gold-deep: #e89c00;
   --on-gold: #15131a;
   --gold-text: #ffb627;
-  --gold-soft: #2b2210;
+  --gold-soft: rgba(255, 182, 39, 0.1);
   --fire: #ff6a45;
   --on-fire: #15131a;
   --success: #2dd4a7;
   --focus-ring: #ffb627;
-  --glow-gold: 0 8px 28px rgba(255, 182, 39, 0.35);
-  --lift: 0 12px 32px rgba(0, 0, 0, 0.5);
+  /* Gold glow: ONLY the primary CTA and the featured card. */
+  --glow-gold: 0 0 0 1px rgba(255, 182, 39, 0.35), 0 12px 40px -12px rgba(255, 182, 39, 0.45);
+  /* No grey drop shadows: floating things get a hairline edge instead. */
+  --lift: 0 0 0 1px var(--line);
+  /* "Night to sunrise" sky */
+  --sunrise: #2a1a08;
+  --dusk: color-mix(in srgb, var(--surface) 55%, var(--sunrise));
+  --bezel: #1a1a22;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [data-theme="day"] {
   color-scheme: light;
   --surface: #fbf7ef;
-  --surface-raised: #ffffff;
+  --surface-raised: #fffdf8;
+  --surface-raised-2: #f7f2e8;
   --surface-sunken: #f2ece0;
   --line: #e5ddcc;
   --ink: #15131a;
@@ -40,7 +49,7 @@
   --gold-text: #8a5b00;
   --gold-soft: #fff1d1;
   --fire: #c2361a;
-  --on-fire: #ffffff;
+  --on-fire: #fffdf8;
   --success: #0b7a5c;
   --lift: 0 8px 24px rgba(21, 19, 26, 0.12);
 }
@@ -50,6 +59,10 @@
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
   --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised-2: var(--surface-raised-2);
+  --color-sunrise: var(--sunrise);
+  --color-dusk: var(--dusk);
+  --color-bezel: var(--bezel);
   --color-line: var(--line);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
@@ -68,8 +81,11 @@
   --font-sans: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 24px;
+  --radius-md: 14px; /* buttons */
+  --radius-lg: 20px; /* cards */
+  --radius-sheet: 24px; /* bottom sheets, big panels */
+  --radius-phone: 36px; /* phone mockups */
+  --radius-input: 12px;
   --radius-pill: 999px;
 
   --shadow-glow-gold: var(--glow-gold);
@@ -79,10 +95,11 @@
   --text-xs: 0.8125rem;
   --text-xs--line-height: 1.25rem;
 
-  --container-content: 1120px;
-  --container-reading: 640px;
+  --container-content: 1200px;
+  --container-narrow: 720px;
+  --container-reading: 60ch;
 
-  --animate-fade-up: fade-up 250ms ease-out both;
+  --animate-fade-up: fade-up 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-shimmer: shimmer 1.4s linear infinite;
   --animate-sheet-in: sheet-in 220ms ease-out both;
   --animate-trail: trail 900ms ease-in-out infinite;
@@ -91,7 +108,7 @@
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(16px);
   }
 }
 @keyframes shimmer {
@@ -126,15 +143,21 @@ html {
 
 body {
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 16px;
+  line-height: 1.6;
   background: var(--surface);
   color: var(--ink);
 }
-@media (width >= 48rem) {
+@media (width >= 64rem) {
   body {
-    font-size: 16px;
+    font-size: 17px;
   }
+}
+p,
+li,
+dd,
+blockquote {
+  text-wrap: pretty;
 }
 
 [data-theme] {
@@ -148,92 +171,136 @@ body {
   outline-offset: 2px;
 }
 
-/* ---------- Type styles (DESIGN.md 3.2) ---------- */
+/* ---------- Type styles (visual polish brief §2) ----------
+ * Anton = uppercase headlines of 6 words or fewer, prices, big numbers. Poppins = everything else.
+ * Nothing below 13px anywhere. */
 @utility type-display-xl {
+  /* hero headline only: 52px -> 96px */
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(3rem, 2.2rem + 4.2vw, 5rem);
+  font-size: clamp(52px, 6.63vw + 28px, 96px);
   line-height: 0.95;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 @utility type-display {
+  /* display-l, section headlines: 38px -> 64px */
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(2.25rem, 1.85rem + 2vw, 3.5rem);
+  font-size: clamp(38px, 3.92vw + 24px, 64px);
   line-height: 1;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 @utility type-heading {
+  /* display-m, card titles: 28px -> 40px */
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.625rem, 1.5rem + 0.6vw, 2rem);
-  line-height: 1.1;
-  letter-spacing: 0.5px;
+  font-size: clamp(28px, 1.81vw + 21.5px, 40px);
+  line-height: 1.05;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 @utility type-price {
+  /* stat: prices, 40px -> 56px */
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(2.75rem, 2.45rem + 1.3vw, 3.5rem);
+  font-size: clamp(40px, 2.41vw + 31.3px, 56px);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+@utility type-stat {
+  /* stat: big numbers (40+, 300+), 40px -> 56px */
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 2.41vw + 31.3px, 56px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 @utility type-price-sm {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 1.75rem;
+  font-size: 28px;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
-/* Hindi-script (Devanagari) headings: Anton has no Devanagari, so use Poppins 800. */
+/* Hindi-script (Devanagari) headings: Anton has no Devanagari, so use Poppins bold. */
 @utility type-heading-hi {
   font-family: var(--font-body);
-  font-weight: 800;
-  font-size: clamp(1.625rem, 1.5rem + 0.6vw, 2rem);
+  font-weight: 700;
+  font-size: clamp(28px, 1.81vw + 21.5px, 40px);
   line-height: 1.25;
 }
 @utility type-title {
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: clamp(1.25rem, 1.2rem + 0.25vw, 1.375rem);
-  line-height: 28px;
+  font-size: clamp(20px, 0.3vw + 18.9px, 22px);
+  line-height: 1.35;
 }
 @utility type-body-lg {
-  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
-  line-height: 27px;
+  /* body-l: hero sub, section intros, 18px -> 20px */
+  font-size: clamp(18px, 0.3vw + 16.9px, 20px);
+  line-height: 1.55;
 }
 @utility type-body {
-  font-size: 15px;
-  line-height: 24px;
-  @media (width >= 48rem) {
-    font-size: 16px;
+  font-size: 16px;
+  line-height: 1.6;
+  @media (width >= 64rem) {
+    font-size: 17px;
   }
 }
+@utility type-body-s {
+  font-size: 15px;
+  line-height: 1.55;
+}
 @utility type-small {
+  /* caption: disclaimers, meta */
   font-size: 13px;
-  line-height: 20px;
+  line-height: 1.45;
+  letter-spacing: 0.1px;
 }
 @utility type-label {
-  font-size: 12px;
-  line-height: 16px;
+  /* eyebrow. 13px everywhere: the brief's 12px mobile size would break its own 13px minimum. */
+  font-size: 13px;
+  line-height: 1.2;
   font-weight: 600;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
 }
 @utility type-button {
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 700;
+  font-size: 17px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 /* Page gutter + max width used by every section. */
 @utility container-page {
+  /* 20px gutter on phones, 32px from tablet; content never wider than 1200px */
   width: 100%;
-  max-width: 1120px;
+  max-width: calc(1200px + 64px);
   margin-inline: auto;
-  padding-inline: 16px;
+  padding-inline: 20px;
   @media (width >= 48rem) {
-    padding-inline: 24px;
+    padding-inline: 32px;
+  }
+}
+@utility container-narrow {
+  width: 100%;
+  max-width: calc(720px + 64px);
+  margin-inline: auto;
+  padding-inline: 20px;
+  @media (width >= 48rem) {
+    padding-inline: 32px;
+  }
+}
+@utility section-y {
+  padding-block: 72px;
+  @media (width >= 64rem) {
+    padding-block: 112px;
   }
 }
 
@@ -344,7 +411,7 @@ details > summary::-webkit-details-marker {
   .accordion-item::details-content {
     block-size: 0;
     overflow: hidden;
-    transition: block-size 200ms ease-out, content-visibility 200ms allow-discrete;
+    transition: block-size 250ms var(--ease-out), content-visibility 250ms allow-discrete;
   }
   .accordion-item[open]::details-content {
     block-size: auto;
@@ -353,7 +420,7 @@ details > summary::-webkit-details-marker {
 
 /* Bottom sheet / modal backdrop */
 dialog.sheet::backdrop {
-  background: rgb(0 0 0 / 0.6);
+  background: color-mix(in srgb, var(--surface-sunken) 75%, transparent);
 }
 
 /* Reduced motion: turn every animation and transition off. */
@@ -377,19 +444,23 @@ dialog.sheet::backdrop {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.07;
+    opacity: 0.035;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
-/* Section reveal: headings/cards fade up 12px as they scroll into view. Pure CSS, no JavaScript.
- * Browsers without support simply show the content. Reduced-motion users get no animation (rule above). */
-@utility reveal {
-  @supports (animation-timeline: view()) {
-    animation: fade-up linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 35%;
-  }
+/* Section reveal (brief §7): fade up 16px, 60ms stagger, once.
+ * Content is visible by default. RevealObserver adds .reveal-armed to <html> only after it has
+ * marked everything already on screen, so nothing blinks and no-JS visitors see everything. */
+.reveal {
+  transition:
+    opacity 400ms var(--ease-out),
+    transform 400ms var(--ease-out);
+  transition-delay: calc(var(--reveal-i, 0) * 60ms);
+}
+.reveal-armed .reveal:not(.is-revealed) {
+  opacity: 0;
+  transform: translateY(16px);
 }
 
 /* Thank-you page: one short gold confetti burst (pieces fly out from the centre and fade). */
@@ -412,4 +483,235 @@ dialog.sheet::backdrop {
   border-radius: 2px;
   opacity: 0;
   animation: confetti 1100ms ease-out 1 both;
+}
+
+/* =====================================================================
+ * THEME: "NIGHT TO SUNRISE FLIGHT" (visual polish brief §1)
+ * Visitors start at night and fly into sunrise as they scroll toward buying.
+ * All CSS, per section, no fixed images (no layout shift, no scroll jank).
+ * ===================================================================== */
+
+/* Top of the page: night with faint static stars. */
+@utility sky-stars {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.25;
+    background-image:
+      radial-gradient(1px 1px at 8% 14%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 22% 62%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 35% 28%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 48% 8%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 57% 47%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 68% 18%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 79% 71%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 88% 33%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 94% 9%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 14% 86%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 41% 79%, var(--ink) 50%, transparent 51%),
+      radial-gradient(1px 1px at 63% 91%, var(--ink) 50%, transparent 51%);
+  }
+}
+
+/* Middle of the page: a warm horizon glow rising from the section's bottom edge.
+ * The glow spills a little into the next section so there is no visible seam. */
+@utility sky-horizon {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -18%;
+    height: 55%;
+    pointer-events: none;
+    background: radial-gradient(60% 50% at 50% 50%, rgba(255, 182, 39, 0.08), transparent 70%);
+  }
+}
+
+/* Pricing: night warming into dusk, with a big soft sun behind the cards. */
+@utility sky-sunrise-start {
+  position: relative;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--dusk) 100%);
+  /* the sun glow is wider than a phone; clip it sideways without making a scroll box */
+  overflow-x: clip;
+}
+@utility sky-dusk {
+  position: relative;
+  background: var(--dusk);
+}
+/* Final CTA: full sunrise. */
+@utility sky-sunrise {
+  position: relative;
+  background: linear-gradient(180deg, var(--dusk) 0%, var(--sunrise) 100%);
+  overflow: hidden;
+}
+@utility sun-glow {
+  /* place inside a relative section; sits behind content */
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  width: min(900px, 140vw);
+  aspect-ratio: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 182, 39, 0.22) 0%, rgba(255, 182, 39, 0.08) 40%, transparent 68%);
+  filter: blur(60px);
+}
+
+/* ---------- The gold flight path (brief §1.2) ----------
+ * One SVG per section, in the left gutter, behind content. pathLength="1" lets us draw it with
+ * stroke-dashoffset. Drawing is driven by a CSS scroll timeline (no scroll listeners).
+ * Browsers without scroll timelines, and reduced-motion users, see the whole line, static. */
+.flight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  /* an SVG would otherwise size itself from its viewBox (10x its width), not the section */
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+  view-timeline-name: --flight;
+}
+@media (width >= 48rem) {
+  .flight {
+    width: 32px;
+  }
+}
+@media (width >= 80rem) {
+  .flight {
+    width: max(32px, calc((100% - 1200px) / 2));
+  }
+}
+.flight-measured {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+  view-timeline-name: --flight;
+}
+.flight path,
+.flight-measured path {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 6px rgba(255, 182, 39, 0.35));
+}
+@keyframes flight-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .flight path,
+    .flight-measured path {
+      stroke-dasharray: 1 1;
+      animation: flight-draw linear both;
+      animation-timeline: --flight;
+      animation-range: cover 15% cover 70%;
+    }
+  }
+}
+/* Spark burst when the line reaches the final button (added once by FlightSpark). */
+.spark-host {
+  position: relative;
+}
+.spark {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0;
+  pointer-events: none;
+}
+.is-sparked .spark {
+  animation: spark-fly 700ms var(--ease-out) 1 both;
+}
+@keyframes spark-fly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--sx), var(--sy)) scale(0.4);
+  }
+}
+
+/* ---------- Phone mockup (brief §5.3) ---------- */
+@utility phone-frame {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius-phone);
+  padding: 10px;
+  background: var(--bezel);
+  box-shadow:
+    inset 0 0 0 1px rgba(246, 241, 231, 0.08),
+    0 0 0 1px rgba(255, 182, 39, 0.35),
+    0 18px 60px -20px rgba(255, 182, 39, 0.4);
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-6px) rotate(var(--tilt, 0deg));
+  }
+}
+@utility float-slow {
+  transform: rotate(var(--tilt, 0deg));
+  animation: float-y 6s ease-in-out infinite;
+}
+
+/* ---------- Hero gold word: one shimmer sweep on load (600ms) ---------- */
+@keyframes shimmer-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+@utility shimmer-once {
+  background-image: linear-gradient(110deg, var(--gold-text) 0%, var(--gold-text) 40%, #fff1c9 50%, var(--gold-text) 60%, var(--gold-text) 100%);
+  background-size: 250% 100%;
+  background-position: 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sweep 600ms var(--ease-out) 300ms 1 both;
+}
+
+/* ---------- Cards that lift on hover (desktop pointers only) ---------- */
+@utility card-lift {
+  transition:
+    transform 150ms var(--ease-out),
+    border-color 150ms var(--ease-out);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+    }
+  }
 }

@@ -99,11 +99,11 @@ export function StickyBuyBar({ price, note, cta, afterId = "hero", hideOnIds }: 
     <div
       inert={!show}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface-raised px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] shadow-lift transition-transform duration-200 ease-out md:hidden [body:has(dialog[open])_&]:hidden",
+        "fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/92 px-5 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur-md transition-transform duration-250 ease-(--ease-out) md:hidden [body:has(dialog[open])_&]:hidden",
         show ? "translate-y-0" : "translate-y-full",
       )}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex min-h-12 items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="type-price-sm text-ink">{price}</div>
           <div className="type-small truncate text-ink-muted">{note}</div>
@@ -136,7 +136,7 @@ export function BottomSheet({ open, onClose, title, children }: { open: boolean;
         if (e.target === ref.current) onClose(); // tap on the dark backdrop
       }}
       aria-label={title}
-      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none rounded-t-lg border border-line bg-surface-raised p-0 text-ink shadow-lift open:animate-sheet-in max-h-[88dvh] overflow-y-auto md:inset-0 md:m-auto md:max-w-md md:rounded-lg"
+      className="sheet fixed inset-x-0 top-auto bottom-0 m-0 w-full max-w-none rounded-t-sheet border border-line bg-surface-raised p-0 text-ink open:animate-sheet-in max-h-[88dvh] overflow-y-auto md:inset-0 md:m-auto md:max-w-md md:rounded-sheet"
     >
       <div className="relative px-4 pt-3 pb-[max(24px,env(safe-area-inset-bottom))] md:p-6">
         <div aria-hidden className="mx-auto mb-3 h-1.5 w-10 rounded-pill bg-line md:hidden" />

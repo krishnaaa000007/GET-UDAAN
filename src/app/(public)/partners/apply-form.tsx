@@ -85,7 +85,7 @@ export function ApplyForm() {
           <label htmlFor="apply-handle" className="font-semibold text-ink">
             {a.handle}
           </label>
-          <div className={`flex min-h-12 items-stretch overflow-hidden rounded-sm border bg-surface-sunken focus-within:border-gold ${errors.handle ? "border-fire" : "border-line"}`}>
+          <div className={`flex min-h-[52px] items-stretch overflow-hidden rounded-input border bg-surface-raised-2 focus-within:border-gold ${errors.handle ? "border-fire" : "border-line"}`}>
             <span aria-hidden className="grid place-items-center border-r border-line px-3 font-semibold text-ink-muted">
               @
             </span>
@@ -108,7 +108,7 @@ export function ApplyForm() {
               autoCorrect="off"
               spellCheck={false}
               aria-invalid={errors.handle ? true : undefined}
-              className="min-w-0 flex-1 bg-transparent px-4 text-[16px] text-ink placeholder:text-ink-muted/70"
+              className="min-w-0 flex-1 bg-transparent px-4 text-[16px] text-ink placeholder:text-ink-muted"
             />
           </div>
           {errors.handle && (
