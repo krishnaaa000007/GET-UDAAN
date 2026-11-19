@@ -33,6 +33,7 @@ test("visitor from a partner reel buys the course and starts lesson 1; partner s
   const partnerCtx = await browser.newContext();
   const partner = await partnerCtx.newPage();
   await login(partner, "lionbhai.partner@example.com", "/partner");
+  await partner.goto("/partner?tab=sales"); // sales live on their own tab
   await expect(partner.getByText("E***").first()).toBeVisible();
   await expect(partner.getByText("e2ereel").first()).toBeVisible();
   expect(await partner.content()).not.toContain(buyerEmail);
@@ -63,4 +64,51 @@ test("partners and students cannot open admin pages", async ({ page }) => {
   await expect(page).toHaveURL(/\/dashboard\?denied=1/);
   const res = await page.request.get("/api/admin/export/orders");
   expect(res.status()).toBe(403);
+});
+
+test("masterclass → FIRST100 auto-applied → pay; partner keeps the credit and sees it pending for ~1 hour", async ({ page, browser }) => {
+  const email = `e2e.mc.${Date.now()}@example.com`;
+  // Came from a partner's reel first, then watched the masterclass
+  await page.goto("/?ref=LIONBHAI&c=mcflow");
+  await page.goto("/masterclass");
+  await expect(page.getByText(/Pehle 100 students/)).toBeVisible();
+  await page.locator('[data-cta="masterclass_first100"]').click();
+
+  await expect(page).toHaveURL(/\/checkout\/basic\?coupon=FIRST100/);
+  await expect(page.getByText(/FIRST100 laga/)).toBeVisible();
+  await page.getByPlaceholder("Rahul Kumar").fill("Mc Buyer");
+  await page.getByPlaceholder("98765 43210").fill("9811122244");
+  await page.getByPlaceholder("aap@gmail.com").fill(email);
+  await expect(page.getByRole("button", { name: /₹450 Pay Karo/ })).toBeVisible();
+  await page.getByRole("button", { name: /Pay Karo/ }).click();
+  await expect(page).toHaveURL(/\/pay\/mock\//);
+  await page.getByRole("button", { name: /payment successful/i }).click();
+  await expect(page.getByRole("heading", { name: /Welcome to Get Udaan/i })).toBeVisible({ timeout: 30_000 });
+
+  // FIRST100 is not a partner coupon, so LIONBHAI's link still gets the sale; it shows as pending with a release time
+  const ctx = await browser.newContext();
+  const partner = await ctx.newPage();
+  await login(partner, "lionbhai.partner@example.com", "/partner");
+  await partner.goto("/partner?tab=sales");
+  const row = partner.locator("li", { hasText: "mcflow" }).first();
+  await expect(row).toBeVisible();
+  await expect(row.getByText(/tak wallet mein/)).toBeVisible();
+  await expect(row.getByText("Pending")).toBeVisible();
+  expect(await partner.content()).not.toContain(email);
+  await ctx.close();
+});
+
+test("invite link pre-fills the apply form with the inviter's name", async ({ page }) => {
+  await page.goto("/j/lionbhai");
+  await expect(page).toHaveURL(/\/partners\?invite=LIONBHAI/);
+  await page.getByLabel("Poora naam").fill("Invite Tester");
+  await page.getByLabel("Email").fill(`e2e.inv.${Date.now()}@example.com`);
+  await page.getByLabel("WhatsApp number").fill("9811122255");
+  await page.getByRole("button", { name: /Aage Badho/ }).click();
+  await page.getByPlaceholder("yourpage").fill("invitetester");
+  await page.getByPlaceholder("50000").fill("1200");
+  await page.getByRole("button", { name: /Aage Badho/ }).click();
+  // Step 3 is shown (not auto-submitted) with the inviter pre-filled
+  await expect(page.getByText(/ne invite kiya/)).toContainText("Lion Bhai Official");
+  await expect(page.getByRole("button", { name: /Application Bhejo/ })).toBeVisible();
 });
