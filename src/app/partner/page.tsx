@@ -20,13 +20,15 @@ import { PARTNER_RULES, releaseLabel } from "@/config/partners";
 import { formatINR } from "@/lib/money";
 import { formatIST, withinHours } from "@/lib/time";
 import { requireUser } from "@/server/auth";
-import { getPartnerDashboard, getPartnerLeaderboard } from "@/server/partner-dashboard";
+import { getEarningsByType, getPartnerDashboard, getPartnerLeaderboard, getPartnerTeam } from "@/server/partner-dashboard";
 import { getSettings } from "@/server/settings";
 import { CampaignLinkBuilder, CopyLine, CountUp, NewSalesBanner, PayoutDetailsForm, QuickActions, WithdrawForm } from "./client";
 
 export const metadata: Metadata = { title: "Partner dashboard", robots: { index: false } };
 
 const RANGES = [7, 30, 90] as const;
+const TABS = ["overview", "sales", "team", "wallet"] as const;
+type Tab = (typeof TABS)[number];
 const D = t.dashboard;
 const h2 = "type-heading text-ink";
 const card = "rounded-md border border-line bg-surface-raised p-4 md:p-6";
@@ -73,7 +75,18 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
 
   const sp = await searchParams;
   const range = RANGES.find((r) => String(r) === sp.range) ?? 30;
-  const [d, settings, lifetimeSales] = await Promise.all([getPartnerDashboard(partnerRow.id, range), getSettings(), db.order.count({ where: { partnerId: partnerRow.id, status: "PAID" } })]);
+  const [d, settings, lifetimeSales, byType] = await Promise.all([
+    getPartnerDashboard(partnerRow.id, range),
+    getSettings(),
+    db.order.count({ where: { partnerId: partnerRow.id, status: "PAID" } }),
+    getEarningsByType(partnerRow.id),
+  ]);
+  // Team tab only while the team bonus is switched on (or if this partner already earned team bonus).
+  const showTeam = settings.teamBonusEnabled || byType.teamPaise > 0;
+  const tabs = TABS.filter((x) => x !== "team" || showTeam);
+  const tab: Tab = tabs.find((x) => x === sp.tab) ?? "overview";
+  const team = tab === "team" ? await getPartnerTeam(partnerRow.id) : null;
+  const release = releaseLabel(settings.commissionReleaseMinutes);
   const board = settings.showLeaderboard ? await getPartnerLeaderboard(partnerRow.id) : null;
 
   const link = `${env.appUrl}/?ref=${d.partner.code}`;
@@ -118,6 +131,21 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
 
         <NewSalesBanner partnerId={partnerRow.id} sales={d.sales.filter((s) => s.commission && s.commission.status !== "REVERSED").map((s) => ({ paidAt: s.paidAt, amountPaise: s.commission!.amountPaise }))} />
 
+        <nav aria-label={D.tabs.label} className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto border-b border-line px-4">
+          {tabs.map((x) => (
+            <Link
+              key={x}
+              href={x === "overview" ? "/partner" : `/partner?tab=${x}`}
+              aria-current={x === tab ? "page" : undefined}
+              className={cn("type-button inline-flex min-h-12 shrink-0 items-center border-b-2 px-3", x === tab ? "border-gold text-gold-text" : "border-transparent text-ink-muted hover:text-ink")}
+            >
+              {D.tabs[x]}
+            </Link>
+          ))}
+        </nav>
+
+        {tab === "overview" && (
+          <>
         {/* Total earnings — the big gold number */}
         <section className="flex flex-col gap-4 rounded-lg border-2 border-gold bg-gold-soft p-4 md:p-6">
           <div className="flex flex-col gap-1">
@@ -164,6 +192,11 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
           </div>
         </section>
 
+          </>
+        )}
+
+        {tab === "sales" && (
+          <>
         {/* Which reel sold the most */}
         <section className="flex flex-col gap-4">
           <h2 className={h2}>
@@ -256,6 +289,11 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
           )}
         </section>
 
+          </>
+        )}
+
+        {tab === "overview" && (
+          <>
         {/* Milestones: locked ones are greyed and show how far along you are */}
         <section className="flex flex-col gap-4">
           <h2 className={h2}>{D.milestones.title}</h2>
@@ -325,6 +363,82 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
           </div>
         </section>
 
+          </>
+        )}
+
+        {tab === "team" && team && (
+          <section className="flex flex-col gap-4">
+            <div>
+              <h2 className={h2}>
+                <Highlight text={D.team.title} />
+              </h2>
+              <p className="type-small text-ink-muted">{D.team.sub}</p>
+            </div>
+            <div className={cn(card, "flex flex-col gap-3")}>
+              <h3 className="type-title text-ink">{D.team.inviteTitle}</h3>
+              <ul>
+                <CopyLine text={`${env.appUrl}/j/${d.partner.code}`} />
+              </ul>
+              <p className="type-small text-ink-muted">{D.team.inviteHint}</p>
+              <p className="type-small text-ink-muted">
+                {D.team.rules.replace("{l1}", String(PARTNER_RULES.teamBonus.l1Bps / 100)).replace("{l2}", String(PARTNER_RULES.teamBonus.l2Bps / 100)).replace("{release}", release)}
+              </p>
+            </div>
+            <dl className="grid grid-cols-2 gap-3 md:grid-cols-3">
+              {(
+                [
+                  [D.team.l1, team.l1Paise],
+                  [D.team.l2, team.l2Paise],
+                  [D.team.pending, team.pendingPaise],
+                ] as const
+              ).map(([label, paise]) => (
+                <div key={label} className="rounded-md border border-line bg-surface-raised p-3">
+                  <dt className="type-label text-ink-muted">{label}</dt>
+                  <dd className="type-title text-ink tabular-nums">{formatINR(paise)}</dd>
+                </div>
+              ))}
+            </dl>
+            {team.level1.length === 0 ? (
+              <EmptyState text={D.team.empty} />
+            ) : (
+              <ul className={cn(card, "divide-y divide-line py-0 md:py-0")}>
+                {team.level1.map((m) => (
+                  <li key={m.id} className="flex items-center justify-between gap-3 py-3">
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-ink">{m.displayName}</span>
+                      <span className="type-small text-ink-muted">
+                        {m.status === "APPROVED" && m.approvedAt ? D.team.joined.replace("{date}", formatIST(m.approvedAt, "date")) : D.team.waiting}
+                        {" • "}
+                        {D.team.sales.replace("{n}", String(m.sales))}
+                      </span>
+                    </span>
+                    <span className="font-semibold text-ink tabular-nums">{formatINR(m.paise)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {team.level2Count > 0 && <p className="type-small text-ink-muted">{D.team.level2Count.replace("{n}", String(team.level2Count))}</p>}
+          </section>
+        )}
+
+        {tab === "wallet" && (
+          <>
+        <section className="flex flex-col gap-3">
+          <h2 className={h2}>{D.walletSplit.title}</h2>
+          <dl className="grid grid-cols-2 gap-3">
+            <div className="rounded-md border border-line bg-surface-raised p-3">
+              <dt className="type-label text-ink-muted">{D.walletSplit.sale}</dt>
+              <dd className="type-title text-ink tabular-nums">{formatINR(byType.salePaise)}</dd>
+            </div>
+            {showTeam && (
+              <div className="rounded-md border border-line bg-surface-raised p-3">
+                <dt className="type-label text-ink-muted">{D.walletSplit.team}</dt>
+                <dd className="type-title text-ink tabular-nums">{formatINR(byType.teamPaise)}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+
         {/* Withdraw + payout details */}
         <section className="grid gap-4 md:grid-cols-2">
           <div className={cn(card, "flex flex-col gap-4")}>
@@ -371,6 +485,8 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
             </div>
           </AccordionItem>
         </Accordion>
+          </>
+        )}
       </main>
     </AppShell>
   );

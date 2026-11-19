@@ -119,3 +119,41 @@ export async function getPartnerLeaderboard(partnerId: string) {
     me: myIndex >= 0 ? { rank: myIndex + 1, sales: ranked[myIndex]._count._all } : null,
   };
 }
+
+/** Lifetime earnings by kind (own sales vs team bonus), not counting reversed ones. For the Wallet tab. */
+export async function getEarningsByType(partnerId: string) {
+  const rows = await db.commission.groupBy({ by: ["type"], where: { partnerId, status: { not: "REVERSED" } }, _sum: { amountPaise: true } });
+  const sum = (t: string) => rows.filter((r) => r.type === t).reduce((s, r) => s + (r._sum.amountPaise ?? 0), 0);
+  return { salePaise: sum("SALE"), teamPaise: sum("TEAM_L1") + sum("TEAM_L2") };
+}
+
+/**
+ * Team tab: the partners you invited (level 1) with what you earned from each, plus level 2 totals.
+ * Shows only display names and counts — never their buyers, money or contact details.
+ */
+export async function getPartnerTeam(partnerId: string) {
+  const level1 = await db.partner.findMany({
+    where: { referredByPartnerId: partnerId, recruiterLockedAt: { not: null } },
+    orderBy: { approvedAt: "desc" },
+    select: { id: true, displayName: true, approvedAt: true, status: true },
+  });
+  const level2Count = await db.partner.count({ where: { referredByPartnerId: { in: level1.map((p) => p.id) }, recruiterLockedAt: { not: null } } });
+  const bonuses = await db.commission.findMany({
+    where: { partnerId, type: { in: ["TEAM_L1", "TEAM_L2"] }, status: { not: "REVERSED" } },
+    select: { type: true, amountPaise: true, status: true, source: { select: { partnerId: true } } },
+  });
+  const fromL1 = new Map<string, { sales: number; paise: number }>();
+  for (const b of bonuses.filter((x) => x.type === "TEAM_L1")) {
+    const k = b.source?.partnerId ?? "";
+    const v = fromL1.get(k) ?? { sales: 0, paise: 0 };
+    fromL1.set(k, { sales: v.sales + 1, paise: v.paise + b.amountPaise });
+  }
+  const total = (f: (b: (typeof bonuses)[number]) => boolean) => bonuses.filter(f).reduce((s, b) => s + b.amountPaise, 0);
+  return {
+    level1: level1.map((p) => ({ ...p, ...(fromL1.get(p.id) ?? { sales: 0, paise: 0 }) })),
+    level2Count,
+    l1Paise: total((b) => b.type === "TEAM_L1"),
+    l2Paise: total((b) => b.type === "TEAM_L2"),
+    pendingPaise: total((b) => b.status === "PENDING"),
+  };
+}

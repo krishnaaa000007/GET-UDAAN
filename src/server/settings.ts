@@ -71,6 +71,6 @@ export async function setSetting<K extends SettingKey>(key: K, value: Settings[K
 
 /** wa.me link for the support number, or undefined when no real number is set (callers then hide the link). */
 export function supportWhatsappHref(s: Pick<Settings, "supportWhatsapp">): string | undefined {
-  const digits = s.supportWhatsapp.replace(/D/g, "");
+  const digits = s.supportWhatsapp.replace(/\D/g, "");
   return digits.length >= 10 ? `https://wa.me/${digits}` : undefined;
 }

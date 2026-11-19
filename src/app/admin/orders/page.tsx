@@ -71,7 +71,7 @@ export default async function AdminOrders({ searchParams }: PageProps<"/admin/or
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-ink-muted">Refunds: Phase 2 adds a Refund button here (via Razorpay API). Until then, refund from the Razorpay dashboard — the webhook marks the order refunded and reverses the commission automatically.</p>
+      <p className="text-xs text-ink-muted">Refunds: Phase 2 adds a Refund button here (via Razorpay API). Until then, refund from the Razorpay dashboard — the webhook marks the order refunded. Commissions stay while the absorbRefunds setting is on (default); with it off, the commission is reversed.</p>
     </div>
   );
 }

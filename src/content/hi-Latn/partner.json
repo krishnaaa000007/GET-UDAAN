@@ -306,6 +306,33 @@
       "text": "Is dauraan nayi commission pending rahegi aur withdraw ruka rahega. Review poora hote hi sab release ho jaayega.",
       "reason": "Reason: {reason}",
       "withdraw": "Account review mein hai, isliye abhi withdraw nahi ho sakta."
+    },
+    "tabs": {
+      "label": "Dashboard sections",
+      "overview": "Overview",
+      "sales": "Sales",
+      "team": "Team",
+      "wallet": "Wallet"
+    },
+    "walletSplit": {
+      "title": "Kamaai kahan se aayi",
+      "sale": "Apni sales",
+      "team": "Team bonus"
+    },
+    "team": {
+      "title": "Tumhari *team*",
+      "sub": "Jo creators tumhare invite link se partner bane. Unki har sale pe tumhe bonus — unki kamaai se kuch nahi katta, Get Udaan alag se deta hai.",
+      "inviteTitle": "Invite link",
+      "inviteHint": "Ye link creators ko bhejo. Approve hone ke baad wo tumhari team mein dikhenge.",
+      "rules": "Level 1 (jinhe tumne invite kiya): unki commission ka {l1}% • Level 2 (jinhe unhone invite kiya): {l2}%. Sirf 2 levels. Bonus bhi {release} baad wallet mein.",
+      "l1": "Level 1 bonus",
+      "l2": "Level 2 bonus",
+      "pending": "Pending bonus",
+      "level2Count": "Level 2 mein {n} partners",
+      "empty": "Abhi team mein koi nahi. Invite link share karo — jo approve hoga wo yahan dikhega.",
+      "joined": "Joined {date}",
+      "sales": "{n} sales",
+      "waiting": "Approval baaki"
     }
   }
 }
