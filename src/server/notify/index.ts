@@ -44,15 +44,18 @@ function emailChannel(): Channel {
   return env.resendKey ? resendChannel : devMailChannel;
 }
 
-export async function notify<T extends TemplateName>(to: string, template: T, data: TemplateData<T>) {
+/** Sends one email and logs it. Never throws; returns false when the email could not be sent (callers that depend on it, like login codes, can tell the user). */
+export async function notify<T extends TemplateName>(to: string, template: T, data: TemplateData<T>): Promise<boolean> {
   const { subject, html, text } = templates[template](data as never);
   const channel = emailChannel();
   try {
     const r = await channel.send(to, subject, html, text);
     await db.messageLog.create({ data: { channel: channel.name, to, template, status: "sent", providerId: r.providerId } });
+    return true;
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);
     console.error(`notify(${template}) failed:`, error);
     await db.messageLog.create({ data: { channel: channel.name, to, template, status: "failed", error } });
+    return false;
   }
 }

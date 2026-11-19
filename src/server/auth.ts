@@ -50,7 +50,8 @@ export async function requestOtp(rawEmail: string) {
   await db.loginToken.create({
     data: { id, email, kind: "OTP", tokenHash: hmac(`otp:${id}:${code}`), expiresAt: new Date(Date.now() + OTP_MINUTES * 60_000) },
   });
-  await notify(email, "loginOtp", { code });
+  // If the email could not be sent, say so (the login page shows an error) instead of letting the person wait for a code that never comes.
+  if (!(await notify(email, "loginOtp", { code }))) throw new Error("login code email could not be sent");
 }
 
 export async function verifyOtp(rawEmail: string, code: string): Promise<{ ok: true; userId: string } | { ok: false; error: string }> {
