@@ -34,7 +34,8 @@ import { Button } from "@/components/ui/button";
 import { PriceCard, TestimonialCard, TierCompareTable } from "@/components/ui/commerce";
 import { Countdown, RecentPurchaseToast, StickyBuyBar } from "@/components/ui/interactive";
 import { cn } from "@/lib/cn";
-import { videoEmbed } from "@/lib/video-embed";
+import { MasterclassVideo } from "@/components/masterclass-video";
+import { getMasterclass } from "@/server/masterclass";
 import mc from "@/content/hi-Latn/masterclass.json";
 import { db } from "@/lib/db";
 import { formatINR } from "@/lib/money";
@@ -90,6 +91,7 @@ export default async function LandingPage() {
     }),
   ]);
 
+  const masterclass = await getMasterclass(settings);
   const tiers = products.filter((p) => p.product.kind !== "ADDON");
   const entry = tiers[0];
   const entryHref = entry ? `/checkout/${entry.product.slug}` : "#pricing";
@@ -198,18 +200,30 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* 1b. MASTERCLASS — only once a real masterclass video is set (Settings → masterclassVideoUrl) */}
-      {videoEmbed(settings.masterclassVideoUrl) && (
-        <Section bend="left">
-          <div className="reveal flex flex-col items-center gap-4 rounded-lg border-2 border-gold bg-gold-soft p-6 text-center md:p-10">
-            <span className="type-label text-gold-text">{mc.eyebrow}</span>
-            <h2 className="type-heading text-ink">
+      {/* 1b. MASTERCLASS — the free video plays right here (only once Settings → masterclassVideoUrl is set), with the FIRST100 offer */}
+      {masterclass.video && (
+        <Section id="masterclass" bend="left">
+          <div className="reveal flex flex-col items-center gap-5 text-center">
+            <Badge tone="gold">{mc.eyebrow}</Badge>
+            <h2 className="type-heading max-w-reading text-ink">
               <Highlight text={mc.title} />
             </h2>
             <p className="max-w-reading text-ink-muted">{mc.sub}</p>
-            <Button href="/masterclass" arrow data-cta="home_masterclass">
-              {mc.homeCta}
-            </Button>
+            <MasterclassVideo video={masterclass.video} title={mc.meta.title} className="max-w-4xl" />
+            {masterclass.offer ? (
+              <div className="flex w-full max-w-xl flex-col items-center gap-3 rounded-lg border-2 border-gold bg-gold-soft p-5">
+                <Badge tone="solid">{mc.offer.chip.replace("{code}", masterclass.offer.code)}</Badge>
+                <p className="type-title text-ink">{mc.offer.title.replace("{pct}", String(masterclass.offer.pct))}</p>
+                <p className="type-small text-ink-muted">{mc.offer.text}</p>
+                <Button href={masterclass.checkoutHref} block arrow data-cta="home_masterclass_first100">
+                  {mc.offer.cta.replace("{pct}", String(masterclass.offer.pct))}
+                </Button>
+              </div>
+            ) : (
+              <Button href={masterclass.checkoutHref} arrow data-cta="home_masterclass_join">
+                {mc.join}
+              </Button>
+            )}
           </div>
         </Section>
       )}

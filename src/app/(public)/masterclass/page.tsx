@@ -7,29 +7,18 @@
  *  - FIRST100 is a normal coupon, so a partner's link credit is kept.
  */
 import type { Metadata } from "next";
+import { MasterclassVideo } from "@/components/masterclass-video";
 import { Badge, Highlight, SpeedTrails } from "@/components/ui/basics";
 import { Button } from "@/components/ui/button";
-import { SITE } from "@/config/site";
 import t from "@/content/hi-Latn/masterclass.json";
-import { db } from "@/lib/db";
-import { videoEmbed } from "@/lib/video-embed";
-import { listProducts } from "@/server/catalog";
+import { getMasterclass } from "@/server/masterclass";
 import { getSettings } from "@/server/settings";
 
 export const revalidate = 300;
 export const metadata: Metadata = { title: t.meta.title, description: t.meta.description, alternates: { canonical: "/masterclass" } };
 
 export default async function MasterclassPage() {
-  const code = SITE.masterclassCoupon.code;
-  const [settings, products, coupon] = await Promise.all([getSettings(), listProducts(), db.coupon.findUnique({ where: { code } })]);
-  const video = videoEmbed(settings.masterclassVideoUrl);
-  const entry = products.find((p) => p.product.kind !== "ADDON" && p.product.kind !== "SERVICE");
-  const now = new Date();
-  const couponLive =
-    !!coupon && coupon.active && !coupon.partnerId && (!coupon.startsAt || coupon.startsAt <= now) && (!coupon.endsAt || coupon.endsAt > now) && (coupon.maxUses == null || coupon.usedCount < coupon.maxUses);
-  const left = coupon?.maxUses != null ? coupon.maxUses - coupon.usedCount : null;
-  const pct = coupon?.kind === "PERCENT" ? String(coupon.value / 100) : String(SITE.masterclassCoupon.percent);
-  const checkoutHref = entry ? `/checkout/${entry.product.slug}${couponLive ? `?coupon=${code}` : ""}` : "/#pricing";
+  const { video, offer, checkoutHref } = await getMasterclass(await getSettings());
 
   return (
     <main className="container-page flex flex-col items-center gap-8 py-12 text-center md:py-20">
@@ -43,13 +32,7 @@ export default async function MasterclassPage() {
       </div>
 
       {video ? (
-        <div className="aspect-video w-full max-w-3xl overflow-hidden rounded-lg border border-line bg-surface-sunken">
-          {video.kind === "youtube" ? (
-            <iframe src={video.src} title={t.meta.title} className="size-full" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy" />
-          ) : (
-            <video src={video.src} controls playsInline preload="metadata" className="size-full" />
-          )}
-        </div>
+        <MasterclassVideo video={video} title={t.meta.title} className="max-w-3xl" />
       ) : (
         <div className="flex max-w-reading flex-col items-center gap-3">
           <p className="text-ink-muted">{t.noVideo}</p>
@@ -59,14 +42,14 @@ export default async function MasterclassPage() {
         </div>
       )}
 
-      {couponLive ? (
+      {offer ? (
         <section className="flex w-full max-w-xl flex-col items-center gap-3 rounded-lg border-2 border-gold bg-gold-soft p-5 md:p-6">
-          <Badge tone="solid">{t.offer.chip.replace("{code}", code)}</Badge>
-          <h2 className="type-heading text-ink">{t.offer.title.replace("{pct}", pct)}</h2>
+          <Badge tone="solid">{t.offer.chip.replace("{code}", offer.code)}</Badge>
+          <h2 className="type-heading text-ink">{t.offer.title.replace("{pct}", String(offer.pct))}</h2>
           <p className="text-ink-muted">{t.offer.text}</p>
-          {left != null && left <= 50 && <p className="type-small font-semibold text-gold-text">{t.offer.left.replace("{n}", String(left))}</p>}
+          {offer.left != null && offer.left <= 50 && <p className="type-small font-semibold text-gold-text">{t.offer.left.replace("{n}", String(offer.left))}</p>}
           <Button href={checkoutHref} size="lg" block arrow data-cta="masterclass_first100">
-            {t.offer.cta.replace("{pct}", pct)}
+            {t.offer.cta.replace("{pct}", String(offer.pct))}
           </Button>
         </section>
       ) : (
