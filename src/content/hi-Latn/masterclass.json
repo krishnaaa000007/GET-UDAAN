@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "title": "Free masterclass",
+    "description": "Phone se viral AI reels banana seekho — free masterclass. Pehle 100 students ko course pe 10% off."
+  },
+  "eyebrow": "FREE MASTERCLASS",
+  "title": "Phone se *viral* reels — free mein seekho",
+  "sub": "Dekho ek reel idea se final video tak kaise banti hai. Phir decide karo course lena hai ya nahi.",
+  "noVideo": "Masterclass video jaldi aa raha hai. Tab tak pehla lesson free dekho.",
+  "freeLesson": "Free Lesson Dekho",
+  "offer": {
+    "chip": "Code {code}",
+    "title": "Pehle 100 students ke liye {pct}% off",
+    "text": "Code apne aap lag jaayega — checkout pe kuch type nahi karna.",
+    "left": "Sirf {n} bache hain",
+    "cta": "{pct}% Off pe Join Karo"
+  },
+  "join": "Course Join Karo",
+  "homeCta": "Free Masterclass Dekho",
+  "resultsVary": "Results vary. Views aur kamaai tumhari mehnat, niche aur consistency pe depend karti hai."
+}

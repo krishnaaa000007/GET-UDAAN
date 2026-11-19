@@ -31,6 +31,8 @@ export const DEFAULTS = {
   /** Real support contact. Empty = hidden everywhere (never show a fake number). */
   supportWhatsapp: "",
   supportEmail: "",
+  /** Masterclass video (YouTube link or .mp4 URL). Empty = the video and the home masterclass block stay hidden. */
+  masterclassVideoUrl: "",
   /** Discount for partner coupons created on approval, in bps (1000 = 10%) */
   partnerCouponDiscountBps: 1000,
   /** TDS on partner withdrawals, bps. 0 = not set (hidden). Confirm rate + threshold with your CA. */

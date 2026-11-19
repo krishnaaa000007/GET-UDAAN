@@ -151,6 +151,7 @@ export function TestimonialCard({
   handle,
   avatarUrl,
   reelThumbUrl,
+  videoUrl,
   quote,
   result,
   showIncomeDisclaimer = false,
@@ -160,6 +161,8 @@ export function TestimonialCard({
   handle?: string;
   avatarUrl?: string;
   reelThumbUrl?: string;
+  /** Real video testimonial (opens in a new tab). Only shown when set. */
+  videoUrl?: string;
   quote: string;
   /** Short real result, e.g. "12k followers in 2 months" */
   result?: string;
@@ -175,6 +178,11 @@ export function TestimonialCard({
         </div>
       )}
       <blockquote className="text-ink">“{quote}”</blockquote>
+      {videoUrl && (
+        <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="type-button inline-flex min-h-12 items-center gap-2 self-start text-gold-text underline underline-offset-4">
+          {ui.testimonial.watchVideo}
+        </a>
+      )}
       {result && (
         <Badge tone="gold" className="self-start">
           {result}

@@ -38,7 +38,7 @@ export async function shareResultAction(_prev: ShareResultState, form: FormData)
     if (await hasSharedResult(user.id)) return { ok: false, values, errors: { form: E.rate } };
 
     const row = await db.testimonial.create({
-      data: { name: user.name?.trim() || "Student", city: values.city || null, quote: values.quote, result: values.result || null, published: false },
+      data: { name: user.name?.trim() || "Student", city: values.city || null, quote: values.quote, result: values.result || null, proofUrl: values.link || null, consentAt: new Date(), published: false },
     });
     await audit({
       actorId: user.id,

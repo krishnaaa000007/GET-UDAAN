@@ -34,6 +34,8 @@ import { Button } from "@/components/ui/button";
 import { PriceCard, TestimonialCard, TierCompareTable } from "@/components/ui/commerce";
 import { Countdown, RecentPurchaseToast, StickyBuyBar } from "@/components/ui/interactive";
 import { cn } from "@/lib/cn";
+import { videoEmbed } from "@/lib/video-embed";
+import mc from "@/content/hi-Latn/masterclass.json";
 import { db } from "@/lib/db";
 import { formatINR } from "@/lib/money";
 import { formatIST } from "@/lib/time";
@@ -196,6 +198,22 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* 1b. MASTERCLASS — only once a real masterclass video is set (Settings → masterclassVideoUrl) */}
+      {videoEmbed(settings.masterclassVideoUrl) && (
+        <Section bend="left">
+          <div className="reveal flex flex-col items-center gap-4 rounded-lg border-2 border-gold bg-gold-soft p-6 text-center md:p-10">
+            <span className="type-label text-gold-text">{mc.eyebrow}</span>
+            <h2 className="type-heading text-ink">
+              <Highlight text={mc.title} />
+            </h2>
+            <p className="max-w-reading text-ink-muted">{mc.sub}</p>
+            <Button href="/masterclass" arrow data-cta="home_masterclass">
+              {mc.homeCta}
+            </Button>
+          </div>
+        </Section>
+      )}
+
       {/* 2. REEL WALL — only when real sample reels have been added */}
       {c.reels.items.length > 0 && (
         <Section bend="left" className="bg-surface-raised">
@@ -341,6 +359,7 @@ export default async function LandingPage() {
                   name={t.name}
                   handle={t.city ?? undefined}
                   reelThumbUrl={t.imageUrl ?? undefined}
+                  videoUrl={t.videoUrl ?? undefined}
                   quote={t.quote}
                   result={t.result ?? undefined}
                   showIncomeDisclaimer={MONEY_WORDS.test(`${t.quote} ${t.result ?? ""}`)}

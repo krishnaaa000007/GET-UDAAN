@@ -669,6 +669,12 @@ model Testimonial {
   quote      String
   result     String? // e.g. "1.2M views on first reel"
   imageUrl   String?
+  /// Short video (e.g. Cloudinary/YouTube URL). Shown only when set.
+  videoUrl   String?
+  /// Link to proof (screenshot/post) the admin checked. Never shown publicly.
+  proofUrl   String?
+  /// When the person agreed to be featured. Admin must set it before publishing.
+  consentAt  DateTime?
   published  Boolean  @default(false)
   position   Int      @default(0)
   createdAt  DateTime @default(now())

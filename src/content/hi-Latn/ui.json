@@ -17,7 +17,7 @@
     "text": "Course kharidne ke {days} din ke andar humein WhatsApp ya email karo. Hum aapka poora paisa wapas kar denge.",
     "link": "Refund policy padho"
   },
-  "testimonial": { "resultsVary": "Results vary. Ye is student ka apna result hai." },
+  "testimonial": { "resultsVary": "Results vary. Ye is student ka apna result hai.", "watchVideo": "▶ Video dekho" },
   "form": {
     "phonePrefix": "+91",
     "couponLabel": "Coupon code",

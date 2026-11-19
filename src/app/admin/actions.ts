@@ -216,13 +216,19 @@ const testimonialSchema = z.object({
   quote: z.string().trim().min(5).max(600),
   result: z.string().trim().max(120).optional().default(""),
   imageUrl: z.string().trim().url().or(z.literal("")).optional().default(""),
+  videoUrl: z.string().trim().url().or(z.literal("")).optional().default(""),
+  proofUrl: z.string().trim().url().or(z.literal("")).optional().default(""),
+  consent: z.literal("on", { message: "Tick consent: the student agreed to be featured" }),
 });
 
 export async function addTestimonialAction(_: unknown, form: FormData): Promise<Result> {
   const admin = await requireAdmin();
   const p = testimonialSchema.safeParse(Object.fromEntries(form));
   if (!p.success) return { ok: false, error: p.error.issues[0].message };
-  await db.testimonial.create({ data: { ...p.data, city: p.data.city || null, result: p.data.result || null, imageUrl: p.data.imageUrl || null, published: true } });
+  const { consent: _consent, ...d } = p.data;
+  await db.testimonial.create({
+    data: { ...d, city: d.city || null, result: d.result || null, imageUrl: d.imageUrl || null, videoUrl: d.videoUrl || null, proofUrl: d.proofUrl || null, consentAt: new Date(), published: true },
+  });
   await audit({ actorId: admin.id, action: "testimonial.create", entity: "Testimonial", after: { name: p.data.name } });
   revalidatePath("/");
   revalidatePath("/admin/content");
@@ -233,6 +239,7 @@ export async function toggleTestimonialAction(form: FormData) {
   await requireAdmin();
   const id = String(form.get("id"));
   const t = await db.testimonial.findUniqueOrThrow({ where: { id } });
+  if (!t.published && !t.consentAt) return; // never publish without recorded consent
   await db.testimonial.update({ where: { id }, data: { published: !t.published } });
   revalidatePath("/");
   revalidatePath("/admin/content");

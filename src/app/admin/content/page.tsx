@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { formatIST } from "@/lib/time";
 import { landingDefaults, type LandingSectionKey } from "@/content/landing";
 import { getLandingContent } from "@/server/content";
 import { ActionForm } from "@/components/admin/action-form";
@@ -60,17 +61,39 @@ export default async function AdminContent() {
           <input name="city" placeholder="City" className="field min-h-10" />
           <input name="result" placeholder="Result (e.g. 1.2M views on reel 3)" className="field min-h-10 sm:col-span-2" />
           <input name="imageUrl" placeholder="Screenshot image URL (R2 public URL)" className="field min-h-10 sm:col-span-2" />
+          <input name="videoUrl" placeholder="Video URL (optional)" className="field min-h-10 sm:col-span-2" />
+          <input name="proofUrl" placeholder="Proof link you checked (never shown publicly)" className="field min-h-10 sm:col-span-2" />
           <textarea name="quote" required placeholder="What they said" rows={3} className="field min-h-0 py-2 sm:col-span-2" />
+          <label className="flex items-start gap-2 sm:col-span-2">
+            <input type="checkbox" name="consent" required className="mt-1" />
+            <span>The student agreed (in writing) to be featured with this name, quote and media. The date is saved.</span>
+          </label>
           <button className="btn-ghost min-h-10 sm:col-span-2">Add testimonial</button>
         </ActionForm>
         <ul className="divide-y divide-line text-sm">
           {testimonials.map((t) => (
             <li key={t.id} className="flex items-center justify-between gap-3 py-2">
-              <span>{t.name}{t.city ? `, ${t.city}` : ""} — <span className="text-ink-muted">{t.quote.slice(0, 80)}</span></span>
-              <form action={toggleTestimonialAction}>
-                <input type="hidden" name="id" value={t.id} />
-                <button className="text-gold-text">{t.published ? "Hide" : "Publish"}</button>
-              </form>
+              <span>
+                {t.name}{t.city ? `, ${t.city}` : ""} — <span className="text-ink-muted">{t.quote.slice(0, 80)}</span>
+                <span className="block text-xs text-ink-muted">
+                  {t.consentAt ? `Consent ${formatIST(t.consentAt, "date")}` : "No consent recorded"}
+                  {t.videoUrl ? " • video" : ""}
+                  {t.proofUrl && (
+                    <>
+                      {" • "}
+                      <a href={t.proofUrl} target="_blank" rel="noopener noreferrer" className="underline">proof</a>
+                    </>
+                  )}
+                </span>
+              </span>
+              {t.published || t.consentAt ? (
+                <form action={toggleTestimonialAction}>
+                  <input type="hidden" name="id" value={t.id} />
+                  <button className="text-gold-text">{t.published ? "Hide" : "Publish"}</button>
+                </form>
+              ) : (
+                <span className="text-xs text-ink-muted">Needs consent</span>
+              )}
             </li>
           ))}
         </ul>
