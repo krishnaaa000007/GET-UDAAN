@@ -94,6 +94,16 @@ export default async function PartnersPage() {
               <p className="type-small text-ink-muted">
                 {L.calc.perSale.replace("{product}", entry.product.name).replace("{amount}", formatINR(perSalePaise)).replace("{pct}", String(Math.round(entry.product.defaultCommissionBps / 100)))} {L.calc.note}
               </p>
+              {s.teamBonusEnabled && (
+                <p className="type-small rounded-md border border-line bg-surface-raised p-3 text-ink">
+                  {L.calc.teamExample
+                    .replace("{invited}", "3")
+                    .replace("{sales}", "10")
+                    .replace("{pct}", String(PARTNER_RULES.teamBonus.l1Bps / 100))
+                    .replace("{amount}", formatINR(3 * 10 * Math.floor((perSalePaise * PARTNER_RULES.teamBonus.l1Bps) / 10_000)))}{" "}
+                  <b>{L.calc.teamNote}</b>
+                </p>
+              )}
               <IncomeDisclaimer />
             </div>
           </div>

@@ -8,6 +8,7 @@
  * and the server receives everything in one go.
  */
 import { CircleAlert, CircleCheck } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/data";
@@ -227,6 +228,13 @@ export function ApplyForm() {
           />
         )}
         <p className="type-small text-ink-muted">{a.invite.payoutLater}</p>
+        <p className="type-small text-ink-muted">
+          {a.terms.split("{link}")[0]}
+          <Link href="/legal/partners" target="_blank" className="underline underline-offset-4">
+            {a.termsLink}
+          </Link>
+          {a.terms.split("{link}")[1]}
+        </p>
       </div>
 
       {state.error && (

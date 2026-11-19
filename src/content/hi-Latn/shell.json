@@ -20,6 +20,7 @@
       { "label": "Refund Policy", "href": "/legal/refund" },
       { "label": "Privacy", "href": "/legal/privacy" },
       { "label": "Terms", "href": "/legal/terms" },
+      { "label": "Partner Terms", "href": "/legal/partners" },
       { "label": "Contact", "href": "/legal/contact" }
     ],
     "supportLabel": "Support",

@@ -29,7 +29,9 @@
       "sales": "{n} sales / mahina",
       "estimate": "Andaazan commission",
       "perSale": "Har {product} sale par lagbhag {amount} ({pct}% commission, coupon discount aur payment fee ke baad).",
-      "note": "Ye sirf ek andaaza hai, vaada nahi."
+      "note": "Ye sirf ek andaaza hai, vaada nahi.",
+      "teamExample": "Team example: tumne {invited} creators invite kiye aur har ek ne mahine mein {sales} sales ki. Unki apni commission poori unki; Get Udaan tumhe upar se {pct}% team bonus deta hai = lagbhag {amount} / mahina.",
+      "teamNote": "Example. Results vary."
     },
     "payout": {
       "eyebrow": "Payout",
@@ -132,7 +134,9 @@
       "found": "✓ {name}",
       "notFound": "Ye code nahi mila. Sahi code daalo ya khaali chhod do.",
       "payoutLater": "UPI / bank details approval ke baad dashboard mein daaloge — abhi zaroorat nahi."
-    }
+    },
+    "terms": "Apply karke tum {link} se agree karte ho.",
+    "termsLink": "Partner Terms"
   },
   "dashboard": {
     "title": "PARTNER *DASHBOARD*",
