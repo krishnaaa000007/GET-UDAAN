@@ -13,6 +13,7 @@ import { audit } from "@/server/audit";
 import { getSettings } from "@/server/settings";
 import { walletSummary, withdrawalSplit } from "@/server/commission";
 import { normalizeCode } from "@/server/attribution";
+import { checkRecruiter } from "@/server/team";
 import { env } from "@/lib/env";
 
 // ───────────── Application ─────────────
@@ -47,6 +48,8 @@ export const partnerApplicationSchema = z.object({
     .refine((s) => s === "" || /^[A-Z]{4}0[A-Z0-9]{6}$/.test(s), "Sahi IFSC daaliye")
     .optional()
     .default(""),
+  /** Invite code of the partner who invited this applicant (team bonus). Optional. */
+  inviteCode: z.string().trim().max(40).optional().default(""),
 });
 export type PartnerApplication = z.infer<typeof partnerApplicationSchema>;
 
@@ -66,6 +69,8 @@ export async function submitPartnerApplication(data: PartnerApplication) {
     bankAccountNumber: data.bankAccountNumber || null,
     bankIfsc: data.bankIfsc || null,
     status: "PENDING" as const,
+    // Recruiter: only while not yet locked (it locks at approval). Unknown / unapproved codes are ignored.
+    ...(existing?.recruiterLockedAt ? {} : { referredByPartnerId: await recruiterFromCode(data.inviteCode, user.id) }),
   };
   const partnerRow = existing ? await db.partner.update({ where: { id: existing.id }, data: fields }) : await db.partner.create({ data: { userId: user.id, ...fields } });
 
@@ -73,6 +78,15 @@ export async function submitPartnerApplication(data: PartnerApplication) {
   if (env.adminEmail)
     await notify(env.adminEmail, "adminNewPartnerApplication", { name: data.name, instagram: data.instagramHandle, followers: data.followers, adminUrl: `${env.appUrl}/admin/partners/review?t=${encodeURIComponent(partnerDecisionToken(partnerRow.id))}` });
   return { ok: true as const };
+}
+
+/** Approved partner for an invite code, or null. Never the applicant themself. */
+export async function recruiterFromCode(code: string | undefined, applicantUserId?: string): Promise<string | null> {
+  const c = normalizeCode(code ?? "");
+  if (!c) return null;
+  const r = await db.partner.findUnique({ where: { code: c }, select: { id: true, status: true, userId: true } });
+  if (!r || r.status !== "APPROVED" || r.userId === applicantUserId) return null;
+  return r.id;
 }
 
 async function uniqueCode(base: string): Promise<string> {
@@ -91,7 +105,19 @@ export async function approvePartner(adminId: string, partnerId: string, request
   const code = p.code ?? (await uniqueCode(normalizeCode(requestedCode) ?? p.instagramHandle));
 
   await db.$transaction(async (tx) => {
-    await tx.partner.update({ where: { id: p.id }, data: { status: "APPROVED", code, approvedAt: p.approvedAt ?? new Date() } });
+    // Team: check the recruiter (no self, no cycle, must be approved) and lock it for good.
+    let recruiter = p.referredByPartnerId;
+    if (!p.recruiterLockedAt && recruiter) {
+      const ok = await checkRecruiter(tx, p.id, recruiter);
+      if (!ok.ok) {
+        await audit({ actorId: adminId, action: "partner.recruiter_dropped", entity: "Partner", entityId: p.id, before: { referredByPartnerId: recruiter }, after: { reason: ok.reason } }, tx);
+        recruiter = null;
+      }
+    }
+    await tx.partner.update({
+      where: { id: p.id },
+      data: { status: "APPROVED", code, approvedAt: p.approvedAt ?? new Date(), ...(p.recruiterLockedAt ? {} : { referredByPartnerId: recruiter, recruiterLockedAt: new Date() }) },
+    });
     const hasCoupon = await tx.coupon.findFirst({ where: { partnerId: p.id } });
     if (!hasCoupon) await tx.coupon.create({ data: { code, kind: "PERCENT", value: settings.partnerCouponDiscountBps, partnerId: p.id } });
     await audit({ actorId: adminId, action: "partner.approve", entity: "Partner", entityId: p.id, before: { status: p.status }, after: { status: "APPROVED", code } }, tx);

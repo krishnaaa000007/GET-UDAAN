@@ -19,6 +19,7 @@ import { notify } from "@/server/notify";
 import { getSettings } from "@/server/settings";
 import { verifyWebhookSignature } from "./gateway";
 import { reverseCommissionsForRefund } from "@/server/partners";
+import { createTeamBonuses } from "@/server/team";
 import { sendServerPurchaseEvents } from "@/server/analytics";
 import type { Tier } from "@/generated/prisma/enums";
 
@@ -160,10 +161,20 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
       });
       if (c.amountPaise > 0) {
         const availableAt = addMinutes(paidAt, settings.commissionReleaseMinutes);
-        await tx.commission.create({
-          data: { partnerId: order.partner.id, orderId: order.id, basePaise: c.basePaise, rateBps: c.effectiveRateBps, amountPaise: c.amountPaise, availableAt },
+        const sale = await tx.commission.create({
+          data: { partnerId: order.partner.id, orderId: order.id, type: "SALE", basePaise: c.basePaise, rateBps: c.effectiveRateBps, amountPaise: c.amountPaise, availableAt },
         });
         commission = { amountPaise: c.amountPaise, availableAt };
+        // Team bonus (off until the admin turns it on): % of this SALE commission for the seller's recruiters.
+        if (settings.teamBonusEnabled) {
+          await createTeamBonuses(tx, {
+            orderId: order.id,
+            sellerId: order.partner.id,
+            sale: { id: sale.id, amountPaise: sale.amountPaise },
+            availableAt,
+            buyer: { email: order.email, phone: order.phone, payerEmail: p.email, payerContact: p.contact, payerVpa: p.vpa },
+          });
+        }
       }
     }
 

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/admin/export
   let body: string;
 
   if (kind === "orders") {
-    const orders = await db.order.findMany({ where: { status: { not: "CREATED" } }, orderBy: { number: "asc" }, include: { items: true, partner: true, coupon: true, commissions: true } });
+    const orders = await db.order.findMany({ where: { status: { not: "CREATED" } }, orderBy: { number: "asc" }, include: { items: true, partner: true, coupon: true, commissions: { where: { type: "SALE" } } } });
     body = csv([
       ["Order #", "Paid at (IST)", "Status", "Name", "Email", "Phone", "Items", "Subtotal ₹", "Discount ₹", "Coupon", "GST ₹", "Total ₹", "Gateway fee ₹", "Partner", "Attribution", "Campaign", "Commission ₹", "Commission status", "Payment ID"],
       ...orders.map((o) => [o.number, o.paidAt ? formatIST(o.paidAt) : "", o.status, o.name, o.email, o.phone, o.items.map((i) => i.name).join(" + "), rs(o.subtotalPaise), rs(o.discountPaise), o.coupon?.code, rs(o.taxPaise), rs(o.totalPaise), rs(o.gatewayFeePaise), o.partner?.code, o.attributionSource, o.campaign, rs(o.commissions[0]?.amountPaise), o.commissions[0]?.status, o.gatewayPaymentId]),

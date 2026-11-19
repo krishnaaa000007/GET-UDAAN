@@ -515,6 +515,12 @@ model Partner {
   adminNote          String?
   approvedAt         DateTime?
   createdAt          DateTime      @default(now())
+  /// Team bonus: the partner who invited this one. Checked (no self, no cycle) and locked at approval.
+  referredByPartnerId String?
+  /// Set at approval; after this the recruiter can never change.
+  recruiterLockedAt   DateTime?
+  referredBy          Partner?     @relation("Team", fields: [referredByPartnerId], references: [id], onDelete: SetNull)
+  recruits            Partner[]    @relation("Team")
 
   user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   coupons     Coupon[]
@@ -524,6 +530,8 @@ model Partner {
   rates       PartnerCommissionRate[]
   ledger      PartnerLedger[]
   payouts     Payout[]
+
+  @@index([referredByPartnerId])
 }
 
 /// Per-partner override of a product's commission rate.
@@ -563,10 +571,19 @@ enum CommissionStatus {
   PAID // included in a paid withdrawal (informational; money tracked in ledger)
 }
 
+enum CommissionType {
+  SALE // the partner's own sale
+  TEAM_L1 // bonus: a partner you invited made the sale
+  TEAM_L2 // bonus: a partner invited by your invitee made the sale
+}
+
 model Commission {
   id           String           @id @default(cuid())
   partnerId    String
   orderId      String
+  type         CommissionType   @default(SALE)
+  /// For TEAM_L1/TEAM_L2: the SALE commission this bonus is a % of (never another bonus).
+  sourceCommissionId String?
   /// Amount the % is applied to: paid − GST − gateway fee
   basePaise    Int
   rateBps      Int
@@ -578,8 +595,10 @@ model Commission {
   createdAt    DateTime         @default(now())
   partner      Partner          @relation(fields: [partnerId], references: [id])
   order        Order            @relation(fields: [orderId], references: [id])
+  source       Commission?      @relation("TeamBonus", fields: [sourceCommissionId], references: [id])
+  bonuses      Commission[]     @relation("TeamBonus")
 
-  @@unique([orderId, partnerId])
+  @@unique([orderId, partnerId, type])
   @@index([partnerId, status])
 }
 

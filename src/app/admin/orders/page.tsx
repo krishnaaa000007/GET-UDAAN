@@ -16,7 +16,7 @@ export default async function AdminOrders({ searchParams }: PageProps<"/admin/or
     },
     orderBy: { createdAt: "desc" },
     take: 200,
-    include: { items: true, partner: { select: { code: true } }, coupon: { select: { code: true } }, commissions: { select: { amountPaise: true, status: true } } },
+    include: { items: true, partner: { select: { code: true } }, coupon: { select: { code: true } }, commissions: { where: { type: "SALE" }, select: { amountPaise: true, status: true } } },
   });
 
   return (

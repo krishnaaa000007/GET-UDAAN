@@ -30,7 +30,7 @@ export async function getPartnerDashboard(partnerId: string, days: number) {
         campaign: true,
         totalPaise: true,
         items: { select: { name: true } },
-        commissions: { where: { partnerId }, select: { amountPaise: true, status: true, availableAt: true, basePaise: true, rateBps: true } },
+        commissions: { where: { partnerId, type: "SALE" }, select: { amountPaise: true, status: true, availableAt: true, basePaise: true, rateBps: true } },
       },
     }),
     db.payout.findMany({ where: { partnerId }, orderBy: { requestedAt: "desc" }, take: 20 }),
