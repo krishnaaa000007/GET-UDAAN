@@ -127,6 +127,64 @@ export default async function LandingPage() {
     <main>
       <FunnelTracker />
 
+      {masterclass.video ? (
+        <>
+      {/* 1. HERO WITH THE FREE MASTERCLASS — the video is the first thing people see (set Settings → masterclassVideoUrl).
+          One set of elements; the grid puts them in order on a phone (text, video, offer) and in two columns on desktop. */}
+      <section id="hero" className="sky-stars film-grain relative overflow-hidden">
+        <FlightPath bend="right" />
+        <div className="container-page relative z-[1] grid gap-x-12 gap-y-6 pt-6 pb-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-8 lg:py-14">
+          <div className="flex flex-col items-start lg:col-start-1 lg:row-start-1 lg:self-end">
+            <Badge tone="gold">{mc.eyebrow}</Badge>
+            <h1 className="type-display-xl mt-4 text-ink">
+              <Highlight text={c.hero.headline} shimmer />
+            </h1>
+            <p className="type-body-lg mt-3 max-w-[34ch] text-ink-muted lg:max-w-[40ch]">{c.hero.sub}</p>
+          </div>
+
+          <div className="w-full lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
+            <MasterclassVideo video={masterclass.video} title={mc.meta.title} />
+          </div>
+
+          <div className="flex flex-col lg:col-start-1 lg:row-start-2 lg:self-start">
+            {masterclass.offer ? (
+              <div className="flex w-full flex-col items-center gap-3 rounded-lg border-2 border-gold bg-gold-soft p-4 text-center sm:items-start sm:text-left md:p-5">
+                <Badge tone="solid">{mc.offer.chip.replace("{code}", masterclass.offer.code)}</Badge>
+                <p className="type-title text-ink">{mc.offer.title.replace("{pct}", String(masterclass.offer.pct))}</p>
+                <p className="type-small text-ink-muted">{mc.offer.text}</p>
+                <Button href={masterclass.checkoutHref} size="lg" block arrow data-cta="hero_masterclass_first100" className="sm:w-auto">
+                  {mc.offer.cta.replace("{pct}", String(masterclass.offer.pct))}
+                </Button>
+              </div>
+            ) : (
+              <Button href={entryHref} size="lg" block arrow data-cta="hero_primary" className="sm:w-auto sm:self-start">
+                {heroCta}
+              </Button>
+            )}
+            <p className="type-small mt-3 w-full text-center text-ink-muted sm:text-left">{c.hero.trust.replace("{days}", String(days))}</p>
+            <ul className={cn("mt-8 grid w-full", stats.length === 4 ? "grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-line" : "grid-cols-3 divide-x divide-line")}>
+              {stats.map((x) => (
+                <li key={x.label} className="px-3 first:pl-0">
+                  <StatChip value={x.value} label={x.label} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="container-page relative z-[1] pb-14">
+          <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+            {c.hero.doubtKillers.map((d) => (
+              <li key={d} className="flex items-start gap-3 text-ink">
+                <Check aria-hidden className="mt-1 size-5 flex-none text-success" strokeWidth={2.5} />
+                {d}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+        </>
+      ) : (
+        <>
       {/* 1. HERO — night sky with stars; the flight path starts here */}
       <section id="hero" className="sky-stars film-grain relative overflow-hidden">
         <FlightPath bend="right" />
@@ -199,33 +257,7 @@ export default async function LandingPage() {
           </ul>
         </div>
       </section>
-
-      {/* 1b. MASTERCLASS — the free video plays right here (only once Settings → masterclassVideoUrl is set), with the FIRST100 offer */}
-      {masterclass.video && (
-        <Section id="masterclass" bend="left">
-          <div className="reveal flex flex-col items-center gap-5 text-center">
-            <Badge tone="gold">{mc.eyebrow}</Badge>
-            <h2 className="type-heading max-w-reading text-ink">
-              <Highlight text={mc.title} />
-            </h2>
-            <p className="max-w-reading text-ink-muted">{mc.sub}</p>
-            <MasterclassVideo video={masterclass.video} title={mc.meta.title} className="max-w-4xl" />
-            {masterclass.offer ? (
-              <div className="flex w-full max-w-xl flex-col items-center gap-3 rounded-lg border-2 border-gold bg-gold-soft p-5">
-                <Badge tone="solid">{mc.offer.chip.replace("{code}", masterclass.offer.code)}</Badge>
-                <p className="type-title text-ink">{mc.offer.title.replace("{pct}", String(masterclass.offer.pct))}</p>
-                <p className="type-small text-ink-muted">{mc.offer.text}</p>
-                <Button href={masterclass.checkoutHref} block arrow data-cta="home_masterclass_first100">
-                  {mc.offer.cta.replace("{pct}", String(masterclass.offer.pct))}
-                </Button>
-              </div>
-            ) : (
-              <Button href={masterclass.checkoutHref} arrow data-cta="home_masterclass_join">
-                {mc.join}
-              </Button>
-            )}
-          </div>
-        </Section>
+        </>
       )}
 
       {/* 2. REEL WALL — only when real sample reels have been added */}
