@@ -123,7 +123,14 @@ export async function approvePartner(adminId: string, partnerId: string, request
     await audit({ actorId: adminId, action: "partner.approve", entity: "Partner", entityId: p.id, before: { status: p.status }, after: { status: "APPROVED", code } }, tx);
   });
   await addRole(p.userId, "PARTNER");
-  await notify(p.user.email, "partnerApproved", { name: p.displayName, link: `${env.appUrl}/?ref=${code}`, coupon: code, dashboardUrl: `${env.appUrl}/partner` });
+  await notify(p.user.email, "partnerApproved", {
+    name: p.displayName,
+    link: `${env.appUrl}/?ref=${code}`,
+    coupon: code,
+    dashboardUrl: `${env.appUrl}/partner`,
+    // Team invite link only while the team bonus is switched on.
+    inviteLink: settings.teamBonusEnabled ? `${env.appUrl}/j/${code}` : undefined,
+  });
 }
 
 export async function rejectPartner(adminId: string, partnerId: string, reason: string) {

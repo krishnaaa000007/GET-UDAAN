@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import { makeCatalog, payment, resetDb, sendWebhook } from "./helpers";
-import { approveDueCommissions, approvePartner, freezePartner, getWallet } from "@/server/partners";
+import { approveDueCommissions, approvePartner, freezePartner, getWallet, submitPartnerApplication } from "@/server/partners";
 import { setSetting } from "@/server/settings";
 import { teamBonusPaise } from "@/server/team";
 
@@ -172,4 +172,31 @@ describe("recruiter link checks at approval", () => {
     await approvePartner("admin", p.id);
     expect((await db.partner.findUniqueOrThrow({ where: { id: p.id } })).referredByPartnerId).toBeNull();
   });
+});
+
+describe("invite code on the partner application", () => {
+  const app = (email: string, inviteCode: string, phone = "9811111111") => ({
+    name: "New Creator", email, phone, instagramHandle: "newcreator", followers: 1000, niche: "", upiId: "", bankAccountName: "", bankAccountNumber: "", bankIfsc: "", inviteCode,
+  });
+
+  it("a valid code (any case) records the inviter; approval locks it", async () => {
+    const r = await partner("RAHUL");
+    expect((await submitPartnerApplication(app("new@c.in", "rahul"))).ok).toBe(true);
+    const p = await db.partner.findFirstOrThrow({ where: { user: { email: "new@c.in" } } });
+    expect(p.referredByPartnerId).toBe(r.id);
+    await approvePartner("admin", p.id);
+    expect((await db.partner.findUniqueOrThrow({ where: { id: p.id } })).recruiterLockedAt).not.toBeNull();
+  });
+
+  it("an unknown code or an unapproved partner's code is ignored", async () => {
+    await pendingPartner("WAITING");
+    await submitPartnerApplication(app("x@c.in", "NOPE"));
+    await submitPartnerApplication(app("y@c.in", "WAITING", "9822222222"));
+    expect(await db.partner.count({ where: { referredByPartnerId: { not: null } } })).toBe(0);
+  });
+
+  async function pendingPartner(code: string) {
+    const user = await db.user.create({ data: { email: `${code.toLowerCase()}@p.in`, name: code } });
+    return db.partner.create({ data: { userId: user.id, status: "PENDING", code, displayName: code, instagramHandle: code.toLowerCase(), phone: "9833333333" } });
+  }
 });

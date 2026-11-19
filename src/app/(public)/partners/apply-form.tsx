@@ -2,20 +2,45 @@
 
 /**
  * PARTNER APPLY FORM — 3 short steps with a progress bar.
+ * Step 3 is the invite code (team): pre-filled from ?invite=, /j/CODE (cookie gu_invite) or localStorage,
+ * shown as "Aapko X ne invite kiya" with a Change link, and checked live. Payout details come after approval.
  * All fields stay inside ONE form (hidden steps are only hidden, not removed), so nothing typed is lost
  * and the server receives everything in one go.
  */
 import { CircleAlert, CircleCheck } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/data";
 import { Input, PhoneInput } from "@/components/ui/form";
 import { PARTNER_RULES } from "@/config/partners";
 import t from "@/content/hi-Latn/partner.json";
-import { applyAction } from "./actions";
+import { applyAction, checkInviteAction } from "./actions";
 
 const a = t.apply;
-type Errors = Partial<Record<"name" | "email" | "phone" | "handle" | "followers", string>>;
+type Errors = Partial<Record<"name" | "email" | "phone" | "handle" | "followers" | "invite", string>>;
+type Invite = { code: string; name: string };
+
+const INVITE_KEY = "gu_invite";
+const INVITE_MS = PARTNER_RULES.inviteCookieDays * 86_400_000;
+
+/** Invite code from the URL, then the cookie set by the proxy, then localStorage (30 days). */
+function savedInviteCode(): string | null {
+  try {
+    const fromUrl = new URLSearchParams(window.location.search).get("invite");
+    if (fromUrl) return fromUrl;
+    const fromCookie = document.cookie.match(/(?:^|; )gu_invite=([^;]+)/)?.[1];
+    if (fromCookie) return decodeURIComponent(fromCookie);
+    const raw = localStorage.getItem(INVITE_KEY);
+    if (raw) {
+      const v = JSON.parse(raw) as { code: string; at: number };
+      if (Date.now() - v.at < INVITE_MS) return v.code;
+      localStorage.removeItem(INVITE_KEY);
+    }
+  } catch {
+    /* storage blocked: no pre-fill */
+  }
+  return null;
+}
 
 export function ApplyForm() {
   const [state, setState] = useState<{ ok: boolean; error?: string }>({ ok: false });
@@ -24,6 +49,45 @@ export function ApplyForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [handle, setHandle] = useState("");
   const form = useRef<HTMLFormElement>(null);
+  // Invite: the confirmed inviter, what is typed in the box, and the live check result.
+  const [invite, setInvite] = useState<Invite | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [check, setCheck] = useState<"idle" | "checking" | "found" | "notFound">("idle");
+  const [found, setFound] = useState<Invite | null>(null);
+
+  // Pre-fill once, after load (browser-only data).
+  useEffect(() => {
+    const code = savedInviteCode();
+    if (!code) return;
+    checkInviteAction(code).then((r) => {
+      if (!r) return;
+      setInvite(r);
+      try {
+        localStorage.setItem(INVITE_KEY, JSON.stringify({ code: r.code, at: Date.now() }));
+      } catch {
+        /* ignore */
+      }
+    });
+  }, []);
+
+  // Live check while typing (debounced).
+  useEffect(() => {
+    if (!editing) return;
+    const code = typed.trim();
+    if (!code) return;
+    const id = setTimeout(() => {
+      setCheck("checking");
+      checkInviteAction(code).then((r) => {
+        setFound(r);
+        setCheck(r ? "found" : "notFound");
+      });
+    }, 400);
+    return () => clearTimeout(id);
+  }, [typed, editing]);
+
+  // The code that is actually sent.
+  const inviteCode = editing ? (check === "found" && found ? found.code : "") : (invite?.code ?? "");
 
   if (state.ok)
     return (
@@ -61,6 +125,10 @@ export function ApplyForm() {
       onSubmit={(e) => {
         e.preventDefault();
         if (pending || step < 2) return;
+        if (editing && typed.trim() && check !== "found") {
+          setErrors({ invite: a.invite.notFound });
+          return;
+        }
         const data = new FormData(e.currentTarget);
         start(async () => setState(await applyAction(null, data)));
       }}
@@ -123,17 +191,42 @@ export function ApplyForm() {
         <Input label={a.niche} name="niche" placeholder={a.nichePlaceholder} />
       </div>
 
-      {/* Step 3 */}
+      {/* Step 3: invite code (optional) */}
       <div hidden={step !== 2} className="flex flex-col gap-4">
-        <Input label={a.upi} name="upiId" placeholder={a.upiPlaceholder} autoCapitalize="none" hint={a.upiHint} />
-        <details className="accordion-item rounded-md border border-line">
-          <summary className="flex min-h-12 cursor-pointer items-center px-4 font-semibold text-ink">{a.bankToggle}</summary>
-          <div className="flex flex-col gap-4 px-4 pb-4">
-            <Input label={a.bankName} name="bankAccountName" autoComplete="name" />
-            <Input label={a.bankNumber} name="bankAccountNumber" inputMode="numeric" />
-            <Input label={a.bankIfsc} name="bankIfsc" autoCapitalize="characters" placeholder="SBIN0001234" />
+        <input type="hidden" name="inviteCode" value={inviteCode} />
+        {invite && !editing ? (
+          <div className="flex items-center justify-between gap-3 rounded-md border border-gold bg-surface p-4">
+            <p className="text-ink">{a.invite.invitedBy.split("{name}")[0]}<b>{invite.name}</b>{a.invite.invitedBy.split("{name}")[1]}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(true);
+                setTyped(invite.code);
+              }}
+              className="min-h-11 shrink-0 px-2 font-semibold text-gold-text underline underline-offset-4">
+              {a.invite.change}
+            </button>
           </div>
-        </details>
+        ) : (
+          <Input
+            label={a.invite.label}
+            value={typed}
+            onChange={(e) => {
+              const v = e.target.value.replace(/[^a-zA-Z0-9_-]/g, "").toUpperCase().slice(0, 40);
+              setTyped(v);
+              setErrors((x) => ({ ...x, invite: undefined }));
+              if (!v) setCheck("idle");
+              if (!editing) setEditing(true);
+            }}
+            placeholder={a.invite.placeholder}
+            autoCapitalize="characters"
+            autoCorrect="off"
+            spellCheck={false}
+            hint={check === "checking" ? a.invite.checking : check === "found" && found ? a.invite.found.replace("{name}", found.name) : a.invite.hint}
+            error={errors.invite ?? (check === "notFound" ? a.invite.notFound : undefined)}
+          />
+        )}
+        <p className="type-small text-ink-muted">{a.invite.payoutLater}</p>
       </div>
 
       {state.error && (
@@ -150,11 +243,13 @@ export function ApplyForm() {
           </Button>
         )}
         {step < 2 ? (
-          <Button variant="secondary" arrow onClick={next} className="sm:flex-1">
+          // Separate keys: React must not turn this same button into the submit button mid-click
+          // (the browser would then submit the form straight from step 2).
+          <Button key="next" variant="secondary" arrow onClick={next} className="sm:flex-1">
             {a.next}
           </Button>
         ) : (
-          <Button type="submit" arrow loading={pending} className="sm:flex-1" data-cta="partner_apply_submit">
+          <Button key="submit" type="submit" arrow loading={pending} className="sm:flex-1" data-cta="partner_apply_submit">
             {a.submit}
           </Button>
         )}

@@ -4,7 +4,9 @@
  *  2. Captures partner referrals: /?ref=CODE&c=reel23 → records the click and sets
  *     the last-click cookie (rb_ref). Unknown/unapproved codes are ignored, so they
  *     can't overwrite a real partner's cookie.
- *  3. Saves UTM tags with the visitor; remembers ?coupon=CODE for checkout prefill.
+ *  3. Partner invites (team): /partners?invite=CODE (or /j/CODE) → cookie gu_invite for 30 days,
+ *     only when CODE belongs to an approved partner. Readable by the apply form (not secret).
+ *  4. Saves UTM tags with the visitor; remembers ?coupon=CODE for checkout prefill.
  */
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { PARTNER_RULES } from "@/config/partners";
@@ -39,6 +41,16 @@ export async function proxy(req: NextRequest, event: NextFetchEvent) {
       }
     } catch (e) {
       console.error("click tracking failed", e);
+    }
+  }
+
+  const invite = normalizeCode(url.searchParams.get("invite"));
+  if (invite) {
+    try {
+      const inviter = await db.partner.findUnique({ where: { code: invite }, select: { status: true } });
+      if (inviter?.status === "APPROVED") res.cookies.set("gu_invite", invite, { maxAge: PARTNER_RULES.inviteCookieDays * 86_400, sameSite: "lax", secure, path: "/" });
+    } catch (e) {
+      console.error("invite lookup failed", e);
     }
   }
 

@@ -88,7 +88,7 @@
     "steps": [
       "Tumhare baare mein",
       "Tumhara page",
-      "Payout"
+      "Invite"
     ],
     "name": "Poora naam",
     "email": "Email",
@@ -121,6 +121,17 @@
       "title": "Application mil gayi!",
       "text": "Aapki application mil gayi. Usually {approval} ghante mein approval — approve hote hi email aayega.",
       "cta": "Free Lesson Dekho"
+    },
+    "invite": {
+      "invitedBy": "Aapko {name} ne invite kiya",
+      "change": "Change",
+      "label": "Invite code (optional)",
+      "placeholder": "Jaise RAHUL",
+      "hint": "Kisi partner ne bheja hai toh unka code daalo. Nahi pata toh khaali chhod do.",
+      "checking": "Check kar rahe hain…",
+      "found": "✓ {name}",
+      "notFound": "Ye code nahi mila. Sahi code daalo ya khaali chhod do.",
+      "payoutLater": "UPI / bank details approval ke baad dashboard mein daaloge — abhi zaroorat nahi."
     }
   },
   "dashboard": {

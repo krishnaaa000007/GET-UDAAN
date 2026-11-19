@@ -53,16 +53,17 @@ export const templates = {
     text: `Hi ${d.name}, aapki partner application mil gayi. 24–48 ghante mein update milega.`,
   }),
 
-  partnerApproved: (d: { name: string; link: string; coupon: string; dashboardUrl: string }): Rendered => ({
+  partnerApproved: (d: { name: string; link: string; coupon: string; dashboardUrl: string; inviteLink?: string }): Rendered => ({
     subject: "Aap Get Udaan partner ban gaye! 🎉",
     html: layout(
       "Welcome, partner! 🦁",
       `<p>Hi ${esc(d.name)}, aapki application approve ho gayi.</p>
        <p><b>Aapka link:</b><br><code>${esc(d.link)}</code></p>
        <p><b>Aapka coupon:</b> <code>${esc(d.coupon)}</code></p>
+       ${d.inviteLink ? `<p><b>Doosre creators ko partner banane ka invite link:</b><br><code>${esc(d.inviteLink)}</code></p>` : ""}
        ${button(d.dashboardUrl, "Partner dashboard kholein")}`,
     ),
-    text: `Approved! Link: ${d.link} Coupon: ${d.coupon} Dashboard: ${d.dashboardUrl}`,
+    text: `Approved! Link: ${d.link} Coupon: ${d.coupon}${d.inviteLink ? ` Invite: ${d.inviteLink}` : ""} Dashboard: ${d.dashboardUrl}`,
   }),
 
   partnerRejected: (d: { name: string; reason: string }): Rendered => ({
