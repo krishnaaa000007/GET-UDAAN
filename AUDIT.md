@@ -2,7 +2,7 @@
 
 Date: 2026-11-18 · Scope: the "Functionality Audit + Build Prompt" brief · Code: commit `1abab01` (staging)
 
-Legend: ✅ done · ⚠️ partly · ❌ missing. Nothing has been changed yet; this file is the "before" state.
+Legend: ✅ done · ⚠️ partly · ❌ missing. Sections A–E are the "before" state. **Section F (end of file) is the "after" state** (2026-11-19).
 
 ---
 
@@ -77,3 +77,48 @@ Legend: ✅ done · ⚠️ partly · ❌ missing. Nothing has been changed yet; 
 7. Tests from §9, plus Playwright end to end.
 
 Each step: its own commit, tests run, checked at 375px and 1440px.
+
+---
+
+## F. After the build (2026-11-19)
+
+Commits `92d0439` → `26e6cbd` (9 commits, local `main`, **not pushed**). Tests: 71 unit/integration + 5 Playwright end-to-end, all passing. New pages checked at 375px and 1440px (no sideways scroll, no tiny text, no small tap targets).
+
+| Area | Before | After | What changed / what's left |
+|---|---|---|---|
+| Config | ❌ | ✅ | `src/config/partners.ts` + `src/config/site.ts`; admin-changeable values default from config. Commission "7 days" wording gone; buyer refund days split from commission release. |
+| Attribution | ⚠️ | ✅ | 30-day `?ref` cookie; self-purchase also blocked by phone, payer email and UPI ID. No device fingerprinting (decision A3). |
+| FIRST100 | ⚠️ | ✅ | Coupon created by migration (10%, max 100 uses, not a partner coupon → keeps link credit; tested end to end). |
+| Approval | ⚠️ | ⚠️ | Oldest-first queue, waiting badge (red after 2h), "1–2 ghante" copy, signed 48h one-tap review link in the admin email, invite link in the approval email (only while team bonus is on). **Left:** WhatsApp alert (no WhatsApp provider). |
+| Commission | ⚠️ | ⚠️ | Released 60 min after the sale; idempotent job; pending rows show "{time} tak wallet mein". **Left:** scheduler on staging (Supabase `pg_cron` every 5 min) — until then it runs when a partner/admin dashboard opens. |
+| Refund | ❌ | ✅ | Refunds absorbed by default (setting `absorbRefunds`, ON); old behaviour kept behind OFF. |
+| Fraud | ⚠️ | ✅ | Freeze/unfreeze with reason (commissions held, withdrawals paused), refund rate per partner + "High refunds" flag (when `refundFlagPct` is set), wider self-purchase check, append-only ledger + audit log. |
+| Team | ❌ | ✅ (OFF) | Migration (`referredByPartnerId`, `recruiterLockedAt`, `Commission.type`, `sourceCommissionId`). 10% L1 / 5% L2 of the SALE commission, on top, no level 3, no bonus-on-bonus, no cycles/self-invite, locked at approval. **Switched off** (`teamBonusEnabled`) until your legal check. |
+| Invite | ❌ | ✅ | `?invite=` and `/j/CODE` → 30-day cookie + localStorage, apply step 3 "Aapko X ne invite kiya" with Change link and live check. Payout details moved out of the application. |
+| Dashboard | ⚠️ | ✅ | Tabs Overview / Sales / Team / Wallet; Team only while the bonus is on; wallet split by own sales vs team bonus. |
+| Withdraw | ✅ | ✅ | Plus frozen-partner block. |
+| Admin | ⚠️ | ✅ | Team tree, ledger viewer (filter by code + balance), refund report, freeze/unfreeze. |
+| Home | ⚠️ | ⚠️ | Masterclass block (shown once a video is set), testimonial video link. **Left:** §7 order, new step names, mentor/example pages, quote above pricing, FIRST100 chip on home — they come from the missing `GETUDAAN_WEBSITE_UPGRADE_PROMPT.md`. |
+| Masterclass | ❌ | ✅ | `/masterclass`: video only when `masterclassVideoUrl` is set (else points to the free lesson), FIRST100 offer while the coupon is live, auto-applied at checkout. |
+| Testimonials | ⚠️ | ✅ | Consent date (required to publish), proof link (admin only), video link. **Left:** real testimonials/videos. |
+| Free lesson | ⚠️ | ⚠️ | Unchanged (not in this build): the lead form is still optional, not a gate. |
+| Legal | ⚠️ | ⚠️ | `/legal/partners` Partner Terms with the team-bonus clause (full clause only while ON), linked from Terms, footer and the apply form. **Left:** real legal name, address and contact details. |
+| SEO/Share | ❌ | ✅ | Share images for home (default), `/masterclass`, `/partners`, and a personal card per invite link. |
+
+**Bugs found and fixed on the way:** the apply form submitted from step 2 (skipping step 3); the support WhatsApp link would have been malformed once a number is set (lost `\` in a regex).
+
+**Before deploying to staging:** run `prisma migrate deploy` (3 new migrations: `partner_freeze`, `team_bonus`, `first100_testimonial_proof`) and set up the 5-minute scheduler.
+
+### `[FILL]` still missing (hidden on the site until set)
+
+| Key | Where to set it |
+|---|---|
+| Confirm team bonus is paid by Get Udaan on top + legal check (then turn on `teamBonusEnabled`) | Admin → Settings |
+| Confirm "joining is free" (Partner Terms states it — true in the code) | — |
+| Payout time | Admin → Settings → `payoutTimeText` |
+| TDS rate (from your CA) | Admin → Settings → `tdsBps` |
+| Refund-flag threshold | Admin → Settings → `refundFlagPct` |
+| Legal name, address, support WhatsApp, support email | Admin → Settings |
+| Masterclass video | Admin → Settings → `masterclassVideoUrl` |
+| Testimonials (real, with consent) + testimonial videos, mentor details | Admin → Landing content |
+| `GETUDAAN_WEBSITE_UPGRADE_PROMPT.md` (home §7 order) | send the file |
