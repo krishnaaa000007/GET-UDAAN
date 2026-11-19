@@ -43,7 +43,8 @@ export async function addClientMessage(user: { id: string; name: string | null; 
   if (!project) return { ok: false, error: "generic" };
   await db.serviceMessage.create({ data: { projectId: project.id, authorId: user.id, fromTeam: false, body: text } });
   const settings = await getSettings();
-  await notify(settings.supportEmail, "serviceUpdate", {
+  const teamInbox = settings.supportEmail || env.adminEmail;
+  if (teamInbox) await notify(teamInbox, "serviceUpdate", {
     name: "team",
     title: `Done-with-you: new message from ${user.name ?? user.email}`,
     text,

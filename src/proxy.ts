@@ -7,12 +7,13 @@
  *  3. Saves UTM tags with the visitor; remembers ?coupon=CODE for checkout prefill.
  */
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { PARTNER_RULES } from "@/config/partners";
 import { encodeRefCookie, normalizeCode } from "@/server/attribution";
 import { recordClick } from "@/server/clicks";
 import { db } from "@/lib/db";
 
 const YEAR = 365 * 86_400;
-const REF_COOKIE_DAYS = 90; // cookie lives long; the admin "attribution window" is enforced at checkout
+const REF_COOKIE_DAYS = PARTNER_RULES.refCookieDays; // 30 days (brief §1); the attribution window is also enforced at checkout
 
 export async function proxy(req: NextRequest, event: NextFetchEvent) {
   const url = req.nextUrl;

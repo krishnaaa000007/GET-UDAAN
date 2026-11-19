@@ -11,7 +11,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { siteUrl } from "@/lib/site-url";
-import { addDays, formatIST } from "@/lib/time";
+import { addMinutes, formatIST } from "@/lib/time";
 import { computeOrderCommission } from "@/server/commission";
 import { higherTier } from "@/server/catalog";
 import { createMagicLink } from "@/server/auth";
@@ -138,7 +138,7 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
     await tx.checkout.updateMany({ where: { email: order.email, status: { in: ["OPEN", "ABANDONED"] } }, data: { status: "PAID" } });
     await tx.lead.updateMany({ where: { OR: [{ email: order.email }, { phone: order.phone }], status: "NEW" }, data: { status: "CONVERTED", convertedAt: paidAt } });
 
-    // Partner commission (PENDING until the refund window ends)
+    // Partner commission: PENDING until commissionReleaseMinutes after payment (1 hour by default)
     let commission: { amountPaise: number; availableAt: Date } | null = null;
     if (order.partner && order.partner.status === "APPROVED") {
       const rateFor = (productId: string, fallback: number) => order.partner!.rates.find((r) => r.productId === productId)?.rateBps ?? fallback;
@@ -150,7 +150,7 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
         gatewayFeePaise: p.fee ?? null,
       });
       if (c.amountPaise > 0) {
-        const availableAt = addDays(paidAt, settings.refundWindowDays);
+        const availableAt = addMinutes(paidAt, settings.commissionReleaseMinutes);
         await tx.commission.create({
           data: { partnerId: order.partner.id, orderId: order.id, basePaise: c.basePaise, rateBps: c.effectiveRateBps, amountPaise: c.amountPaise, availableAt },
         });
@@ -183,7 +183,7 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
         name: order.partner.displayName,
         productName: order.items.map((i) => i.name).join(" + "),
         commissionPaise: commission.amountPaise,
-        availableOn: formatIST(commission.availableAt, "date"),
+        availableOn: formatIST(commission.availableAt, "datetime"),
         dashboardUrl: `${siteUrl()}/partner`,
       });
     }

@@ -42,7 +42,7 @@ export const templates = {
        <p><b>Total paid: ${formatINR(d.totalPaise)}</b></p>
        ${button(d.loginUrl, "Lesson 1 shuru karein →")}
        <p style="font-size:13px;color:#666">Ye login link 7 din valid hai. Baad mein apne email se kabhi bhi login kar sakte hain.</p>
-       <p style="font-size:13px">Koi problem? WhatsApp karein: ${esc(d.supportWhatsapp)}</p>`,
+       ${d.supportWhatsapp ? `<p style="font-size:13px">Koi problem? WhatsApp karein: ${esc(d.supportWhatsapp)}</p>` : ""}`,
     ),
     text: `Payment successful! Order #${d.orderNumber}. Total ${formatINR(d.totalPaise)}. Start learning: ${d.loginUrl}`,
   }),

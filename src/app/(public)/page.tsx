@@ -39,7 +39,7 @@ import { formatINR } from "@/lib/money";
 import { formatIST } from "@/lib/time";
 import { listProducts } from "@/server/catalog";
 import { getLandingContent, getSocialProof } from "@/server/content";
-import { getSettings } from "@/server/settings";
+import { getSettings, supportWhatsappHref } from "@/server/settings";
 import { getRecentPurchases } from "@/server/testimonials";
 
 export const revalidate = 300;
@@ -94,7 +94,7 @@ export default async function LandingPage() {
   const entryPrice = entry ? formatINR(entry.price.amountPaise) : "";
   const deadline = tiers.find((t) => t.price.endsAt)?.price.endsAt ?? null;
   const days = settings.refundWindowDays;
-  const wa = `https://wa.me/${settings.supportWhatsapp.replace(/\D/g, "")}`;
+  const wa = supportWhatsappHref(settings);
 
   // Real numbers from the course itself.
   const lessons = course?.modules.flatMap((m) => m.lessons) ?? [];

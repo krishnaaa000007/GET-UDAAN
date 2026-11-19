@@ -16,7 +16,7 @@ import { formatIST } from "@/lib/time";
 import { createSession, getCurrentUser } from "@/server/auth";
 import { getProductWithPrice } from "@/server/catalog";
 import { browserOwnsOrder } from "@/server/order-cookie";
-import { getSettings } from "@/server/settings";
+import { getSettings, supportWhatsappHref } from "@/server/settings";
 import { ConfettiOnce, PurchasePixel, ShareLink, WaitForPayment } from "./client";
 
 export const metadata: Metadata = { title: "Payment successful", robots: { index: false } };
@@ -47,7 +47,7 @@ export default async function ThankYouPage({ params }: PageProps<"/thank-you/[or
   const { orderId } = await params;
   const [order, settings] = await Promise.all([db.order.findUnique({ where: { id: orderId }, include: { items: { include: { product: true } } } }), getSettings()]);
   if (!order) notFound();
-  const wa = `https://wa.me/${settings.supportWhatsapp.replace(/\D/g, "")}`;
+  const wa = supportWhatsappHref(settings);
 
   if (order.status !== "PAID") {
     return (

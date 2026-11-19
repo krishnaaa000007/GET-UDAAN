@@ -18,7 +18,7 @@ import t from "@/content/hi-Latn/done-with-you.json";
 import { formatINR } from "@/lib/money";
 import { getProductWithPrice } from "@/server/catalog";
 import { getLandingContent } from "@/server/content";
-import { getSettings } from "@/server/settings";
+import { getSettings, supportWhatsappHref } from "@/server/settings";
 
 export const metadata: Metadata = { title: t.meta.title, description: t.meta.description };
 export const revalidate = 300;
@@ -32,7 +32,7 @@ export default async function DoneWithYouPage() {
   const price = formatINR(item.price.amountPaise);
   const href = `/checkout/${item.product.slug}`;
   const features = Array.isArray(item.product.features) ? (item.product.features as string[]) : [];
-  const wa = `https://wa.me/${settings.supportWhatsapp.replace(/\D/g, "")}`;
+  const wa = supportWhatsappHref(settings);
   const team = landing.team;
 
   return (

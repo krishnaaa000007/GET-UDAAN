@@ -10,6 +10,7 @@ import { useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/data";
 import { Input, PhoneInput } from "@/components/ui/form";
+import { PARTNER_RULES } from "@/config/partners";
 import t from "@/content/hi-Latn/partner.json";
 import { applyAction } from "./actions";
 
@@ -29,7 +30,7 @@ export function ApplyForm() {
       <div role="status" className="flex flex-col items-center gap-3 rounded-lg border border-line bg-surface-raised p-6 text-center">
         <CircleCheck aria-hidden className="size-14 text-success" strokeWidth={1.5} />
         <h3 className="type-heading text-ink">{a.success.title}</h3>
-        <p className="text-ink-muted">{a.success.text}</p>
+        <p className="text-ink-muted">{a.success.text.replace("{approval}", PARTNER_RULES.approvalTargetHours)}</p>
         <Button href="/free-lesson" variant="secondary">
           {a.success.cta}
         </Button>

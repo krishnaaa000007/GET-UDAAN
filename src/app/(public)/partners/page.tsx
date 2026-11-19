@@ -9,6 +9,7 @@ import { Accordion, AccordionItem } from "@/components/ui/accordion";
 import { Badge, Highlight, IncomeDisclaimer, SectionHeader } from "@/components/ui/basics";
 import { Button } from "@/components/ui/button";
 import t from "@/content/hi-Latn/partner.json";
+import { PARTNER_RULES, releaseLabel } from "@/config/partners";
 import { formatINR } from "@/lib/money";
 import { listProducts } from "@/server/catalog";
 import { evaluateCoupon } from "@/server/pricing";
@@ -40,6 +41,9 @@ export default async function PartnersPage() {
   const fill = (str: string) =>
     str
       .replaceAll("{days}", String(s.refundWindowDays))
+      .replaceAll("{release}", releaseLabel(s.commissionReleaseMinutes))
+      .replaceAll("{payoutTime}", s.payoutTimeText)
+      .replaceAll("{approval}", PARTNER_RULES.approvalTargetHours)
       .replaceAll("{min}", formatINR(s.minWithdrawalPaise))
       .replaceAll("{pct}", String(maxPct))
       .replaceAll("{window}", String(s.attributionWindowDays));
@@ -101,7 +105,7 @@ export default async function PartnersPage() {
         <div className="container-page">
           <SectionHeader eyebrow={L.payout.eyebrow} heading={L.payout.title} className="reveal" />
           <ol className="mt-8 grid gap-4 md:grid-cols-3">
-            {L.payout.items.map((p) => (
+            {L.payout.items.filter((p) => !("needs" in p) || (p.needs === "payoutTime" && s.payoutTimeText)).map((p) => (
               <li key={p.title} className="reveal flex flex-col gap-1 rounded-md border border-line bg-surface-raised p-4 md:p-6">
                 <h3 className="type-title text-ink">{fill(p.title)}</h3>
                 <p className="text-ink-muted">{fill(p.desc)}</p>
@@ -118,7 +122,7 @@ export default async function PartnersPage() {
           <Accordion className="mt-8 max-w-3xl">
             {L.faq.items.map((f) => (
               <AccordionItem key={f.q} group="partner-faq" title={f.q}>
-                {fill(f.a)}
+                {fill(!s.absorbRefunds && "aReversed" in f && f.aReversed ? f.aReversed : f.a)}
               </AccordionItem>
             ))}
           </Accordion>

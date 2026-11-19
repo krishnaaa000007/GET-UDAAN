@@ -27,6 +27,10 @@ export default async function LegalPage({ params }: PageProps<"/legal/[page]">) 
   if (!PAGES.includes(page as PageKey)) notFound();
   const s = await getSettings();
   const seller = s.sellerLegalName;
+  // Real contact details only; with none set yet, point to the Contact page instead of showing a fake number.
+  const contactText = [s.supportWhatsapp && `WhatsApp ${s.supportWhatsapp}`, s.supportEmail && `email ${s.supportEmail}`].filter(Boolean).join(" or ") || "via our Contact page";
+  const releaseText = s.commissionReleaseMinutes % 60 === 0 ? `${s.commissionReleaseMinutes / 60} hour(s)` : `${s.commissionReleaseMinutes} minutes`;
+  const refundText = s.absorbRefunds ? "is not taken back if the buyer is later refunded (Get Udaan bears refunds)" : "is reversed if the order is refunded";
 
   const body: Record<PageKey, React.ReactNode> = {
     terms: (
@@ -41,7 +45,7 @@ export default async function LegalPage({ params }: PageProps<"/legal/[page]">) 
         <H>Third-party tools</H>
         <P>The course uses third-party AI and editing tools whose features, pricing and terms may change. Follow each platform&apos;s rules, and do not create content that infringes others&apos; rights or is misleading or harmful.</P>
         <H>Partners</H>
-        <P>Partner (affiliate) commissions are governed by the partner dashboard terms: commissions are pending during the refund window, reversed on refunds, and paid on approved withdrawal requests. We may withhold commission for fraud, self-referral or spam.</P>
+        <P>Partner (affiliate) commissions are governed by the Partner Terms: a commission becomes available in the partner&apos;s wallet {releaseText} after the sale, {refundText}, and is paid on approved withdrawal requests. We may withhold commission for fraud, self-referral or spam.</P>
         <H>Liability & law</H>
         <P>To the extent permitted by law our liability is limited to the amount you paid for the course. These terms are governed by the laws of India.</P>
       </>
@@ -58,12 +62,12 @@ export default async function LegalPage({ params }: PageProps<"/legal/[page]">) 
         <H>Cookies</H>
         <P>We use essential cookies (login, checkout, referral tracking) and, if enabled, Meta Pixel / Google Analytics for measuring ads.</P>
         <H>Your rights</H>
-        <P>You can ask to access, correct or delete your data by writing to {s.supportEmail}. We keep order records as required by tax law.</P>
+        <P>You can ask to access, correct or delete your data by writing to us ({contactText}). We keep order records as required by tax law.</P>
       </>
     ),
     refund: (
       <>
-        <P><b>{s.refundWindowDays}-day refund:</b> If you&apos;re not happy with a course, message us on WhatsApp ({s.supportWhatsapp}) or email ({s.supportEmail}) within {s.refundWindowDays} days of purchase with your order number. We refund the full amount — no questions asked.</P>
+        <P><b>{s.refundWindowDays}-day refund:</b> If you&apos;re not happy with a course, message us ({contactText}) within {s.refundWindowDays} days of purchase with your order number. We refund the full amount — no questions asked.</P>
         <P>Refunds are processed to the original payment method within 5–7 working days after approval (bank timelines may vary). Course access ends when a refund is issued.</P>
         <P>Refunds are not available after {s.refundWindowDays} days, or for accounts removed for sharing content. Done-with-you service refunds are prorated based on work already delivered.</P>
         <P>Failed payments where money was debited are reversed automatically by the bank/Razorpay, usually within 5–7 working days.</P>
@@ -74,8 +78,8 @@ export default async function LegalPage({ params }: PageProps<"/legal/[page]">) 
         <P><b>{seller}</b></P>
         {s.sellerAddress && <P>{s.sellerAddress}</P>}
         {s.gstin && <P>GSTIN: {s.gstin}</P>}
-        <P>WhatsApp: {s.supportWhatsapp}</P>
-        <P>Email: {s.supportEmail}</P>
+        {s.supportWhatsapp && <P>WhatsApp: {s.supportWhatsapp}</P>}
+        {s.supportEmail && <P>Email: {s.supportEmail}</P>}
         <P>We usually reply within 24 hours (Mon–Sat).</P>
       </>
     ),

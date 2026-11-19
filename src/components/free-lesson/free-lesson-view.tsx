@@ -15,7 +15,7 @@ import t from "@/content/hi-Latn/free-lesson.json";
 import { db } from "@/lib/db";
 import { formatINR } from "@/lib/money";
 import { listProducts } from "@/server/catalog";
-import { getSettings } from "@/server/settings";
+import { getSettings, supportWhatsappHref } from "@/server/settings";
 import { videoProviderFor } from "@/server/video/provider";
 import { PromptList } from "./prompt-list";
 
@@ -46,7 +46,7 @@ export async function FreeLessonView({ lessonId }: { lessonId: string }) {
   const price = entry ? formatINR(entry.price.amountPaise) : "";
   const fill = (s: string) => s.replace("{remaining}", String(remaining)).replace("{price}", price).replace("{total}", String(total)).replace("{n}", "1");
   const checkoutHref = entry ? `/checkout/${entry.product.slug}` : "/#pricing";
-  const wa = `https://wa.me/${settings.supportWhatsapp.replace(/\D/g, "")}`;
+  const wa = supportWhatsappHref(settings);
 
   return (
     <main className="pb-12">

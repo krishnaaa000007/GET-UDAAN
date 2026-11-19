@@ -81,7 +81,8 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
   const activeBumps = bumps.filter((b) => bumpOn[b.slug]);
   const total = product.pricePaise - (coupon?.discountPaise ?? 0) + activeBumps.reduce((s, b) => s + b.pricePaise, 0);
   const busy = pending || paying; // while busy the Pay button is locked, so nobody can pay twice
-  const wa = `https://wa.me/${supportWhatsapp.replace(/\D/g, "")}`;
+  const waDigits = supportWhatsapp.replace(/\D/g, "");
+  const wa = waDigits.length >= 10 ? `https://wa.me/${waDigits}` : undefined;
   const fieldErr = (f: string) => (error?.field === f ? error.msg : undefined);
 
   function submit(e: React.FormEvent) {
@@ -168,10 +169,12 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
             >
               {t.failed.retry}
             </Button>
-            <a href={wa} target="_blank" rel="noopener" className="type-button inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-4 text-gold-text underline underline-offset-4">
+            {wa && (
+              <a href={wa} target="_blank" rel="noopener" className="type-button inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-4 text-gold-text underline underline-offset-4">
               <MessageCircle aria-hidden className="size-5" />
               {t.failed.whatsapp}
             </a>
+            )}
           </div>
         </div>
       )}
@@ -270,10 +273,12 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
           </Button>
           <TrustRow />
           <p className="type-small text-ink-muted">{t.refund.replace("{days}", String(refundDays))}</p>
-          <a href={wa} target="_blank" rel="noopener" className="type-small inline-flex min-h-12 items-center gap-2 self-start text-gold-text underline underline-offset-4">
+          {wa && (
+            <a href={wa} target="_blank" rel="noopener" className="type-small inline-flex min-h-12 items-center gap-2 self-start text-gold-text underline underline-offset-4">
             <MessageCircle aria-hidden className="size-5" />
             {t.help.replace("{number}", supportWhatsapp)}
           </a>
+          )}
           {testimonial && (
             <figure className="flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4">
               <p className="type-label text-gold-text">{t.proof.eyebrow}</p>

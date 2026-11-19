@@ -16,6 +16,7 @@ import t from "@/content/hi-Latn/partner.json";
 import { cn } from "@/lib/cn";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
+import { PARTNER_RULES, releaseLabel } from "@/config/partners";
 import { formatINR } from "@/lib/money";
 import { formatIST, withinHours } from "@/lib/time";
 import { requireUser } from "@/server/auth";
@@ -67,7 +68,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
     );
   if (partnerRow.status !== "APPROVED")
     return (
-      <AppShell user={user}>{partnerRow.status === "PENDING" ? <Notice title={D.pending.title} text={D.pending.text} /> : <Notice title={D.rejected.title} text={partnerRow.adminNote} />}</AppShell>
+      <AppShell user={user}>{partnerRow.status === "PENDING" ? <Notice title={D.pending.title} text={D.pending.text.replace("{approval}", PARTNER_RULES.approvalTargetHours)} /> : <Notice title={D.rejected.title} text={partnerRow.adminNote} />}</AppShell>
     );
 
   const sp = await searchParams;
@@ -123,7 +124,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
               <div key={key} className="rounded-md border border-line bg-surface-raised p-3">
                 <dt className="type-label text-ink-muted">{D.split[key]}</dt>
                 <dd className="type-title text-ink">{formatINR(paise)}</dd>
-                <dd className="type-small text-ink-muted">{D.splitHint[key].replace("{days}", String(settings.refundWindowDays))}</dd>
+                <dd className="type-small text-ink-muted">{D.splitHint[key].replace("{release}", releaseLabel(settings.commissionReleaseMinutes))}</dd>
               </div>
             ))}
           </dl>
@@ -234,7 +235,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
                       <span className="type-small text-ink-muted">
                         {formatIST(s.paidAt, "date")}
                         {s.campaign ? ` • ${s.campaign}` : ""}
-                        {st === "PENDING" && s.commission ? ` • ${D.salesList.availableOn.replace("{date}", formatIST(s.commission.availableAt, "date"))}` : ""}
+                        {st === "PENDING" && s.commission ? ` • ${D.salesList.availableOn.replace("{time}", formatIST(s.commission.availableAt, "time"))}` : ""}
                       </span>
                     </span>
                     <span className="flex flex-none flex-col items-end gap-1">
@@ -358,7 +359,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
           <AccordionItem title={D.formula.title}>
             <div className="flex flex-col gap-2">
               {D.formula.lines.map((line) => (
-                <p key={line}>{line.replace("{days}", String(settings.refundWindowDays)).replace("{window}", String(settings.attributionWindowDays))}</p>
+                <p key={line}>{line.replace("{release}", releaseLabel(settings.commissionReleaseMinutes)).replace("{refundLine}", settings.absorbRefunds ? D.formula.refundAbsorbed : D.formula.refundReversed).replace("{window}", String(settings.attributionWindowDays))}</p>
               ))}
             </div>
           </AccordionItem>

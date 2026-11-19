@@ -4,13 +4,13 @@ import { MessageCircle } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { IncomeDisclaimer } from "@/components/ui/basics";
 import shell from "@/content/hi-Latn/shell.json";
-import type { Settings } from "@/server/settings";
+import { supportWhatsappHref, type Settings } from "@/server/settings";
 
 const link = "inline-flex min-h-12 items-center rounded-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline";
 
 export function SiteFooter({ settings }: { settings: Settings }) {
   const f = shell.footer;
-  const wa = settings.supportWhatsapp.replace(/\D/g, "");
+  const wa = supportWhatsappHref(settings);
   return (
     // Extra bottom space on mobile so the sticky buy bar never covers the footer.
     <footer id="site-footer" className="border-t border-line bg-surface-raised pt-16 pb-32 md:pb-16">
@@ -34,17 +34,21 @@ export function SiteFooter({ settings }: { settings: Settings }) {
         <div>
           <h2 className="type-label mb-2 text-ink-muted">{f.supportLabel}</h2>
           <ul>
+            {wa && (
             <li>
-              <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener" className={`${link} gap-2`}>
+              <a href={wa} target="_blank" rel="noopener" className={`${link} gap-2`}>
                 <MessageCircle aria-hidden className="size-5" />
                 {f.whatsapp.replace("{number}", settings.supportWhatsapp)}
               </a>
             </li>
+            )}
+            {settings.supportEmail && (
             <li>
               <a href={`mailto:${settings.supportEmail}`} className={link}>
                 {settings.supportEmail}
               </a>
             </li>
+            )}
             {settings.instagramUrl && (
               <li>
                 <a href={settings.instagramUrl} target="_blank" rel="noopener" className={link}>

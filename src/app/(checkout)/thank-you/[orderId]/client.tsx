@@ -8,7 +8,7 @@ import t from "@/content/hi-Latn/checkout.json";
 import { track } from "@/lib/track";
 
 /** Polls until the webhook marks the order PAID (usually 2–10 seconds). */
-export function WaitForPayment({ orderId, whatsappHref }: { orderId: string; whatsappHref: string }) {
+export function WaitForPayment({ orderId, whatsappHref }: { orderId: string; whatsappHref?: string }) {
   const router = useRouter();
   const [slow, setSlow] = useState(false);
   useEffect(() => {
@@ -35,7 +35,7 @@ export function WaitForPayment({ orderId, whatsappHref }: { orderId: string; wha
       <SpeedTrails animated className="h-12 w-14" />
       <h1 className="type-heading text-ink">{t.waiting.title}</h1>
       <p className="text-ink-muted">{t.waiting.text}</p>
-      {slow && (
+      {slow && whatsappHref && (
         <>
           <p className="type-small text-ink-muted">{t.waiting.slow}</p>
           <a href={whatsappHref} target="_blank" rel="noopener" className="type-button inline-flex min-h-12 items-center gap-2 text-gold-text underline underline-offset-4">
