@@ -4,10 +4,11 @@
  * Sensitive changes are written to the audit log.
  */
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/server/auth";
-import { approvePartner, decideWithdrawal, rejectPartner } from "@/server/partners";
+import { approvePartner, decideWithdrawal, freezePartner, rejectPartner, unfreezePartner } from "@/server/partners";
 import { audit } from "@/server/audit";
 import { DEFAULTS, setSetting, type SettingKey } from "@/server/settings";
 import { landingDefaults, type LandingSectionKey } from "@/content/landing";
@@ -19,11 +20,26 @@ export async function approvePartnerAction(form: FormData) {
   const admin = await requireAdmin();
   await approvePartner(admin.id, String(form.get("partnerId")), String(form.get("code") ?? "") || undefined);
   revalidatePath("/admin/partners");
+  if (form.get("back") === "1") redirect("/admin/partners?done=approved");
 }
 
 export async function rejectPartnerAction(form: FormData) {
   const admin = await requireAdmin();
   await rejectPartner(admin.id, String(form.get("partnerId")), String(form.get("reason") || "Abhi aapka page humare criteria se match nahi karta."));
+  revalidatePath("/admin/partners");
+  if (form.get("back") === "1") redirect("/admin/partners?done=rejected");
+}
+
+export async function freezePartnerAction(_: unknown, form: FormData): Promise<Result> {
+  const admin = await requireAdmin();
+  const r = await freezePartner(admin.id, String(form.get("partnerId")), String(form.get("reason") ?? ""));
+  revalidatePath("/admin/partners");
+  return r;
+}
+
+export async function unfreezePartnerAction(form: FormData) {
+  const admin = await requireAdmin();
+  await unfreezePartner(admin.id, String(form.get("partnerId")));
   revalidatePath("/admin/partners");
 }
 

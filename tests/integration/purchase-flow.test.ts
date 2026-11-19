@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import { makeCatalog, makeOrder, makePartner, payment, resetDb, sendWebhook } from "./helpers";
-import { approveDueCommissions, decideWithdrawal, getWallet, requestWithdrawal } from "@/server/partners";
+import { approveDueCommissions, decideWithdrawal, freezePartner, getWallet, requestWithdrawal, unfreezePartner } from "@/server/partners";
 import { getPartnerDashboard } from "@/server/partner-dashboard";
 import { setSetting } from "@/server/settings";
 
@@ -136,8 +136,9 @@ describe("commission lifecycle & withdrawals", () => {
     expect((await getWallet(partner.id)).availablePaise).toBe(24361);
   });
 
-  it("refund reverses commission (pending → reversed, no wallet change)", async () => {
+  it("absorbRefunds OFF: refund reverses commission (pending → reversed, no wallet change)", async () => {
     const { partner } = await paidSale();
+    await setSetting("absorbRefunds", false);
     await sendWebhook("refund.processed", { refund: { entity: { id: "rfnd_1", payment_id: "pay_1", amount: 49900 } } });
     expect((await db.order.findFirstOrThrow()).status).toBe("REFUNDED");
     expect((await db.commission.findFirstOrThrow()).status).toBe("REVERSED");
@@ -145,8 +146,9 @@ describe("commission lifecycle & withdrawals", () => {
     expect(await getWallet(partner.id)).toMatchObject({ pendingPaise: 0, availablePaise: 0 });
   });
 
-  it("refund after payout makes the wallet negative", async () => {
+  it("absorbRefunds OFF: refund after payout makes the wallet negative", async () => {
     const { partner } = await paidSale();
+    await setSetting("absorbRefunds", false);
     await db.commission.updateMany({ data: { availableAt: new Date(Date.now() - 1000) } });
     await approveDueCommissions();
     await requestWithdrawal(partner.id, 24361);
@@ -155,6 +157,90 @@ describe("commission lifecycle & withdrawals", () => {
     await decideWithdrawal("admin", p.id, { action: "paid", reference: "UTR" });
     await sendWebhook("refund.processed", { refund: { entity: { id: "rfnd_2", payment_id: "pay_1", amount: 49900 } } });
     expect((await getWallet(partner.id)).availablePaise).toBe(-24361);
+  });
+});
+
+describe("partner rules (functionality brief §3)", () => {
+  async function sale(phone = "9876543210") {
+    const { basic } = await makeCatalog();
+    const partner = await makePartner("LION", "lion@p.in");
+    await db.order.create({
+      data: {
+        email: "buyer@gmail.com", phone, name: "Buyer", subtotalPaise: 49900, totalPaise: 49900, partnerId: partner.id, attributionSource: "COOKIE", gatewayOrderId: "o1",
+        items: { create: [{ productId: basic.id, name: "Basic", unitPaise: 49900 }] },
+      },
+    });
+    await sendWebhook("payment.captured", payment("o1", 49900, "pay_1"));
+    return partner;
+  }
+  const minutesFromNow = (m: number) => new Date(Date.now() + m * 60_000);
+
+  it("commission becomes available 60 minutes after the sale, not before; running the job twice pays once", async () => {
+    const partner = await sale();
+    const c = await db.commission.findFirstOrThrow();
+    const o = await db.order.findFirstOrThrow();
+    expect(Math.round((c.availableAt.getTime() - o.paidAt!.getTime()) / 60_000)).toBe(60);
+    expect(await approveDueCommissions()).toBe(0);
+    expect((await db.commission.findFirstOrThrow()).status).toBe("PENDING");
+    await db.commission.updateMany({ data: { availableAt: minutesFromNow(-1) } });
+    await approveDueCommissions();
+    await approveDueCommissions();
+    expect((await db.commission.findFirstOrThrow()).status).toBe("APPROVED");
+    expect(await db.partnerLedger.count({ where: { type: "COMMISSION_APPROVED" } })).toBe(1);
+    expect((await getWallet(partner.id)).availablePaise).toBe(24361);
+  });
+
+  it("refund after release: commission stays (Get Udaan absorbs it) and the refund is recorded", async () => {
+    const partner = await sale();
+    await db.commission.updateMany({ data: { availableAt: minutesFromNow(-1) } });
+    await approveDueCommissions();
+    await sendWebhook("refund.processed", { refund: { entity: { id: "rfnd_a", payment_id: "pay_1", amount: 49900 } } });
+    expect((await db.order.findFirstOrThrow()).status).toBe("REFUNDED");
+    expect(await db.refund.count()).toBe(1);
+    expect((await db.commission.findFirstOrThrow()).status).toBe("APPROVED");
+    expect((await getWallet(partner.id)).availablePaise).toBe(24361);
+  });
+
+  it("refund inside the first hour: commission is still released", async () => {
+    const partner = await sale();
+    await sendWebhook("refund.processed", { refund: { entity: { id: "rfnd_b", payment_id: "pay_1", amount: 49900 } } });
+    await db.commission.updateMany({ data: { availableAt: minutesFromNow(-1) } });
+    await approveDueCommissions();
+    expect((await db.commission.findFirstOrThrow()).status).toBe("APPROVED");
+    expect((await getWallet(partner.id)).availablePaise).toBe(24361);
+  });
+
+  it("frozen partner: commission stays pending and withdrawals pause; unfreeze releases it", async () => {
+    const partner = await sale();
+    await setSetting("minWithdrawalPaise", 10000);
+    await freezePartner("admin", partner.id, "Checking refunds");
+    await db.commission.updateMany({ data: { availableAt: minutesFromNow(-1) } });
+    await approveDueCommissions();
+    expect((await db.commission.findFirstOrThrow()).status).toBe("PENDING");
+    const w = await requestWithdrawal(partner.id, 10000);
+    expect(w.ok).toBe(false);
+    await unfreezePartner("admin", partner.id);
+    expect((await db.commission.findFirstOrThrow()).status).toBe("APPROVED");
+  });
+
+  it("withdrawal: blocked below ₹500, allowed at ₹500", async () => {
+    const partner = await sale();
+    await db.commission.updateMany({ data: { amountPaise: 60000, availableAt: minutesFromNow(-1) } });
+    await approveDueCommissions();
+    expect((await requestWithdrawal(partner.id, 49999)).ok).toBe(false);
+    expect((await requestWithdrawal(partner.id, 50000)).ok).toBe(true);
+  });
+
+  it("self-purchase by the partner's own phone number earns nothing", async () => {
+    await sale("9999999999"); // makePartner gives every partner phone 9999999999
+    expect(await db.commission.count()).toBe(0);
+  });
+
+  it("webhook replay with the same payment creates nothing new", async () => {
+    await sale();
+    await sendWebhook("payment.captured", payment("o1", 49900, "pay_1"), "evt_replay");
+    expect(await db.commission.count()).toBe(1);
+    expect(await db.partnerLedger.count()).toBe(0);
   });
 });
 

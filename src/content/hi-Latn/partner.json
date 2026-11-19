@@ -289,6 +289,12 @@
       ],
       "refundAbsorbed": "Buyer refund le toh bhi tumhari commission rehti hai — refund Get Udaan uthata hai.",
       "refundReversed": "Refund hone par commission wapas ho jaati hai."
+    },
+    "frozen": {
+      "title": "Account review mein hai.",
+      "text": "Is dauraan nayi commission pending rahegi aur withdraw ruka rahega. Review poora hote hi sab release ho jaayega.",
+      "reason": "Reason: {reason}",
+      "withdraw": "Account review mein hai, isliye abhi withdraw nahi ho sakta."
     }
   }
 }

@@ -13,14 +13,14 @@
 export type AttributionInput = {
   now: Date;
   windowDays: number;
-  buyer: { userId: string | null; email: string };
+  buyer: { userId: string | null; email: string; phone?: string | null };
   coupon: { partnerId: string } | null;
   /** last-click cookie */
   cookie: { partnerId: string; clickId: string | null; campaign: string | null; at: Date } | null;
   /** most recent lead record for this buyer's email/phone that has a partner */
   lead: { id: string; partnerId: string; campaign: string | null; at: Date } | null;
   /** lookup for partner status + owner, keyed by partnerId */
-  partners: Record<string, { status: string; userId: string; email: string }>;
+  partners: Record<string, { status: string; userId: string; email: string; phone?: string | null }>;
 };
 
 export type Attribution = {
@@ -55,7 +55,8 @@ export function resolveAttribution(input: AttributionInput): Attribution {
 
   const isSelf =
     (input.buyer.userId && input.buyer.userId === partner.userId) ||
-    input.buyer.email.trim().toLowerCase() === partner.email.trim().toLowerCase();
+    input.buyer.email.trim().toLowerCase() === partner.email.trim().toLowerCase() ||
+    (!!input.buyer.phone && !!partner.phone && input.buyer.phone.replace(/\D/g, "").slice(-10) === partner.phone.replace(/\D/g, "").slice(-10));
   if (isSelf) return { ...NONE, note: "self-referral" };
 
   return candidate;

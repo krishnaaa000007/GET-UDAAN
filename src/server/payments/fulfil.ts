@@ -22,7 +22,7 @@ import { reverseCommissionsForRefund } from "@/server/partners";
 import { sendServerPurchaseEvents } from "@/server/analytics";
 import type { Tier } from "@/generated/prisma/enums";
 
-type RzPayment = { id: string; order_id: string; amount: number; fee?: number; tax?: number; status: string; email?: string; contact?: string };
+type RzPayment = { id: string; order_id: string; amount: number; fee?: number; tax?: number; status: string; email?: string; contact?: string; vpa?: string };
 type RzRefund = { id: string; payment_id: string; amount: number; status?: string };
 type RzEvent = { event: string; payload: { payment?: { entity: RzPayment }; refund?: { entity: RzRefund } } };
 
@@ -140,7 +140,16 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
 
     // Partner commission: PENDING until commissionReleaseMinutes after payment (1 hour by default)
     let commission: { amountPaise: number; availableAt: Date } | null = null;
-    if (order.partner && order.partner.status === "APPROVED") {
+    // Self-purchase check at payment time: the payer's email, phone or UPI ID matching the partner's own = no commission.
+    const last10 = (v?: string | null) => (v ?? "").replace(/\D/g, "").slice(-10);
+    const partnerSelf =
+      !!order.partner &&
+      ((!!p.vpa && !!order.partner.upiId && p.vpa.trim().toLowerCase() === order.partner.upiId.trim().toLowerCase()) ||
+        (last10(p.contact).length === 10 && last10(p.contact) === last10(order.partner.phone)) ||
+        last10(order.phone) === last10(order.partner.phone) ||
+        (!!p.email && p.email.trim().toLowerCase() === order.partner.user.email.toLowerCase()));
+    if (partnerSelf) await tx.auditLog.create({ data: { actorId: null, action: "commission.blocked_self_purchase", entity: "Order", entityId: order.id, after: { partnerId: order.partnerId } } });
+    if (order.partner && order.partner.status === "APPROVED" && !partnerSelf) {
       const rateFor = (productId: string, fallback: number) => order.partner!.rates.find((r) => r.productId === productId)?.rateBps ?? fallback;
       const c = computeOrderCommission({
         items: order.items.map((i) => ({ unitPaise: i.unitPaise, rateBps: rateFor(i.productId, i.product.defaultCommissionBps) })),
@@ -193,6 +202,7 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
 
 /** A refund done in the Razorpay dashboard (or via our admin) — mark order and reverse commission. */
 async function recordGatewayRefund(r: RzRefund) {
+  const { absorbRefunds } = await getSettings();
   const order = await db.order.findUnique({ where: { gatewayPaymentId: r.payment_id } });
   if (!order) throw new Error(`order not found for payment ${r.payment_id}`);
   await db.$transaction(async (tx) => {
@@ -205,7 +215,8 @@ async function recordGatewayRefund(r: RzRefund) {
     await tx.order.update({ where: { id: order.id }, data: { status: full ? "REFUNDED" : "PARTIALLY_REFUNDED" } });
     if (full) {
       await tx.enrollment.updateMany({ where: { orderId: order.id }, data: { revokedAt: new Date() } });
-      await reverseCommissionsForRefund(tx, order.id);
+      // Refunds are absorbed by Get Udaan by default: commissions (and team bonuses) stay.
+      if (!absorbRefunds) await reverseCommissionsForRefund(tx, order.id);
     }
   });
 }

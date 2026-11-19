@@ -496,6 +496,9 @@ model Partner {
   id                 String        @id @default(cuid())
   userId             String        @unique
   status             PartnerStatus @default(PENDING)
+  /// Admin freeze (fraud check): new commissions stay pending and withdrawals pause while set. Reason is shown to the partner.
+  frozenAt           DateTime?
+  frozenReason       String?
   /// Referral code used in links: /?ref=CODE
   code               String?       @unique
   displayName        String

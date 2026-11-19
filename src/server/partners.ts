@@ -6,6 +6,7 @@
 import "server-only";
 import { z } from "zod";
 import { db, type Tx } from "@/lib/db";
+import { hmac, safeEqual } from "@/lib/crypto";
 import { addRole, findOrCreateUser } from "@/server/auth";
 import { notify } from "@/server/notify";
 import { audit } from "@/server/audit";
@@ -66,12 +67,11 @@ export async function submitPartnerApplication(data: PartnerApplication) {
     bankIfsc: data.bankIfsc || null,
     status: "PENDING" as const,
   };
-  if (existing) await db.partner.update({ where: { id: existing.id }, data: fields });
-  else await db.partner.create({ data: { userId: user.id, ...fields } });
+  const partnerRow = existing ? await db.partner.update({ where: { id: existing.id }, data: fields }) : await db.partner.create({ data: { userId: user.id, ...fields } });
 
   await notify(data.email, "partnerApplicationReceived", { name: data.name });
   if (env.adminEmail)
-    await notify(env.adminEmail, "adminNewPartnerApplication", { name: data.name, instagram: data.instagramHandle, followers: data.followers, adminUrl: `${env.appUrl}/admin/partners` });
+    await notify(env.adminEmail, "adminNewPartnerApplication", { name: data.name, instagram: data.instagramHandle, followers: data.followers, adminUrl: `${env.appUrl}/admin/partners/review?t=${encodeURIComponent(partnerDecisionToken(partnerRow.id))}` });
   return { ok: true as const };
 }
 
@@ -111,10 +111,22 @@ export { recordClick } from "@/server/clicks";
 
 // ───────────── Commission lifecycle ─────────────
 
-/** PENDING → APPROVED once the refund window has passed (idempotent; safe to call anytime). */
+/**
+ * PENDING → APPROVED (available in the wallet) once availableAt has passed — 60 minutes after the sale by default.
+ * Idempotent: a status-guarded update + one ledger row per commission, so running it twice never pays twice.
+ * Frozen partners are skipped (their commissions wait until unfrozen).
+ * With absorbRefunds on, a refunded order's commission is still released (Get Udaan bears the refund).
+ */
 export async function approveDueCommissions(partnerId?: string) {
+  const { absorbRefunds } = await getSettings();
   const due = await db.commission.findMany({
-    where: { status: "PENDING", availableAt: { lte: new Date() }, order: { status: "PAID" }, ...(partnerId ? { partnerId } : {}) },
+    where: {
+      status: "PENDING",
+      availableAt: { lte: new Date() },
+      order: { status: absorbRefunds ? { in: ["PAID", "REFUNDED", "PARTIALLY_REFUNDED"] } : "PAID" },
+      partner: { frozenAt: null },
+      ...(partnerId ? { partnerId } : {}),
+    },
     select: { id: true, partnerId: true, amountPaise: true },
     take: 500,
   });
@@ -128,7 +140,7 @@ export async function approveDueCommissions(partnerId?: string) {
   return due.length;
 }
 
-/** Refund → commission reversed. If it was already approved/paid, the wallet goes down (can go negative). */
+/** Only used when absorbRefunds is OFF: refund → commission reversed (wallet can go negative if already paid out). */
 export async function reverseCommissionsForRefund(tx: Tx, orderId: string) {
   const list = await tx.commission.findMany({ where: { orderId, status: { not: "REVERSED" } } });
   for (const c of list) {
@@ -165,9 +177,10 @@ export async function requestWithdrawal(partnerId: string, amountPaise: number):
 
   // Serialise per partner: row lock prevents two parallel requests spending the same money.
   return db.$transaction(async (tx) => {
-    const [p] = await tx.$queryRaw<{ id: string; upiId: string | null; bankAccountNumber: string | null; bankIfsc: string | null; bankAccountName: string | null; payoutDetailsUpdatedAt: Date | null; status: string }[]>`
-      SELECT id, "upiId", "bankAccountNumber", "bankIfsc", "bankAccountName", "payoutDetailsUpdatedAt", status FROM "Partner" WHERE id = ${partnerId} FOR UPDATE`;
+    const [p] = await tx.$queryRaw<{ id: string; upiId: string | null; bankAccountNumber: string | null; bankIfsc: string | null; bankAccountName: string | null; payoutDetailsUpdatedAt: Date | null; status: string; frozenAt: Date | null; frozenReason: string | null }[]>`
+      SELECT id, "upiId", "bankAccountNumber", "bankIfsc", "bankAccountName", "payoutDetailsUpdatedAt", status, "frozenAt", "frozenReason" FROM "Partner" WHERE id = ${partnerId} FOR UPDATE`;
     if (!p || p.status !== "APPROVED") return { ok: false as const, error: "Partner account active nahi hai" };
+    if (p.frozenAt) return { ok: false as const, error: `Aapka account abhi review mein hai, isliye withdraw ruka hua hai.${p.frozenReason ? " Reason: " + p.frozenReason : ""}` };
     if (!p.upiId && !(p.bankAccountNumber && p.bankIfsc)) return { ok: false as const, error: "Pehle UPI ID ya bank details add karein" };
     if (p.payoutDetailsUpdatedAt && Date.now() - p.payoutDetailsUpdatedAt.getTime() < 24 * 3600_000)
       return { ok: false as const, error: "Payout details abhi badle gaye hain — security ke liye 24 ghante baad withdraw kar payenge" };
@@ -213,4 +226,40 @@ export async function decideWithdrawal(adminId: string, payoutId: string, decisi
     }
     await audit({ actorId: adminId, action: `payout.${decision.action}`, entity: "Payout", entityId: p.id, before: { status: p.status }, after: decision }, tx);
   });
+}
+
+// ───────────── Freeze (fraud check) ─────────────
+
+/** Freeze: new commissions stay pending and withdrawals pause, with a reason shown to the partner. */
+export async function freezePartner(adminId: string, partnerId: string, reason: string) {
+  const clean = reason.trim().slice(0, 300);
+  if (!clean) return { ok: false as const, error: "Give a reason (it is shown to the partner)" };
+  await db.partner.update({ where: { id: partnerId }, data: { frozenAt: new Date(), frozenReason: clean } });
+  await audit({ actorId: adminId, action: "partner.freeze", entity: "Partner", entityId: partnerId, after: { reason: clean } });
+  return { ok: true as const };
+}
+
+/** Unfreeze: releases every commission that became due while frozen. */
+export async function unfreezePartner(adminId: string, partnerId: string) {
+  await db.partner.update({ where: { id: partnerId }, data: { frozenAt: null, frozenReason: null } });
+  await audit({ actorId: adminId, action: "partner.unfreeze", entity: "Partner", entityId: partnerId });
+  await approveDueCommissions(partnerId);
+  return { ok: true as const };
+}
+
+// ───────────── One-tap approval links (admin alert email) ─────────────
+
+const DECISION_TTL_MS = 48 * 3600_000;
+
+/** Signed, expiring token for the admin's one-tap review link. The page it opens still requires an admin login. */
+export function partnerDecisionToken(partnerId: string, now = Date.now()) {
+  const exp = Math.floor((now + DECISION_TTL_MS) / 1000);
+  return `${partnerId}.${exp}.${hmac(`partner-decision:${partnerId}:${exp}`).slice(0, 32)}`;
+}
+
+export function verifyPartnerDecisionToken(token: string, now = Date.now()): string | null {
+  const [id, exp, sig] = token.split(".");
+  if (!id || !exp || !sig) return null;
+  if (Number(exp) * 1000 < now) return null;
+  return safeEqual(sig, hmac(`partner-decision:${id}:${exp}`).slice(0, 32)) ? id : null;
 }

@@ -83,7 +83,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
   const detailsLocked = withinHours(partnerRow.payoutDetailsUpdatedAt, 24);
   const hasPayout = !!(partnerRow.upiId || (partnerRow.bankAccountNumber && partnerRow.bankIfsc));
   const openRequest = d.payouts.some((p) => p.status === "REQUESTED" || p.status === "APPROVED");
-  const disabledReason = !hasPayout ? D.withdraw.needDetails : detailsLocked ? D.withdraw.locked : openRequest ? D.withdraw.open : null;
+  const disabledReason = partnerRow.frozenAt ? D.frozen.withdraw : !hasPayout ? D.withdraw.needDetails : detailsLocked ? D.withdraw.locked : openRequest ? D.withdraw.open : null;
   const best = d.campaigns.find((c) => c.sales > 0)?.campaign;
   const couponLine = coupon ? D.promo.couponLine.replace("{code}", coupon) : "";
   const split = [
@@ -108,6 +108,13 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
             <Highlight text={D.title} />
           </h1>
         </div>
+
+        {partnerRow.frozenAt && (
+          <p role="alert" className="rounded-md border border-fire bg-surface-raised p-4 text-ink">
+            <strong className="text-fire">{D.frozen.title}</strong> {D.frozen.text}
+            {partnerRow.frozenReason ? ` ${D.frozen.reason.replace("{reason}", partnerRow.frozenReason)}` : ""}
+          </p>
+        )}
 
         <NewSalesBanner partnerId={partnerRow.id} sales={d.sales.filter((s) => s.commission && s.commission.status !== "REVERSED").map((s) => ({ paidAt: s.paidAt, amountPaise: s.commission!.amountPaise }))} />
 

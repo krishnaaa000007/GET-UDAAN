@@ -110,11 +110,11 @@ export async function startCheckout(raw: CheckoutInput): Promise<StartCheckoutRe
   const attribution = resolveAttribution({
     now: new Date(),
     windowDays: settings.attributionWindowDays,
-    buyer: { userId: existingUser?.id ?? null, email },
+    buyer: { userId: existingUser?.id ?? null, email, phone: input.phone },
     coupon: couponPartnerId ? { partnerId: couponPartnerId } : null,
     cookie: ref && refPartner ? { partnerId: refPartner.id, clickId: ref.clickId, campaign: ref.campaign, at: ref.at } : null,
     lead: lead?.partnerId ? { id: lead.id, partnerId: lead.partnerId, campaign: lead.campaign, at: lead.createdAt } : null,
-    partners: Object.fromEntries(partnerRows.map((p) => [p.id, { status: p.status, userId: p.userId, email: p.user.email }])),
+    partners: Object.fromEntries(partnerRows.map((p) => [p.id, { status: p.status, userId: p.userId, email: p.user.email, phone: p.phone }])),
   });
 
   const visitorId = jar.get("rb_vid")?.value ?? null;
