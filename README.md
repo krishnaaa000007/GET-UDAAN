@@ -108,13 +108,16 @@ All variables are in `.env.example` with comments. Summary:
    - Activate the account. The site already has the required Terms, Privacy, Refund and Contact pages at `/legal/*`; fill in Admin → Settings (legal name, address, support email/WhatsApp) first.
    - Add a webhook: URL `https://yourdomain.com/api/webhooks/razorpay`, events `payment.captured`, `order.paid`, `payment.failed`, `refund.processed`, secret = `RAZORPAY_WEBHOOK_SECRET`.
    - Set `PAYMENTS_MODE=razorpay`. Test with Razorpay **test keys** first.
-5. **Scheduled job** (approves matured commissions, marks abandoned carts). In Supabase SQL editor enable `pg_cron` and `pg_net`, then:
+5. **Scheduled job** (releases commissions 1 hour after the sale, marks abandoned carts). **Staging already has this** (Supabase job `getudaan-release`, every 5 minutes). For a new database: in the Supabase SQL editor enable `pg_cron` and `pg_net`, keep the secret in Vault, then schedule:
    ```sql
-   select cron.schedule('reelbhai-run', '*/10 * * * *', $$
+   select vault.create_secret('YOUR_CRON_SECRET', 'getudaan_cron_secret');
+   select cron.schedule('getudaan-release', '*/5 * * * *', $$
      select net.http_post(url := 'https://yourdomain.com/api/cron/run',
-       headers := '{"Authorization": "Bearer YOUR_CRON_SECRET"}'::jsonb) $$);
+       headers := jsonb_build_object('Authorization', 'Bearer ' ||
+         (select decrypted_secret from vault.decrypted_secrets where name = 'getudaan_cron_secret'))) $$);
    ```
-   (Commissions are also approved automatically whenever a partner or admin opens their dashboard.)
+   When the domain changes, re-run `cron.schedule('getudaan-release', …)` with the new URL (same name replaces the job). If you change `CRON_SECRET` in Vercel, update the Vault secret too (`vault.update_secret`).
+   (Commissions are also released whenever a partner or admin opens their dashboard.)
 6. **Resend**: verify your domain, then set `RESEND_API_KEY` and `EMAIL_FROM`. The free plan sends about 100 emails/day.
 7. Log in with `ADMIN_EMAIL`. If that user doesn't exist in production, sign in once, then in Supabase SQL:
    ```sql
