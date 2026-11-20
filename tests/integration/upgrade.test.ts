@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import { makeCatalog, resetDb } from "./helpers";
-import { tierNames } from "@/server/student-app";
+import { getCatalogFor, tierNames } from "@/server/student-app";
 import { upgradeCredit, upgradedPrice } from "@/server/upgrade";
 
 beforeEach(resetDb);
@@ -52,5 +52,12 @@ describe("upgrade price", () => {
     const nameOf = await tierNames([course.id]);
     expect(nameOf(course.id, "BASIC")).toBe("Pro");
     expect(nameOf("other", "DONE_WITH_YOU")).toBe("DONE WITH YOU");
+  });
+
+  it("Explore shows the same upgrade price as checkout", async () => {
+    const { user } = await student("BASIC");
+    const items = await getCatalogFor(user.id);
+    expect(items.find((i) => i.slug === "pro")).toMatchObject({ state: "upgrade", pricePaise: 150000 });
+    expect(items.find((i) => i.slug === "basic")).toMatchObject({ state: "owned" });
   });
 });

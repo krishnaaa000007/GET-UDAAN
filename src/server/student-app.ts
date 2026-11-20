@@ -64,15 +64,19 @@ export async function getCatalogFor(userId: string) {
     db.serviceProject.findFirst({ where: { userId }, select: { id: true } }),
   ]);
   const tierOf = new Map(enrollments.map((e) => [e.courseId, e.tier]));
+  // Today's price of each course tier, so an upgrade shows "new price − price of the tier you own" (same rule as checkout).
+  const tierPrice = new Map(products.filter((p) => p.product.kind === "COURSE_TIER").map((p) => [`${p.product.courseId}:${p.product.tier}`, p.price.amountPaise]));
   return products
     .filter((p) => p.product.kind !== "ADDON")
     .map((p) => {
       const pr = p.product;
       let state: "owned" | "upgrade" | "new" = "new";
+      let pricePaise = p.price.amountPaise;
       if (pr.kind === "SERVICE") state = project ? "owned" : "new";
       else if (pr.courseId && pr.tier) {
         const have = tierOf.get(pr.courseId);
         state = have && tierAllows(have, pr.tier) ? "owned" : have ? "upgrade" : "new";
+        if (state === "upgrade" && have) pricePaise = Math.max(0, pricePaise - (tierPrice.get(`${pr.courseId}:${have}`) ?? 0));
       }
       return {
         slug: pr.slug,
@@ -80,7 +84,7 @@ export async function getCatalogFor(userId: string) {
         tagline: pr.tagline,
         kind: pr.kind,
         features: (Array.isArray(pr.features) ? pr.features : []) as string[],
-        pricePaise: p.price.amountPaise,
+        pricePaise,
         href: pr.kind === "SERVICE" ? "/done-with-you" : `/checkout/${pr.slug}`,
         state,
       };
