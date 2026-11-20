@@ -91,11 +91,11 @@
       }
     },
     "projectCard": {
-      "eyebrow": "Done-with-you",
-      "title": "Aapka project",
+      "eyebrow": "Done-for-you",
+      "title": "Team ke saath aapka project",
       "stage": "Abhi: {stage}",
       "done": "Project poora ho gaya",
-      "cta": "Project Tracker Dekho"
+      "cta": "Project Kholo"
     }
   },
   "lesson": {
@@ -144,8 +144,8 @@
     }
   },
   "project": {
-    "eyebrow": "Done-with-you",
-    "title": "AAPKA *PROJECT*",
+    "eyebrow": "Done-for-you",
+    "title": "TEAM KE SAATH *PROJECT*",
     "order": "Order #{number}",
     "stages": {
       "done": "Poora ho gaya",
@@ -157,7 +157,7 @@
     "fileOpen": "{title} kholo",
     "messages": {
       "title": "TEAM SE *BAAT* KARO",
-      "empty": "Abhi koi message nahi. Koi sawaal ho toh yahan likhiye — hamari team jawab degi.",
+      "empty": "Shuruaat ke liye apna Instagram page link, niche aur goal yahan bhejo — hamari team jawab degi.",
       "team": "Get Udaan team",
       "you": "Aap",
       "label": "Aapka message",
@@ -172,14 +172,14 @@
     },
     "none": {
       "title": "ABHI KOI *PROJECT* NAHI",
-      "text": "Done-with-you book karne ke baad aapka project yahan dikhega.",
-      "cta": "Done-with-you Dekho"
+      "text": "Done-for-you lene ke baad hamari team ke saath aapka project yahan dikhega.",
+      "cta": "Plans Dekho"
     },
     "email": {
       "messageTitle": "Get Udaan team ka naya message",
       "stageTitle": "Aapka project aage badha: {stage}",
       "stageText": "Hamari team ne aapke project ka stage update kiya hai. Ab chal raha hai: {stage}.",
-      "doneTitle": "Aapka Done-with-you project poora ho gaya",
+      "doneTitle": "Aapka Done-for-you project poora ho gaya",
       "doneText": "Saare stages poore ho gaye hain. Files aur messages aapke tracker mein hamesha milenge.",
       "fileTitle": "Aapke project mein nayi file aayi hai",
       "fileText": "Nayi file: {title}",
@@ -198,7 +198,9 @@
       "pHome": "Home",
       "pSales": "Sales",
       "pTeam": "Team",
-      "pWallet": "Wallet"
+      "pWallet": "Wallet",
+      "project": "Project",
+      "coursesShort": "Courses"
     },
     "navLabel": "App menu",
     "tabsLabel": "App tabs",

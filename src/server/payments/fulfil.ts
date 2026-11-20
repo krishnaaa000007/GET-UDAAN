@@ -10,6 +10,7 @@
  */
 import "server-only";
 import { db } from "@/lib/db";
+import { env } from "@/lib/env";
 import { siteUrl } from "@/lib/site-url";
 import { addMinutes, formatIST } from "@/lib/time";
 import { computeOrderCommission } from "@/server/commission";
@@ -20,6 +21,7 @@ import { getSettings } from "@/server/settings";
 import { verifyWebhookSignature } from "./gateway";
 import { reverseCommissionsForRefund } from "@/server/partners";
 import { createTeamBonuses } from "@/server/team";
+import { hasProjectPage } from "@/server/service";
 import { sendServerPurchaseEvents } from "@/server/analytics";
 import type { Tier } from "@/generated/prisma/enums";
 
@@ -116,14 +118,16 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
     await tx.userRole.upsert({ where: { userId_role: { userId: user.id, role: "STUDENT" } }, create: { userId: user.id, role: "STUDENT" }, update: {} });
 
     // Access
+    let newProject = false;
     for (const item of order.items) {
       const prod = item.product;
       let tier: Tier | null = prod.tier;
-      if (prod.kind === "SERVICE") {
+      if (prod.kind === "SERVICE") tier = "DONE_WITH_YOU";
+      // Done-for-you (and the old service): a project page to work with our team, one per paid order.
+      if (hasProjectPage(prod)) {
         await tx.userRole.upsert({ where: { userId_role: { userId: user.id, role: "SERVICE_CLIENT" } }, create: { userId: user.id, role: "SERVICE_CLIENT" }, update: {} });
-        tier = "DONE_WITH_YOU";
-        // Client tracker: one project per paid Done-with-you order.
         await tx.serviceProject.upsert({ where: { orderId: order.id }, create: { orderId: order.id, userId: user.id }, update: {} });
+        newProject = true;
       }
       if (prod.courseId && tier) {
         const existing = await tx.enrollment.findUnique({ where: { userId_courseId: { userId: user.id, courseId: prod.courseId } } });
@@ -182,11 +186,11 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
       data: { name: "payment_success", visitorId: order.visitorId, userId: user.id, partnerId: order.partnerId, campaign: order.campaign, props: { orderId: order.id, totalPaise: order.totalPaise } },
     });
 
-    return { order, userId: user.id, commission };
+    return { order, userId: user.id, commission, newProject };
   });
 
   if (!result) return null;
-  const { order, commission } = result;
+  const { order, commission, newProject } = result;
 
   return async () => {
     const loginUrl = await createMagicLink(order.email, "/dashboard");
@@ -205,6 +209,17 @@ export async function fulfilPayment(p: RzPayment): Promise<(() => Promise<void>)
         commissionPaise: commission.amountPaise,
         availableOn: formatIST(commission.availableAt, "datetime"),
         dashboardUrl: `${siteUrl()}/partner`,
+      });
+    }
+    // Tell the team a Done-for-you client is waiting (they start with onboarding on the project page).
+    const teamInbox = settings.supportEmail || env.adminEmail;
+    if (newProject && teamInbox) {
+      await notify(teamInbox, "serviceUpdate", {
+        name: "team",
+        title: `New Done-for-you client: ${order.name}`,
+        text: `Order #${order.number} (${order.email}, ${order.phone}). Their project page is ready; they were asked to send their Instagram link, niche and goal.`,
+        url: `${siteUrl()}/admin/projects`,
+        cta: "Open projects",
       });
     }
     await sendServerPurchaseEvents(order);

@@ -1,10 +1,11 @@
 /**
- * DONE-WITH-YOU CLIENT TRACKER — one project per paid Done-with-you order.
+ * DONE-FOR-YOU PROJECT PAGE — one project per paid order that includes Done-for-you (course tier PRO),
+ * including upgrades from Pro. (The old Rs 14,999 Done-with-you service, kind SERVICE, used the same page.)
  * SECURITY: every function takes the user from the session (client) or is called only after requireAdmin (team).
  * A client can only ever read or write THEIR OWN project.
  */
 import "server-only";
-import dwy from "@/content/hi-Latn/done-with-you.json";
+import dfy from "@/content/hi-Latn/done-for-you.json";
 import student from "@/content/hi-Latn/student.json";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
@@ -13,8 +14,8 @@ import { notify } from "@/server/notify";
 import { rateLimit } from "@/server/rate-limit";
 import { getSettings } from "@/server/settings";
 
-/** Stage names + descriptions come from the Done-with-you page content, so both always match. */
-export const SERVICE_STAGES = dwy.process.steps;
+/** Stage names + descriptions (content/hi-Latn/done-for-you.json). Keep 5 stages: stored stage numbers refer to them. */
+export const SERVICE_STAGES = dfy.stages;
 export const STAGE_DONE = SERVICE_STAGES.length; // stage value meaning "everything finished"
 
 const E = student.project.email;
@@ -22,16 +23,26 @@ const trackerUrl = () => `${env.appUrl}/dashboard/project`;
 const include = { files: { orderBy: { createdAt: "asc" as const } }, messages: { orderBy: { createdAt: "asc" as const } } };
 
 /**
- * The logged-in client's project (newest first). If they paid for Done-with-you before the tracker existed,
- * the project is created now from that paid order.
+ * The logged-in client's project (newest first). Someone who bought Done-for-you before project pages existed
+ * gets one now, from that paid order.
  */
 export async function getClientProject(userId: string) {
   const existing = await db.serviceProject.findFirst({ where: { userId }, orderBy: { createdAt: "desc" }, include });
   if (existing) return existing;
-  const order = await db.order.findFirst({ where: { userId, status: "PAID", items: { some: { product: { kind: "SERVICE" } } } }, orderBy: { paidAt: "desc" }, select: { id: true } });
+  const order = await db.order.findFirst({
+    where: { userId, status: "PAID", items: { some: { product: { OR: [{ kind: "SERVICE" }, { kind: "COURSE_TIER", tier: "PRO" }] } } } },
+    orderBy: { paidAt: "desc" },
+    select: { id: true },
+  });
   if (!order) return null;
   await db.serviceProject.upsert({ where: { orderId: order.id }, create: { orderId: order.id, userId }, update: {} });
+  await db.userRole.upsert({ where: { userId_role: { userId, role: "SERVICE_CLIENT" } }, create: { userId, role: "SERVICE_CLIENT" }, update: {} });
   return db.serviceProject.findFirst({ where: { userId }, orderBy: { createdAt: "desc" }, include });
+}
+
+/** True when a product sold in an order comes with a team project page. */
+export function hasProjectPage(p: { kind: string; tier: string | null }) {
+  return p.kind === "SERVICE" || (p.kind === "COURSE_TIER" && p.tier === "PRO");
 }
 
 /** A message from the CLIENT to the team. Emails the support address so nobody has to keep checking the admin page. */
@@ -46,7 +57,7 @@ export async function addClientMessage(user: { id: string; name: string | null; 
   const teamInbox = settings.supportEmail || env.adminEmail;
   if (teamInbox) await notify(teamInbox, "serviceUpdate", {
     name: "team",
-    title: `Done-with-you: new message from ${user.name ?? user.email}`,
+    title: `Done-for-you: new message from ${user.name ?? user.email}`,
     text,
     url: `${env.appUrl}/admin/projects`,
     cta: "Open projects",

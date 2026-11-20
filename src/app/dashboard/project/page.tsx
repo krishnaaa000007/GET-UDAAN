@@ -26,7 +26,7 @@ export default async function ProjectPage() {
 
   if (!project)
     return (
-      <AppFrame user={user} mode="student" active="home">
+      <AppFrame user={user} mode="student" active="project">
         <div className="flex flex-col gap-6">
           <h1 className="type-heading text-ink">
             <Highlight text={p.none.title} />
@@ -34,7 +34,7 @@ export default async function ProjectPage() {
           <EmptyState
             text={p.none.text}
             action={
-              <Button href="/done-with-you" arrow>
+              <Button href="/dashboard/explore" arrow>
                 {p.none.cta}
               </Button>
             }
@@ -47,7 +47,7 @@ export default async function ProjectPage() {
   const allDone = project.stage >= STAGE_DONE;
 
   return (
-    <AppFrame user={user} mode="student" active="home">
+    <AppFrame user={user} mode="student" active="project">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
         <header className="flex flex-col gap-2">
           <p className="type-label text-gold-text">{p.eyebrow}</p>

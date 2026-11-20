@@ -1,0 +1,9 @@
+{
+  "stages": [
+    { "title": "Onboarding", "desc": "Neeche message mein apna Instagram page link, niche aur goal bhejo. Hum samajhte hain aap abhi kahan ho." },
+    { "title": "Content analysis", "desc": "Hamari team aapke page aur reels dekh kar analysis karti hai — kya chal raha hai, kya nahi." },
+    { "title": "Feedback aur refine", "desc": "Aapko saaf feedback milta hai: hook, story, editing aur posting mein kya badalna hai." },
+    { "title": "Saath mein grow", "desc": "Aap naye reels banate ho, team review karke unhe refine karne mein madad karti hai." },
+    { "title": "Aage ka plan", "desc": "Results dekh kar aage ka plan: kya post karna hai aur kab." }
+  ]
+}

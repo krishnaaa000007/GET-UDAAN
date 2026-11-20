@@ -11,7 +11,7 @@ const NAV = [
   ["/admin/ledger", "Ledger"],
   ["/admin/refunds", "Refunds"],
   ["/admin/students", "Students"],
-  ["/admin/projects", "DWY projects"],
+  ["/admin/projects", "Done-for-you projects"],
   ["/admin/courses", "Courses"],
   ["/admin/pricing", "Pricing & coupons"],
   ["/admin/content", "Landing content"],

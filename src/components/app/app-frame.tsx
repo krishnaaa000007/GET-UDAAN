@@ -5,7 +5,7 @@
  * Every menu item is its own page. Admin keeps its own layout; the lesson player keeps AppShell.
  */
 import Link from "next/link";
-import { BookOpen, Compass, House, LogOut, MessageCircle, ReceiptIndianRupee, Shield, Sparkles, User, Users, Wallet } from "lucide-react";
+import { BookOpen, Compass, House, LogOut, MessageCircle, MessagesSquare, ReceiptIndianRupee, Shield, Sparkles, User, Users, Wallet } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/logo";
 import t from "@/content/hi-Latn/student.json";
@@ -14,13 +14,14 @@ import type { CurrentUser } from "@/server/auth";
 
 const a = t.app;
 
-export type StudentKey = "home" | "courses" | "explore" | "profile";
+export type StudentKey = "home" | "courses" | "project" | "explore" | "profile";
 export type PartnerKey = "p-home" | "p-sales" | "p-team" | "p-wallet";
-type Item = { key: StudentKey | PartnerKey; href: string; label: string; icon: LucideIcon };
+/** `short`: label for the phone tab bar, where 5 tabs share the width. */
+type Item = { key: StudentKey | PartnerKey; href: string; label: string; short?: string; icon: LucideIcon };
 
 const STUDENT: Item[] = [
   { key: "home", href: "/dashboard", label: a.nav.home, icon: House },
-  { key: "courses", href: "/dashboard/courses", label: a.nav.courses, icon: BookOpen },
+  { key: "courses", href: "/dashboard/courses", label: a.nav.courses, short: a.nav.coursesShort, icon: BookOpen },
   { key: "explore", href: "/dashboard/explore", label: a.nav.explore, icon: Compass },
   { key: "profile", href: "/dashboard/profile", label: a.nav.profile, icon: User },
 ];
@@ -56,7 +57,11 @@ export function AppFrame({
 }) {
   const isPartner = user.roles.includes("PARTNER");
   const isAdmin = user.roles.includes("ADMIN");
-  const items = mode === "student" ? STUDENT : partnerNav ? partnerItems(showTeam) : [];
+  // Done-for-you buyers get a "Project" item (their page to work with the team).
+  const studentItems = user.roles.includes("SERVICE_CLIENT")
+    ? [...STUDENT.slice(0, 2), { key: "project" as const, href: "/dashboard/project", label: a.nav.project, icon: MessagesSquare }, ...STUDENT.slice(2)]
+    : STUDENT;
+  const items = mode === "student" ? studentItems : partnerNav ? partnerItems(showTeam) : [];
   const firstName = user.name?.trim().split(/\s+/)[0];
 
   // Only people with both roles get the switch.
@@ -162,7 +167,7 @@ export function AppFrame({
                   className={cn("flex min-h-14 flex-col items-center justify-center gap-0.5", it.key === active ? "text-gold-text" : "text-ink-muted hover:text-ink")}
                 >
                   <it.icon aria-hidden className="size-6" />
-                  <span className="type-small font-semibold">{it.label}</span>
+                  <span className="type-small font-semibold whitespace-nowrap">{it.short ?? it.label}</span>
                 </Link>
               </li>
             ))}

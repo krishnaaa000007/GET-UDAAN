@@ -30,7 +30,7 @@ const milestoneFor = (pct: number) => (pct >= 100 ? d.milestones["100"] : pct >=
 export default async function StudentHome({ searchParams }: PageProps<"/dashboard">) {
   const user = await requireUser("/dashboard");
   const sp = await searchParams;
-  const project = user.roles.includes("SERVICE_CLIENT") ? await getClientProject(user.id) : null;
+  const project = await getClientProject(user.id);
   const [learning, catalog, settings, sharedResult] = await Promise.all([getMyLearning(user.id), getCatalogFor(user.id), getSettings(), hasSharedResult(user.id)]);
   const { outlines, cont, streak, certificates, lessonsDone, lessonsTotal, planName } = learning;
 

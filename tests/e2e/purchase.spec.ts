@@ -120,7 +120,7 @@ test("student app: Home, My Courses, Explore and Profile are real pages with a b
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/Namaste/);
   await expect(page.getByText(/Continue watching|Shuru karo/i).first()).toBeVisible();
   const tabs = page.getByRole("navigation", { name: "App tabs" });
-  await tabs.getByRole("link", { name: "My Courses" }).click();
+  await tabs.getByRole("link", { name: "Courses", exact: true }).click();
   await expect(page).toHaveURL(/\/dashboard\/courses$/);
   await tabs.getByRole("link", { name: "Explore" }).click();
   await expect(page).toHaveURL(/\/dashboard\/explore$/);

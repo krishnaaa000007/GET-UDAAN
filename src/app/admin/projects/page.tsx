@@ -1,4 +1,4 @@
-/** ADMIN — Done-with-you projects: move the stage, share file links, reply to the client. English, dense. */
+/** ADMIN — Done-for-you projects: move the stage, share file links, reply to the client. English, dense. */
 import { ActionForm } from "@/components/admin/action-form";
 import { formatIST } from "@/lib/time";
 import { listProjectsForAdmin, SERVICE_STAGES, STAGE_DONE } from "@/server/service";
@@ -11,13 +11,13 @@ export default async function AdminProjects() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-3xl">Done-with-you projects</h1>
+        <h1 className="font-display text-3xl">Done-for-you projects</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          A project is created automatically when a Done-with-you order is paid. The client sees the stage, your file links and messages on their tracker page, and gets an email for every stage change, new file and reply. Files are links (for example a Google Drive share link) — nothing is uploaded here.
+          A project is created automatically when Done-for-you is bought (or upgraded to), and you get an email. The client starts by sending their Instagram link, niche and goal in the messages. The client sees the stage, your file links and messages on their tracker page, and gets an email for every stage change, new file and reply. Files are links (for example a Google Drive share link) — nothing is uploaded here.
         </p>
       </div>
 
-      {projects.length === 0 && <p className="card p-6 text-sm text-ink-muted">No Done-with-you projects yet.</p>}
+      {projects.length === 0 && <p className="card p-6 text-sm text-ink-muted">No Done-for-you projects yet.</p>}
 
       {projects.map((p) => {
         const last = p.messages[p.messages.length - 1];
