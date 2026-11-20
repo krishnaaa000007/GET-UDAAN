@@ -8,7 +8,8 @@ import { z } from "zod";
 import { cookies, headers } from "next/headers";
 import { db } from "@/lib/db";
 import { hashIp } from "@/lib/crypto";
-import { normalizeEmail } from "@/server/auth";
+import { getCurrentUser, normalizeEmail } from "@/server/auth";
+import { upgradeCredit, upgradedPrice } from "@/server/upgrade";
 import { cartTotals, evaluateCoupon, type CartLine } from "@/server/pricing";
 import { decodeRefCookie, resolveAttribution } from "@/server/attribution";
 import { getProductWithPrice } from "@/server/catalog";
@@ -32,14 +33,16 @@ export type CheckoutInput = z.input<typeof checkoutSchema>;
 
 export type CouponPreview = { ok: true; code: string; discountPaise: number; totalPaise: number } | { ok: false; reason: string };
 
-/** Live coupon check for the checkout form (no order created). */
+/** Live coupon check for the checkout form (no order created). Uses the same upgrade price as startCheckout. */
 export async function previewCoupon(productSlug: string, code: string): Promise<CouponPreview> {
   const p = await getProductWithPrice(productSlug);
   if (!p) return { ok: false, reason: "Product nahi mila" };
+  const user = await getCurrentUser();
+  const base = upgradedPrice(p.price.amountPaise, await upgradeCredit(user?.id, p.product));
   const coupon = await db.coupon.findUnique({ where: { code: code.trim().toUpperCase() } });
-  const r = evaluateCoupon(coupon, productSlug, p.price.amountPaise);
+  const r = evaluateCoupon(coupon, productSlug, base);
   if (!r.ok) return r;
-  return { ok: true, code: coupon!.code, discountPaise: r.discountPaise, totalPaise: p.price.amountPaise - r.discountPaise };
+  return { ok: true, code: coupon!.code, discountPaise: r.discountPaise, totalPaise: base - r.discountPaise };
 }
 
 export type StartCheckoutResult =
@@ -72,8 +75,15 @@ export async function startCheckout(raw: CheckoutInput): Promise<StartCheckoutRe
   const main = await getProductWithPrice(input.productSlug);
   if (!main) return { ok: false, error: "Ye product abhi available nahi hai" };
 
+  // Upgrade: a logged-in owner of a lower tier pays only the difference. The order must be for their own
+  // account email, so the upgrade lands where the lower tier is.
+  const sessionUser = await getCurrentUser();
+  const credit = sessionUser && normalizeEmail(sessionUser.email) === email ? await upgradeCredit(sessionUser.id, main.product) : null;
+  const mainPaise = upgradedPrice(main.price.amountPaise, credit);
+  if (credit && mainPaise < 100) return { ok: false, error: "Ye course aapke paas pehle se hai." };
+
   // Order bump add-ons (only ADDON products are allowed as bumps).
-  const lines: CartLine[] = [{ productSlug: main.product.slug, name: main.product.name, unitPaise: main.price.amountPaise, kind: "MAIN" }];
+  const lines: CartLine[] = [{ productSlug: main.product.slug, name: credit ? `${main.product.name} (upgrade from ${credit.fromName})` : main.product.name, unitPaise: mainPaise, kind: "MAIN" }];
   const productIds: Record<string, string> = { [main.product.slug]: main.product.id };
   for (const slug of [...new Set(input.bumpSlugs)]) {
     const b = await getProductWithPrice(slug);
@@ -89,7 +99,7 @@ export async function startCheckout(raw: CheckoutInput): Promise<StartCheckoutRe
   let discountPaise = 0;
   if (input.coupon) {
     const coupon = await db.coupon.findUnique({ where: { code: input.coupon.toUpperCase() } });
-    const r = evaluateCoupon(coupon, main.product.slug, main.price.amountPaise);
+    const r = evaluateCoupon(coupon, main.product.slug, mainPaise);
     if (!r.ok) return { ok: false, error: r.reason, field: "coupon" };
     discountPaise = r.discountPaise;
     couponId = coupon!.id;

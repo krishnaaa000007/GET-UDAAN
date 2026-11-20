@@ -9,6 +9,13 @@ import { getCourseOutline, getLearningStreak, tierAllows } from "@/server/learni
 
 export type Outline = NonNullable<Awaited<ReturnType<typeof getCourseOutline>>>;
 
+/** What students call each plan: the product name for a course + tier (e.g. BASIC → "Pro"). Admin can rename it. */
+export async function tierNames(courseIds: string[]): Promise<(courseId: string, tier: string) => string> {
+  const rows = courseIds.length ? await db.product.findMany({ where: { courseId: { in: courseIds }, kind: "COURSE_TIER" }, select: { courseId: true, tier: true, name: true } }) : [];
+  const m = new Map(rows.map((r) => [`${r.courseId}:${r.tier}`, r.name]));
+  return (courseId, tier) => m.get(`${courseId}:${tier}`) ?? tier.replace(/_/g, " ");
+}
+
 /** Courses the user can open (active enrolments), with progress, plus the lesson to continue. */
 export async function getMyLearning(userId: string) {
   const enrollments = await db.enrollment.findMany({ where: { userId, revokedAt: null }, include: { course: true }, orderBy: { createdAt: "asc" } });
@@ -41,7 +48,9 @@ export async function getMyLearning(userId: string) {
 
   const lessonsDone = outlines.reduce((s, o) => s + o.doneCount, 0);
   const lessonsTotal = outlines.reduce((s, o) => s + o.lessons.length, 0);
-  return { outlines, cont, streak, certificates, lessonsDone, lessonsTotal };
+  const nameOf = await tierNames(outlines.map((o) => o.course.id));
+  const planName = (o: Outline) => (o.enrollment ? nameOf(o.course.id, o.enrollment.tier) : "");
+  return { outlines, cont, streak, certificates, lessonsDone, lessonsTotal, planName };
 }
 
 /**

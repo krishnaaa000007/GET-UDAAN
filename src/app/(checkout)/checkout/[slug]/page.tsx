@@ -4,11 +4,12 @@
  */
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getProductWithPrice, listProducts } from "@/server/catalog";
 import { getSettings } from "@/server/settings";
 import { getCurrentUser } from "@/server/auth";
+import { upgradeCredit, upgradedPrice } from "@/server/upgrade";
 import { decodeRefCookie } from "@/server/attribution";
 import { ownedOrderId } from "@/server/order-cookie";
 import { getPublishedTestimonials } from "@/server/testimonials";
@@ -52,13 +53,19 @@ export default async function CheckoutPage({ params, searchParams }: PageProps<"
     if (prev && (failed || prev.status === "PAID")) prefill = { name: prev.name, email: prev.email, phone: prev.phone };
   }
 
+  // Upgrade price for a logged-in owner of a lower tier (the server charges exactly this).
+  const credit = await upgradeCredit(user?.id, item.product);
+  if (credit && upgradedPrice(item.price.amountPaise, credit) < 100) redirect("/dashboard/courses");
+
   const proof = (await getPublishedTestimonials())[0];
   const features = Array.isArray(item.product.features) ? (item.product.features as string[]) : [];
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 pt-6 pb-16 md:px-6">
       <CheckoutForm
-        product={{ slug: item.product.slug, name: item.product.name, kind: item.product.kind, pricePaise: item.price.amountPaise, features: features.slice(0, 4) }}
+        product={{ slug: item.product.slug, name: item.product.name, kind: item.product.kind, pricePaise: upgradedPrice(item.price.amountPaise, credit), features: features.slice(0, 4) }}
+        upgrade={credit ? { fromName: credit.fromName, creditPaise: credit.creditPaise, fullPaise: item.price.amountPaise } : null}
+        lockEmail={!!credit}
         bumps={bumps}
         initialCoupon={coupon}
         prefill={prefill}

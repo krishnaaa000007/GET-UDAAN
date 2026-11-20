@@ -30,6 +30,10 @@ type Props = {
   initialFailed: boolean;
   /** One real, published student testimonial (or null) */
   testimonial: { name: string; city: string | null; quote: string } | null;
+  /** Logged-in owner of a lower tier: product.pricePaise is already the upgrade price; this explains it. */
+  upgrade?: { fromName: string; creditPaise: number; fullPaise: number } | null;
+  /** Upgrades go to the logged-in account, so its email can't be changed here. */
+  lockEmail?: boolean;
 };
 
 type RazorpayOptions = Record<string, unknown> & { handler: () => void; modal: { ondismiss: () => void } };
@@ -53,7 +57,7 @@ function loadRazorpay(): Promise<boolean> {
 // Razorpay's own window needs a plain colour value, so we read our gold token from the page.
 const brandGold = () => getComputedStyle(document.documentElement).getPropertyValue("--gold").trim();
 
-export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDays, supportWhatsapp, initialFailed, testimonial }: Props) {
+export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDays, supportWhatsapp, initialFailed, testimonial, upgrade = null, lockEmail = false }: Props) {
   const router = useRouter();
   const [form, setForm] = useState(prefill);
   const [bumpOn, setBumpOn] = useState<Record<string, boolean>>({});
@@ -192,10 +196,26 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
           ))}
         </ul>
         <dl className="mt-4 flex flex-col gap-2 border-t border-line pt-4">
-          <div className="flex justify-between gap-3">
-            <dt className="text-ink-muted">{product.name}</dt>
-            <dd className="text-ink">{formatINR(product.pricePaise)}</dd>
-          </div>
+          {upgrade ? (
+            <>
+              <div className="flex justify-between gap-3">
+                <dt className="text-ink-muted">{product.name}</dt>
+                <dd className="text-ink">{formatINR(upgrade.fullPaise)}</dd>
+              </div>
+              <div className="flex justify-between gap-3 text-success">
+                <dt className="flex items-center gap-1">
+                  <Check aria-hidden className="size-4" strokeWidth={3} />
+                  {t.summary.upgrade.replace("{name}", upgrade.fromName)}
+                </dt>
+                <dd>−{formatINR(upgrade.creditPaise)}</dd>
+              </div>
+            </>
+          ) : (
+            <div className="flex justify-between gap-3">
+              <dt className="text-ink-muted">{product.name}</dt>
+              <dd className="text-ink">{formatINR(product.pricePaise)}</dd>
+            </div>
+          )}
           {activeBumps.map((b) => (
             <div key={b.slug} className="flex justify-between gap-3">
               <dt className="text-ink-muted">{b.name}</dt>
@@ -234,8 +254,9 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
           required
           autoComplete="email"
           placeholder={t.fields.emailPlaceholder}
-          hint={t.fields.emailHint}
+          hint={lockEmail ? t.fields.emailLocked : t.fields.emailHint}
           value={form.email}
+          readOnly={lockEmail}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           error={fieldErr("email")}
         />

@@ -22,7 +22,7 @@ test("visitor from a partner reel buys the course and starts lesson 1; partner s
   await expect(page).toHaveURL(/\/pay\/mock\//);
   await page.getByRole("button", { name: /payment successful/i }).click();
   await expect(page.getByRole("heading", { name: /Welcome to Get Udaan/i })).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText(/Pro mein upgrade karo/i)).toBeVisible(); // one upsell
+  await expect(page.getByText(/Done-for-you mein upgrade karo/i)).toBeVisible(); // one upsell
 
   // 4. Same browser is logged in automatically and lands in lesson 1 with a watermark
   await page.getByRole("button", { name: /Lesson 1 Shuru Karo/ }).click();
@@ -139,4 +139,12 @@ test("login Partner tab lands on the partner Home with the Student/Partner switc
   await page.getByRole("button", { name: /Login karein/ }).click();
   await expect(page).toHaveURL(/\/partner$/);
   await expect(page.getByRole("group", { name: "Mode badlo" }).first()).toBeVisible();
+});
+
+test("upgrade: a Pro owner sees Done-for-you at the difference (₹1,499 − ₹499 = ₹1,000), email locked", async ({ page }) => {
+  await login(page, "student@example.com", "/dashboard");
+  await page.goto("/checkout/pro");
+  await expect(page.getByText(/pehle se hai/)).toBeVisible();
+  await expect(page.getByRole("button", { name: /₹1,000 Pay Karo/ })).toBeVisible();
+  await expect(page.getByLabel("Email")).toHaveAttribute("readonly", "");
 });

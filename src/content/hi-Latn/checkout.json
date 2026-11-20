@@ -5,7 +5,8 @@
     "product": "Get Udaan {name}",
     "coupon": "Coupon {code}",
     "total": "Total",
-    "oneTime": "Ek baar payment • Lifetime access"
+    "oneTime": "Ek baar payment • Lifetime access",
+    "upgrade": "{name} pehle se hai — uska price kat gaya"
   },
   "fields": {
     "title": "Aapki details",
@@ -15,7 +16,8 @@
     "phonePlaceholder": "98765 43210",
     "email": "Email",
     "emailPlaceholder": "aap@gmail.com",
-    "emailHint": "Course ka login link isi email par aayega."
+    "emailHint": "Course ka login link isi email par aayega.",
+    "emailLocked": "Upgrade isi account pe hoga."
   },
   "bump": "Haan, {name} bhi add karo — {price}",
   "coupon": {

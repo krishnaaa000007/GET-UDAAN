@@ -21,7 +21,7 @@ export function AccountLinks() {
   const isIn = useSyncExternalStore(subscribe, loggedIn, () => false);
   if (isIn)
     return (
-      <Button href="/dashboard/profile" variant="secondary" size="sm" data-cta="header_account">
+      <Button href="/dashboard/profile" variant="secondary" size="sm" className="whitespace-nowrap" data-cta="header_account">
         {h.account}
       </Button>
     );

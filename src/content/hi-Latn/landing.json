@@ -174,14 +174,12 @@
         "feature": "40 video lessons",
         "values": [
           true,
-          true,
           true
         ]
       },
       {
         "feature": "300+ prompt pack",
         "values": [
-          true,
           true,
           true
         ]
@@ -190,14 +188,12 @@
         "feature": "PDF guide + story templates",
         "values": [
           true,
-          true,
           true
         ]
       },
       {
         "feature": "Income module",
         "values": [
-          true,
           true,
           true
         ]
@@ -206,7 +202,27 @@
         "feature": "Lifetime access",
         "values": [
           true,
-          true,
+          true
+        ]
+      },
+      {
+        "feature": "Humari team ke saath page grow karo",
+        "values": [
+          false,
+          true
+        ]
+      },
+      {
+        "feature": "Aapke content ka analysis + feedback",
+        "values": [
+          false,
+          true
+        ]
+      },
+      {
+        "feature": "Content refine karne mein madad",
+        "values": [
+          false,
           true
         ]
       },
@@ -214,7 +230,6 @@
         "feature": "Private community (Telegram)",
         "values": [
           false,
-          true,
           true
         ]
       },
@@ -222,46 +237,12 @@
         "feature": "Har mahine naye prompts",
         "values": [
           false,
-          true,
           true
         ]
       },
       {
         "feature": "Monthly live Q&A",
         "values": [
-          false,
-          true,
-          true
-        ]
-      },
-      {
-        "feature": "Character design hamari team se",
-        "values": [
-          false,
-          false,
-          true
-        ]
-      },
-      {
-        "feature": "Pehli 5 videos saath mein",
-        "values": [
-          false,
-          false,
-          true
-        ]
-      },
-      {
-        "feature": "Page setup + 30-din growth plan",
-        "values": [
-          false,
-          false,
-          true
-        ]
-      },
-      {
-        "feature": "2 one-on-one calls",
-        "values": [
-          false,
           false,
           true
         ]

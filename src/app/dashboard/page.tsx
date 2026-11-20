@@ -32,7 +32,7 @@ export default async function StudentHome({ searchParams }: PageProps<"/dashboar
   const sp = await searchParams;
   const project = user.roles.includes("SERVICE_CLIENT") ? await getClientProject(user.id) : null;
   const [learning, catalog, settings, sharedResult] = await Promise.all([getMyLearning(user.id), getCatalogFor(user.id), getSettings(), hasSharedResult(user.id)]);
-  const { outlines, cont, streak, certificates, lessonsDone, lessonsTotal } = learning;
+  const { outlines, cont, streak, certificates, lessonsDone, lessonsTotal, planName } = learning;
 
   // Nothing bought yet → the landing page is their home (the header there shows "Mera account").
   // (If they were bounced from a page they are not allowed to open, Profile explains why.)
@@ -132,7 +132,7 @@ export default async function StudentHome({ searchParams }: PageProps<"/dashboar
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {outlines.slice(0, 3).map((o) => (
-                <CourseCard key={o.course.id} o={o} />
+                <CourseCard key={o.course.id} o={o} plan={planName(o)} />
               ))}
             </div>
           </section>

@@ -12,6 +12,7 @@ import t from "@/content/hi-Latn/student.json";
 import { requireUser } from "@/server/auth";
 import { getCourseOutline } from "@/server/learning";
 import { getSettings, supportWhatsappHref } from "@/server/settings";
+import { tierNames } from "@/server/student-app";
 
 export const metadata: Metadata = { title: "Course", robots: { index: false } };
 
@@ -24,6 +25,7 @@ export default async function CoursePage({ params }: PageProps<"/dashboard/cours
   const d = t.dashboard;
   const c = t.coursesPage;
   const next = o.lessons.find((l) => l.unlocked && !l.completed);
+  const plan = (await tierNames([o.course.id]))(o.course.id, o.enrollment.tier);
   const downloads = o.course.assets.map((a) => ({ ...a, locked: a.minTier === "PRO" && o.enrollment?.tier === "BASIC" }));
 
   return (
@@ -37,7 +39,7 @@ export default async function CoursePage({ params }: PageProps<"/dashboard/cours
         <header className="flex flex-col gap-4 rounded-lg border border-line bg-surface-raised p-4 md:flex-row md:items-center md:p-6">
           <ProgressRing value={o.percent} size={72} />
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-            <Badge tone="gold">{o.enrollment.tier.replace(/_/g, " ")}</Badge>
+            <Badge tone="gold">{plan}</Badge>
             <h1 className="type-heading text-ink">{o.course.title}</h1>
             <p className="type-small text-ink-muted">{d.courses.lessonsDone.replace("{done}", String(o.doneCount)).replace("{total}", String(o.lessons.length))}</p>
           </div>

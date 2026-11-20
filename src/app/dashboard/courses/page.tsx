@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "My courses", robots: { index: false 
 
 export default async function MyCourses() {
   const user = await requireUser("/dashboard/courses");
-  const [{ outlines }, settings] = await Promise.all([getMyLearning(user.id), getSettings()]);
+  const [{ outlines, planName }, settings] = await Promise.all([getMyLearning(user.id), getSettings()]);
   const c = t.coursesPage;
   return (
     <AppFrame user={user} mode="student" active="courses" supportHref={supportWhatsappHref(settings)}>
@@ -36,7 +36,7 @@ export default async function MyCourses() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {outlines.map((o) => (
-              <CourseCard key={o.course.id} o={o} primary />
+              <CourseCard key={o.course.id} o={o} plan={planName(o)} primary />
             ))}
           </div>
         )}

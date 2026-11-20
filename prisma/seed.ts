@@ -25,7 +25,7 @@ const CURRICULUM: { title: string; minTier?: "BASIC" | "PRO"; lessons: string[];
   { title: "Animation: Images ko video banao", lessons: ["Free image-to-video tools", "Camera movement prompts", "Lip-sync aur expressions", "Action scenes (chase, fight) safely", "Common errors aur fix", "Phone pe poora workflow"] },
   { title: "Voice, music aur editing", lessons: ["AI voiceover — free options", "Bhai wali deep voice setup", "Background music aur copyright", "CapCut editing — fast cuts", "Subtitles jo retention badhaye", "Export settings (720p/1080p) for Instagram"] },
   { title: "Posting aur growth", lessons: ["Best posting time aur frequency", "Captions, hashtags, cover", "Series strategy: followers wapas aate hain", "Analytics padhna — kya kaam kar raha hai", "Collab aur shoutouts", "Shadowban myths vs reality"] },
-  { title: "Kamai: Brand deals, monetization, clients", upsellAfterLast: "done-with-you", lessons: ["Kamai ke tarike (honest — results vary)", "Brand sponsorship: rate card aur pitch DM", "YouTube Shorts / Facebook monetization basics", "Client work: dusron ke liye reels banao", "Aage kya? Apna system banao"] },
+  { title: "Kamai: Brand deals, monetization, clients", upsellAfterLast: "pro", lessons: ["Kamai ke tarike (honest — results vary)", "Brand sponsorship: rate card aur pitch DM", "YouTube Shorts / Facebook monetization basics", "Client work: dusron ke liye reels banao", "Aage kya? Apna system banao"] },
 ];
 
 async function wipe() {
@@ -127,9 +127,11 @@ async function main() {
         prices: { create: [{ amountPaise: p.price, startsAt: ago(60) }] },
       },
     });
-  const basic = await mk({ slug: "basic", name: "Basic", kind: "COURSE_TIER", tier: "BASIC", price: 49900, commission: 5000, position: 1, tagline: "Seekhna shuru karo", features: ["40 video lessons (~320 min)", "300+ prompt pack", "PDF guide + story templates", "Income module", "Lifetime access"] });
-  const pro = await mk({ slug: "pro", name: "Pro", kind: "COURSE_TIER", tier: "PRO", price: 199900, commission: 5000, position: 2, tagline: "Sabse popular", features: ["Basic ka sab kuch", "Private community (Telegram)", "Har mahine naye prompts", "Monthly live Q&A"] });
+  const basic = await mk({ slug: "basic", name: "Pro", kind: "COURSE_TIER", tier: "BASIC", price: 49900, commission: 5000, position: 1, tagline: "Seekhna shuru karo", features: ["40 video lessons (~320 min)", "300+ prompt pack", "PDF guide + story templates", "Income module", "Lifetime access"] });
+  const pro = await mk({ slug: "pro", name: "Done-for-you", kind: "COURSE_TIER", tier: "PRO", price: 149900, commission: 5000, position: 2, tagline: "Team ke saath page grow karo", features: ["Pro ka sab kuch", "Humari team ke saath page grow karo", "Aapke content ka analysis + feedback", "Content refine karne mein madad", "Private community (Telegram)", "Har mahine naye prompts", "Monthly live Q&A"] });
   const dwy = await mk({ slug: "done-with-you", name: "Done-with-you", kind: "SERVICE", tier: "DONE_WITH_YOU", price: 1499900, commission: 2500, position: 3, tagline: "Humari team aapka page banayegi", features: ["Pro ka sab kuch", "Character design by our team", "Pehli 5 videos saath mein", "Page setup + 30-din growth plan", "2 one-on-one calls"] });
+  // The Rs 14,999 service is no longer sold (2026-11-20); kept switched off so old demo orders still make sense.
+  await db.product.update({ where: { id: dwy.id }, data: { active: false } });
   const bump = await mk({ slug: "advanced-prompts", name: "Advanced Prompt Pack", kind: "ADDON", price: 14900, commission: 5000, position: 10, tagline: "150 extra cinematic prompts", features: ["150 cinematic prompts", "Action + emotion scenes"] });
   void pro;
 

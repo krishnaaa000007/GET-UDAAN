@@ -14,6 +14,7 @@ import { env } from "@/lib/env";
 import { formatINR } from "@/lib/money";
 import { formatIST } from "@/lib/time";
 import { createSession, getCurrentUser } from "@/server/auth";
+import { upgradeCredit, upgradedPrice } from "@/server/upgrade";
 import { getProductWithPrice } from "@/server/catalog";
 import { browserOwnsOrder } from "@/server/order-cookie";
 import { getSettings, supportWhatsappHref } from "@/server/settings";
@@ -58,9 +59,9 @@ export default async function ThankYouPage({ params }: PageProps<"/thank-you/[or
   }
 
   const main = order.items.find((i) => i.kind === "MAIN")?.product;
-  // ONE upsell: Basic → Pro, Pro → Done-with-you, DWY → none.
-  const upsellSlug = main?.tier === "BASIC" ? "pro" : main?.tier === "PRO" ? "done-with-you" : null;
-  const upsell = upsellSlug ? await getProductWithPrice(upsellSlug) : null;
+  // ONE upsell: Pro (tier BASIC) → Done-for-you (tier PRO). They pay only the difference.
+  const upsell = main?.tier === "BASIC" ? await getProductWithPrice("pro") : null;
+  const upsellPaise = upsell ? upgradedPrice(upsell.price.amountPaise, await upgradeCredit(order.userId, upsell.product)) : 0;
   const ownsIt = await browserOwnsOrder(order.id);
   const firstName = order.name.trim().split(/\s+/)[0] ?? "";
   const maskedEmail = order.email.replace(/^(.{2}).*@/, "$1***@");
@@ -127,7 +128,7 @@ export default async function ThankYouPage({ params }: PageProps<"/thank-you/[or
             ))}
           </ul>
           <Button href={`/checkout/${upsell.product.slug}?from=${order.id}`} variant="secondary" block data-cta="thank_you_upsell">
-            {t.thankYou.upsell.cta.replace("{name}", upsell.product.name).replace("{price}", formatINR(upsell.price.amountPaise))}
+            {t.thankYou.upsell.cta.replace("{name}", upsell.product.name).replace("{price}", formatINR(upsellPaise))}
           </Button>
           <p className="type-small text-center text-ink-muted">{t.thankYou.upsell.skip}</p>
         </section>

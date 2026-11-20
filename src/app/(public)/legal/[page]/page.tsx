@@ -77,7 +77,7 @@ export default async function LegalPage({ params }: PageProps<"/legal/[page]">) 
       <>
         <P><b>{s.refundWindowDays}-day refund:</b> If you&apos;re not happy with a course, message us ({contactText}) within {s.refundWindowDays} days of purchase with your order number. We refund the full amount — no questions asked.</P>
         <P>Refunds are processed to the original payment method within 5–7 working days after approval (bank timelines may vary). Course access ends when a refund is issued.</P>
-        <P>Refunds are not available after {s.refundWindowDays} days, or for accounts removed for sharing content. Done-with-you service refunds are prorated based on work already delivered.</P>
+        <P>Refunds are not available after {s.refundWindowDays} days, or for accounts removed for sharing content.</P>
         <P>Failed payments where money was debited are reversed automatically by the bank/Razorpay, usually within 5–7 working days.</P>
       </>
     ),

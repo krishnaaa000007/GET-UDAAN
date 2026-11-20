@@ -15,7 +15,6 @@
     "linksLabel": "Links",
     "links": [
       { "label": "Courses", "href": "/#pricing" },
-      { "label": "Done-with-you", "href": "/done-with-you" },
       { "label": "Partner Program", "href": "/partners" },
       { "label": "Refund Policy", "href": "/legal/refund" },
       { "label": "Privacy", "href": "/legal/privacy" },
