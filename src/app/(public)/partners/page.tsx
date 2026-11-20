@@ -7,6 +7,8 @@ import type { Metadata } from "next";
 import { FunnelTracker } from "@/components/landing/islands";
 import { Accordion, AccordionItem } from "@/components/ui/accordion";
 import { Badge, Highlight, IncomeDisclaimer, SectionHeader } from "@/components/ui/basics";
+import { VideoWall } from "@/components/testimonials/video-wall";
+import { partnerVideos, wallCopy } from "@/lib/video-testimonials";
 import { Button } from "@/components/ui/button";
 import t from "@/content/hi-Latn/partner.json";
 import { PARTNER_RULES, releaseLabel } from "@/config/partners";
@@ -23,6 +25,7 @@ const L = t.landing;
 
 export default async function PartnersPage() {
   const [s, products] = await Promise.all([getSettings(), listProducts()]);
+  const partnerWall = partnerVideos();
   const tiers = products.filter((p) => p.product.kind !== "ADDON");
   const entry = tiers[0];
   const maxPct = Math.round(Math.max(0, ...tiers.map((p) => p.product.defaultCommissionBps)) / 100);
@@ -83,6 +86,21 @@ export default async function PartnersPage() {
           </ol>
         </div>
       </section>
+
+      {/* PARTNER VIDEOS — real partners, two sliding rows; income talk, so the honesty line sits under it. Hidden until live. */}
+      {partnerWall.length > 0 && (
+        <section id="partner-videos" className="relative scroll-mt-16 overflow-hidden border-t border-line py-12 md:py-20">
+          <div className="container-page">
+            <SectionHeader eyebrow={wallCopy.partners.eyebrow} heading={wallCopy.partners.title} sub={wallCopy.partners.sub} className="reveal" />
+          </div>
+          <div className="mt-8 md:mt-10">
+            <VideoWall videos={partnerWall} playLabel={wallCopy.play} closeLabel={wallCopy.close} />
+          </div>
+          <div className="container-page mt-5">
+            <IncomeDisclaimer />
+          </div>
+        </section>
+      )}
 
       {/* CALCULATOR — income talk, so the honesty line sits right under it */}
       {entry && perSalePaise > 0 && (

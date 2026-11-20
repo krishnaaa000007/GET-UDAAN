@@ -7,4 +7,6 @@ export const SITE = {
   masterclassCoupon: { code: "FIRST100", percent: 10 },
   /** Buyer refund guarantee, in days (separate from when partners get their commission). */
   refundGuaranteeDays: 7,
+  /** Public media files (Cloudflare R2). Move to your own domain (e.g. https://media.getudaan.com) before launch. */
+  mediaBaseUrl: "https://pub-9e4ac3d519554bcd9873fd662b675f17.r2.dev",
 } as const;

@@ -715,3 +715,34 @@ dialog.sheet::backdrop {
     }
   }
 }
+
+/* ---------- Video wall: two rows sliding in opposite directions (testimonials) ----------
+   The track holds the cards twice; moving it by exactly half loops with no jump.
+   Pauses on hover/focus and while a video is open. Reduced motion: no sliding, swipe instead. */
+@keyframes marquee-x {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee {
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee-track {
+  width: max-content;
+  animation: marquee-x var(--marquee-dur, 60s) linear infinite;
+}
+.marquee-track[data-dir="right"] {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track,
+.marquee[data-paused] .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    mask-image: none;
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "_note": "Video testimonials. Files live in Cloudflare R2 under testimonials/<id>.mp4 + <id>.jpg. Add an optional \"name\" to any item to show it instead of Student/Partner. Set \"live\": true once the files are uploaded.",
+  "consent": "Owner confirmed on 2026-11-20 that all 13 students and 5 partners in these videos agreed to be shown publicly.",
+  "live": false,
+  "folder": "testimonials",
+  "play": "Video chalao",
+  "close": "Band karo",
+  "students": {
+    "eyebrow": "Real students",
+    "title": "STUDENTS KI *ZUBAANI*",
+    "sub": "Get Udaan se seekhne wale students — unke apne shabdon mein.",
+    "label": "Student",
+    "items": [
+      {
+        "id": "student-01"
+      },
+      {
+        "id": "student-02"
+      },
+      {
+        "id": "student-03"
+      },
+      {
+        "id": "student-04"
+      },
+      {
+        "id": "student-05"
+      },
+      {
+        "id": "student-06"
+      },
+      {
+        "id": "student-07"
+      },
+      {
+        "id": "student-08"
+      },
+      {
+        "id": "student-09"
+      },
+      {
+        "id": "student-10"
+      },
+      {
+        "id": "student-11"
+      },
+      {
+        "id": "student-12"
+      },
+      {
+        "id": "student-13"
+      }
+    ]
+  },
+  "partners": {
+    "eyebrow": "Real partners",
+    "title": "PARTNERS KI *KAHAANI*",
+    "sub": "Jo creators Get Udaan ke partner hain — unse suno.",
+    "label": "Partner",
+    "items": [
+      {
+        "id": "partner-01"
+      },
+      {
+        "id": "partner-02"
+      },
+      {
+        "id": "partner-03"
+      },
+      {
+        "id": "partner-04"
+      },
+      {
+        "id": "partner-05"
+      }
+    ]
+  }
+}

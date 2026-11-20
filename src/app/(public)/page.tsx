@@ -34,6 +34,9 @@ import { Button } from "@/components/ui/button";
 import { PriceCard, TestimonialCard, TierCompareTable } from "@/components/ui/commerce";
 import { Countdown, RecentPurchaseToast, StickyBuyBar } from "@/components/ui/interactive";
 import { cn } from "@/lib/cn";
+import { VideoWall } from "@/components/testimonials/video-wall";
+import ui from "@/content/hi-Latn/ui.json";
+import { studentVideos, wallCopy } from "@/lib/video-testimonials";
 import { MasterclassVideo } from "@/components/masterclass-video";
 import { getMasterclass } from "@/server/masterclass";
 import mc from "@/content/hi-Latn/masterclass.json";
@@ -92,6 +95,7 @@ export default async function LandingPage() {
   ]);
 
   const masterclass = await getMasterclass(settings);
+  const studentWall = studentVideos();
   const tiers = products.filter((p) => p.product.kind !== "ADDON");
   const entry = tiers[0];
   const entryHref = entry ? `/checkout/${entry.product.slug}` : "#pricing";
@@ -393,6 +397,19 @@ export default async function LandingPage() {
           <IncomeDisclaimer className="mx-auto mt-10 max-w-reading" />
         </div>
       </Section>
+
+      {/* 7b. STUDENT VIDEOS — two rows sliding in opposite directions; tap to watch. Hidden until the files are live. */}
+      {studentWall.length > 0 && (
+        <section id="student-videos" className="section-y relative scroll-mt-16 overflow-hidden">
+          <div className="container-page">
+            <SectionHeader eyebrow={wallCopy.students.eyebrow} heading={wallCopy.students.title} sub={wallCopy.students.sub} className="reveal" />
+          </div>
+          <div className="mt-8 md:mt-10">
+            <VideoWall videos={studentWall} playLabel={wallCopy.play} closeLabel={wallCopy.close} />
+          </div>
+          <p className="type-small container-page mt-5 text-ink-muted">{ui.testimonial.resultsVary}</p>
+        </section>
+      )}
 
       {/* 8. STUDENT RESULTS — real only, hidden until at least 3 exist */}
       {proof.testimonials.length >= 3 && (
