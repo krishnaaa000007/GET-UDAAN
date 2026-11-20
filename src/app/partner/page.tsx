@@ -6,7 +6,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Crown, Lock, Trophy } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
+import { AppFrame } from "@/components/app/app-frame";
 import { EarningsChart } from "@/components/charts/earnings-chart";
 import { Accordion, AccordionItem } from "@/components/ui/accordion";
 import { Badge, EmptyState, Highlight, SpeedTrails } from "@/components/ui/basics";
@@ -21,7 +21,7 @@ import { formatINR } from "@/lib/money";
 import { formatIST, withinHours } from "@/lib/time";
 import { requireUser } from "@/server/auth";
 import { getEarningsByType, getPartnerDashboard, getPartnerLeaderboard, getPartnerTeam } from "@/server/partner-dashboard";
-import { getSettings } from "@/server/settings";
+import { getSettings, supportWhatsappHref } from "@/server/settings";
 import { CampaignLinkBuilder, CopyLine, CountUp, NewSalesBanner, PayoutDetailsForm, QuickActions, WithdrawForm } from "./client";
 
 export const metadata: Metadata = { title: "Partner dashboard", robots: { index: false } };
@@ -35,7 +35,7 @@ const card = "rounded-md border border-line bg-surface-raised p-4 md:p-6";
 
 function Notice({ title, text, cta }: { title: string; text?: string | null; cta?: { href: string; label: string } }) {
   return (
-    <main className="container-page flex flex-col items-center gap-4 py-16 text-center">
+    <div className="flex flex-col items-center gap-4 py-12 text-center">
       <SpeedTrails className="h-10 w-12" />
       <h1 className="type-display text-ink">
         <Highlight text={title} />
@@ -46,7 +46,7 @@ function Notice({ title, text, cta }: { title: string; text?: string | null; cta
           {cta.label}
         </Button>
       )}
-    </main>
+    </div>
   );
 }
 
@@ -55,8 +55,8 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
   const partnerRow = await db.partner.findUnique({ where: { userId: user.id } });
   if (!partnerRow)
     return (
-      <AppShell user={user}>
-        <main className="container-page py-16">
+      <AppFrame user={user} mode="partner" partnerNav={false}>
+        <div className="py-10">
           <EmptyState
             text={D.none.text}
             action={
@@ -65,12 +65,12 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
               </Button>
             }
           />
-        </main>
-      </AppShell>
+        </div>
+      </AppFrame>
     );
   if (partnerRow.status !== "APPROVED")
     return (
-      <AppShell user={user}>{partnerRow.status === "PENDING" ? <Notice title={D.pending.title} text={D.pending.text.replace("{approval}", PARTNER_RULES.approvalTargetHours)} /> : <Notice title={D.rejected.title} text={partnerRow.adminNote} />}</AppShell>
+      <AppFrame user={user} mode="partner" partnerNav={false}>{partnerRow.status === "PENDING" ? <Notice title={D.pending.title} text={D.pending.text.replace("{approval}", PARTNER_RULES.approvalTargetHours)} /> : <Notice title={D.rejected.title} text={partnerRow.adminNote} />}</AppFrame>
     );
 
   const sp = await searchParams;
@@ -113,8 +113,8 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
   ];
 
   return (
-    <AppShell user={user}>
-      <main className="container-page flex flex-col gap-8 pt-6 pb-16">
+    <AppFrame user={user} mode="partner" active={tab === "overview" ? "p-home" : tab === "sales" ? "p-sales" : tab === "team" ? "p-team" : "p-wallet"} showTeam={showTeam} supportHref={supportWhatsappHref(settings)}>
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-1">
           <p className="type-label text-gold-text">@{partnerRow.instagramHandle}</p>
           <h1 className="type-heading text-ink">
@@ -131,18 +131,6 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
 
         <NewSalesBanner partnerId={partnerRow.id} sales={d.sales.filter((s) => s.commission && s.commission.status !== "REVERSED").map((s) => ({ paidAt: s.paidAt, amountPaise: s.commission!.amountPaise }))} />
 
-        <nav aria-label={D.tabs.label} className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto border-b border-line px-4">
-          {tabs.map((x) => (
-            <Link
-              key={x}
-              href={x === "overview" ? "/partner" : `/partner?tab=${x}`}
-              aria-current={x === tab ? "page" : undefined}
-              className={cn("type-button inline-flex min-h-12 shrink-0 items-center border-b-2 px-3", x === tab ? "border-gold text-gold-text" : "border-transparent text-ink-muted hover:text-ink")}
-            >
-              {D.tabs[x]}
-            </Link>
-          ))}
-        </nav>
 
         {tab === "overview" && (
           <>
@@ -487,7 +475,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
         </Accordion>
           </>
         )}
-      </main>
-    </AppShell>
+      </div>
+    </AppFrame>
   );
 }

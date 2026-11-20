@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { getCurrentUser } from "@/server/auth";
@@ -15,18 +16,56 @@ const REASONS: Record<string, string> = {
   google_cancelled: "Google login cancel kar diya. Phir se try karein ya email code use karein.",
 };
 
+/** Student | Partner tabs only choose where you land after login. It is still ONE account: someone with
+ *  both roles switches inside the app. A new partner's "signup" is the application on /partners. */
+const MODES = {
+  student: {
+    title: "Login karein",
+    sub: "Apne courses, progress aur downloads tak pahunchein.",
+    home: "/dashboard",
+    newText: "Naye ho? Pehle course dekho",
+    newHref: "/#pricing",
+  },
+  partner: {
+    title: "Partner login",
+    sub: "Apni sales, commission aur wallet dekhein.",
+    home: "/partner",
+    newText: "Abhi partner nahi ho? Apply karo — free hai",
+    newHref: "/partners#apply",
+  },
+} as const;
+
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const sp = await searchParams;
-  const next = typeof sp.next === "string" && sp.next.startsWith("/") && !sp.next.startsWith("//") ? sp.next : "/dashboard";
+  const asked = typeof sp.next === "string" && sp.next.startsWith("/") && !sp.next.startsWith("//") ? sp.next : null;
+  const mode: keyof typeof MODES = sp.as === "partner" || (!sp.as && asked?.startsWith("/partner")) ? "partner" : "student";
+  const m = MODES[mode];
+  // A page that sent the person here wins; otherwise the tab decides where they land.
+  const next = asked && !(sp.as && (asked === "/dashboard" || asked === "/partner")) ? asked : m.home;
   if (await getCurrentUser()) redirect(next);
   const reason = typeof sp.reason === "string" ? REASONS[sp.reason] : undefined;
+  const tabHref = (k: keyof typeof MODES) => `/login?as=${k}${asked && asked !== "/dashboard" && asked !== "/partner" ? `&next=${encodeURIComponent(asked)}` : ""}`;
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col px-4 py-6">
       <Logo />
-      <div className="mt-10 card p-6">
-        <h1 className="font-display text-3xl">Login karein</h1>
-        <p className="mt-1 mb-6 text-sm text-ink-muted">Apne course, progress aur downloads tak pahunchein.</p>
+      <div className="mt-8 card p-6">
+        <div role="tablist" aria-label="Login as" className="mb-6 grid grid-cols-2 rounded-pill border border-line bg-surface-sunken p-1 text-sm font-semibold">
+          {(Object.keys(MODES) as (keyof typeof MODES)[]).map((k) => (
+            <Link
+              key={k}
+              href={tabHref(k)}
+              role="tab"
+              aria-selected={k === mode}
+              replace
+              className={`inline-flex min-h-10 items-center justify-center rounded-pill px-3 transition-colors duration-150 ${k === mode ? "bg-gold text-on-gold" : "text-ink-muted hover:text-ink"}`}
+            >
+              {k === "student" ? "Student" : "Partner"}
+            </Link>
+          ))}
+        </div>
+        <h1 className="font-display text-3xl">{m.title}</h1>
+        <p className="mt-1 mb-6 text-sm text-ink-muted">{m.sub}</p>
         {reason && <p className="mb-4 rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm text-gold-text">{reason}</p>}
         {googleEnabled() && (
           <>
@@ -38,7 +77,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             </div>
           </>
         )}
-        <LoginForm next={next} />
+        <LoginForm key={mode} next={next} />
+        <p className="mt-6 border-t border-line pt-4 text-center text-sm text-ink-muted">
+          <Link href={m.newHref} className="inline-flex min-h-11 items-center font-semibold text-gold-text underline underline-offset-4">
+            {m.newText}
+          </Link>
+        </p>
       </div>
     </main>
   );

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { login } from "./helpers";
+import { latestOtp, login } from "./helpers";
 
 const buyerEmail = `e2e.${Date.now()}@example.com`;
 
@@ -53,7 +53,7 @@ test("an account stays logged in on max 2 devices; the oldest is logged out", as
   await devices[0].p.goto("/dashboard");
   await expect(devices[0].p).toHaveURL(/\/login\?.*reason=device/);
   // Devices 2 and 3 still work
-  await devices[2].p.goto("/dashboard");
+  await devices[2].p.goto("/dashboard/profile"); // devices live on the Profile page
   await expect(devices[2].p.getByText(/Logged-in devices \(2\/2\)/)).toBeVisible();
   for (const d of devices) await d.ctx.close();
 });
@@ -61,7 +61,9 @@ test("an account stays logged in on max 2 devices; the oldest is logged out", as
 test("partners and students cannot open admin pages", async ({ page }) => {
   await login(page, "lionbhai.partner@example.com", "/partner");
   await page.goto("/admin");
-  await expect(page).toHaveURL(/\/dashboard\?denied=1/);
+  // A partner with no course lands on Profile, which explains they cannot open that page.
+  await expect(page).toHaveURL(/\/dashboard(\/profile)?\?denied=1/);
+  await expect(page.getByRole("alert")).toBeVisible();
   const res = await page.request.get("/api/admin/export/orders");
   expect(res.status()).toBe(403);
 });
@@ -111,4 +113,30 @@ test("invite link pre-fills the apply form with the inviter's name", async ({ pa
   // Step 3 is shown (not auto-submitted) with the inviter pre-filled
   await expect(page.getByText(/ne invite kiya/)).toContainText("Lion Bhai Official");
   await expect(page.getByRole("button", { name: /Application Bhejo/ })).toBeVisible();
+});
+
+test("student app: Home, My Courses, Explore and Profile are real pages with a bottom tab bar", async ({ page }) => {
+  await login(page, "student@example.com", "/dashboard");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/Namaste/);
+  await expect(page.getByText(/Continue watching|Shuru karo/i).first()).toBeVisible();
+  const tabs = page.getByRole("navigation", { name: "App tabs" });
+  await tabs.getByRole("link", { name: "My Courses" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/courses$/);
+  await tabs.getByRole("link", { name: "Explore" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/explore$/);
+  await expect(page.getByText(/Upgrade|Naya|Aapke paas hai/).first()).toBeVisible();
+  await tabs.getByRole("link", { name: "Profile" }).click();
+  await expect(page.getByText(/Logged-in devices/)).toBeVisible();
+});
+
+test("login Partner tab lands on the partner Home with the Student/Partner switch", async ({ page }) => {
+  const t = Date.now() - 1000;
+  await page.goto("/login?as=partner");
+  await expect(page.getByRole("heading", { name: /Partner login/i })).toBeVisible();
+  await page.getByPlaceholder("aap@gmail.com").fill("lionbhai.partner@example.com");
+  await page.getByRole("button", { name: /Login code bhejo/ }).click();
+  await page.getByPlaceholder("••••••").fill(await latestOtp("lionbhai.partner@example.com", t));
+  await page.getByRole("button", { name: /Login karein/ }).click();
+  await expect(page).toHaveURL(/\/partner$/);
+  await expect(page.getByRole("group", { name: "Mode badlo" }).first()).toBeVisible();
 });

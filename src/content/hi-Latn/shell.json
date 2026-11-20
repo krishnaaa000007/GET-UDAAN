@@ -7,7 +7,7 @@
       { "label": "Partner Bano", "href": "/partners" }
     ],
     "navLabel": "Main menu",
-    "login": "Login",
+    "login": "Login", "account": "Mera Account",
     "join": "Join"
   },
   "footer": {

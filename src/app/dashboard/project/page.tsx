@@ -4,7 +4,7 @@
  */
 import type { Metadata } from "next";
 import { Check, ExternalLink } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
+import { AppFrame } from "@/components/app/app-frame";
 import { Badge, EmptyState, Highlight, SpeedTrails } from "@/components/ui/basics";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/data";
@@ -26,8 +26,8 @@ export default async function ProjectPage() {
 
   if (!project)
     return (
-      <AppShell user={user} studentTabs>
-        <main className="container-page flex flex-col gap-6 pt-6 pb-28 md:pb-12">
+      <AppFrame user={user} mode="student" active="home">
+        <div className="flex flex-col gap-6">
           <h1 className="type-heading text-ink">
             <Highlight text={p.none.title} />
           </h1>
@@ -39,16 +39,16 @@ export default async function ProjectPage() {
               </Button>
             }
           />
-        </main>
-      </AppShell>
+        </div>
+      </AppFrame>
     );
 
   const order = await db.order.findUnique({ where: { id: project.orderId }, select: { number: true } });
   const allDone = project.stage >= STAGE_DONE;
 
   return (
-    <AppShell user={user} studentTabs>
-      <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pt-6 pb-28 md:px-6 md:pb-12">
+    <AppFrame user={user} mode="student" active="home">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
         <header className="flex flex-col gap-2">
           <p className="type-label text-gold-text">{p.eyebrow}</p>
           <h1 className="type-heading text-ink">
@@ -130,7 +130,7 @@ export default async function ProjectPage() {
           )}
           <MessageForm />
         </section>
-      </main>
-    </AppShell>
+      </div>
+    </AppFrame>
   );
 }

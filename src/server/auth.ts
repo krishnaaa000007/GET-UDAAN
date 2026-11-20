@@ -19,6 +19,7 @@ import type { RoleName } from "@/generated/prisma/enums";
 import { siteUrl } from "@/lib/site-url";
 
 export const SESSION_COOKIE = "rb_session";
+export const LOGGED_IN_HINT = "gu_in";
 const SESSION_DAYS = 30;
 const OTP_MINUTES = 10;
 const OTP_MAX_ATTEMPTS = 5;
@@ -139,6 +140,9 @@ export async function createSession(userId: string) {
     path: "/",
     expires: expiresAt,
   });
+  // Harmless "logged in" marker the cached public pages read in the browser to show "Mera account"
+  // instead of Login/Join. No user data in it; the real session stays in the httpOnly cookie above.
+  jar.set(LOGGED_IN_HINT, "1", { secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", expires: expiresAt });
 }
 
 /** Keep only the newest N active sessions; revoke the rest ("new login logs out the oldest"). */
@@ -221,4 +225,5 @@ export async function logout() {
     await db.session.updateMany({ where: { tokenHash: hmac(`session:${token}`) }, data: { revokedAt: new Date(), revokedReason: "LOGOUT" } });
   }
   jar.delete(SESSION_COOKIE);
+  jar.delete(LOGGED_IN_HINT);
 }

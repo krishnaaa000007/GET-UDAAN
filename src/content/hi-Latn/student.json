@@ -185,5 +185,82 @@
       "fileText": "Nayi file: {title}",
       "cta": "Project Tracker Kholo"
     }
+  },
+  "app": {
+    "student": "Student",
+    "partner": "Partner",
+    "switchLabel": "Mode badlo",
+    "nav": {
+      "home": "Home",
+      "courses": "My Courses",
+      "explore": "Explore",
+      "profile": "Profile",
+      "pHome": "Home",
+      "pSales": "Sales",
+      "pTeam": "Team",
+      "pWallet": "Wallet"
+    },
+    "navLabel": "App menu",
+    "tabsLabel": "App tabs",
+    "admin": "Admin panel",
+    "becomePartner": "Partner bano",
+    "support": "Help (WhatsApp)",
+    "logout": "Logout"
+  },
+  "home": {
+    "sub": "Aaj thoda aage badhte hain.",
+    "stats": {
+      "lessons": "Lessons done",
+      "progress": "Progress",
+      "streak": "Din ki streak",
+      "certificates": "Certificates"
+    },
+    "myCourses": "Mere *courses*",
+    "seeAll": "Sab dekho",
+    "open": "Course kholo",
+    "continueCourse": "Continue karo",
+    "next": {
+      "eyebrow": "Aapke liye agla step",
+      "upgrade": "{name} mein upgrade karo",
+      "fresh": "{name}",
+      "cta": "Dekho",
+      "partnerTitle": "Partner bano, har sale pe kamao",
+      "partnerText": "Apne followers ko Get Udaan batao aur apne link ya coupon se aayi har sale pe commission pao.",
+      "partnerCta": "Partner Program dekho"
+    },
+    "more": "Get Udaan ke aur *courses*",
+    "explore": "Explore karo"
+  },
+  "coursesPage": {
+    "title": "Mere *courses*",
+    "sub": "Aapke saare courses ek jagah.",
+    "empty": "Abhi aapke paas koi course nahi hai.",
+    "emptyCta": "Courses explore karo",
+    "modules": "{n} modules",
+    "lessons": "{done}/{total} lessons",
+    "downloads": "Downloads",
+    "back": "Mere courses"
+  },
+  "explore": {
+    "title": "*Explore* karo",
+    "sub": "Get Udaan ke saare courses aur services. Naye courses yahan apne aap aayenge.",
+    "owned": "Aapke paas hai",
+    "upgrade": "Upgrade",
+    "fresh": "Naya",
+    "upgradeCta": "Upgrade Karo",
+    "details": "Details dekho",
+    "open": "Kholo",
+    "empty": "Abhi aur kuch nahi — naye courses jaldi aa rahe hain.",
+    "join": "Join Karo"
+  },
+  "profilePage": {
+    "title": "*Profile*",
+    "account": "Account",
+    "name": "Naam",
+    "email": "Email",
+    "phone": "WhatsApp",
+    "notSet": "Nahi diya",
+    "addPhone": "Number add karo",
+    "google": "Google se connected"
   }
 }

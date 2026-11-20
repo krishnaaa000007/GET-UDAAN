@@ -1,8 +1,8 @@
 // Public site header (64px). See-through at the top of the page, solid with a border after scrolling.
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { Button } from "@/components/ui/button";
 import shell from "@/content/hi-Latn/shell.json";
+import { AccountLinks } from "./account-links";
 import { HeaderFrame } from "./header-frame";
 
 export function SiteHeader() {
@@ -18,15 +18,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-1">
-          <Link href="/login" className="inline-flex min-h-12 items-center rounded-sm px-3 text-[15px] font-semibold text-ink-muted transition-colors duration-150 hover:text-ink">
-            {h.login}
-          </Link>
-          {/* Outline, not gold: the page's main CTA is the only gold button on screen. */}
-          <Button href="/#pricing" variant="secondary" size="sm" data-cta="header_join">
-            {h.join}
-          </Button>
-        </div>
+        <AccountLinks />
       </div>
     </HeaderFrame>
   );
