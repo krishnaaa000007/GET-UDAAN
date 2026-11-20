@@ -1,7 +1,7 @@
 {
   "_note": "Video testimonials. Files live in Cloudflare R2 under testimonials/<id>.mp4 + <id>.jpg. Add an optional \"name\" to any item to show it instead of Student/Partner. Set \"live\": true once the files are uploaded.",
   "consent": "Owner confirmed on 2026-11-20 that all 13 students and 5 partners in these videos agreed to be shown publicly.",
-  "live": false,
+  "live": true,
   "folder": "testimonials",
   "play": "Video chalao",
   "close": "Band karo",
