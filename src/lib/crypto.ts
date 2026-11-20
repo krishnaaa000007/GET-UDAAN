@@ -5,6 +5,11 @@ export function sha256(input: string): string {
   return crypto.createHash("sha256").update(input).digest("hex");
 }
 
+/** SHA-256 in URL-safe base64 (no padding). Used for OAuth PKCE code challenges. */
+export function sha256b64url(input: string): string {
+  return crypto.createHash("sha256").update(input).digest("base64url");
+}
+
 /** Keyed hash (uses APP_SECRET) — for OTPs, session tokens, IPs. */
 export function hmac(input: string, secret = process.env.APP_SECRET ?? ""): string {
   return crypto.createHmac("sha256", secret).update(input).digest("hex");

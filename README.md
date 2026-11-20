@@ -90,6 +90,7 @@ All variables are in `.env.example` with comments. Summary:
 | `RESEND_API_KEY`, `EMAIL_FROM` | email | Without it, emails go to `.local-mail/` |
 | `NEXT_PUBLIC_META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN`, `NEXT_PUBLIC_GA4_ID`, `GA4_API_SECRET` | tracking | IDs can also be set in Admin → Settings |
 | `CRON_SECRET` | scheduled jobs | Protects `/api/cron/run` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Sign in with Google (optional) | Hidden on the login page until both are set. Create at console.cloud.google.com → APIs & Services → Credentials → OAuth client (Web). The Authorized redirect URI must be exactly `${APP_URL}/auth/google/callback`. |
 
 ---
 
