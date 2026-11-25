@@ -15,6 +15,7 @@ const HELP: Partial<Record<SettingKey, string>> = {
   supportWhatsapp: "Real support WhatsApp, e.g. +91 98xxxxxxxx. Empty = hidden everywhere",
   supportEmail: "Real support email. Empty = hidden everywhere",
   masterclassVideoUrl: "Masterclass video: YouTube link or .mp4 URL. Empty = video + home masterclass block hidden",
+  masterclassVideoQualities: "Optional smaller versions for the player's quality menu, comma separated: 720p=https://…720.mp4, 480p=https://…480.mp4 (the main link above shows as HD). Empty = no quality menu",
   maxDevices: "Max logged-in devices per student",
   partnerCouponDiscountBps: "Partner coupon discount in bps (1000 = 10%)",
   tdsBps: "TDS on withdrawals in bps (200 = 2%). 0 = none shown. Confirm rate + threshold with your CA",

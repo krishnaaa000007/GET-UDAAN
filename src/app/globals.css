@@ -773,3 +773,11 @@ dialog.sheet::backdrop {
     border-bottom: 0;
   }
 }
+
+/* Masterclass player: the "+10s / −10s" bubble pops in, then fades away. */
+@keyframes skip-flash {
+  0% { opacity: 0; transform: translateY(-50%) scale(0.9); }
+  15% { opacity: 1; transform: translateY(-50%) scale(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}

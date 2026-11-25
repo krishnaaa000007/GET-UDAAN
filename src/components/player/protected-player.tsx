@@ -112,6 +112,9 @@ export function ProtectedPlayer({
     streamType: "on-demand" as const,
     startTime: startAt || undefined,
     accentColor: "#ffb627",
+    // ⟲10 / 10⟳ buttons in the control bar. Quality: Mux streams several renditions, chosen in the player's settings menu.
+    forwardSeekOffset: 10,
+    backwardSeekOffset: 10,
     metadata: { video_id: lessonId, video_title: title, viewer_user_id: viewerId },
     style: { width: "100%", height: "100%", "--fullscreen-button": "none", "--pip-button": "none", "--cast-button": "none" } as React.CSSProperties & Record<`--${string}`, string>,
     onTimeUpdate: (e: Event) => {

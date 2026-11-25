@@ -33,6 +33,8 @@ export const DEFAULTS = {
   supportEmail: "",
   /** Masterclass video (YouTube link or .mp4 URL). Empty = the video and the home masterclass block stay hidden. */
   masterclassVideoUrl: "",
+  /** Optional smaller copies of the masterclass for the quality menu: "720p=https://…mp4, 480p=https://…mp4". */
+  masterclassVideoQualities: "",
   /** Discount for partner coupons created on approval, in bps (1000 = 10%) */
   partnerCouponDiscountBps: 1000,
   /** TDS on partner withdrawals, bps. 0 = not set (hidden). Confirm rate + threshold with your CA. */
