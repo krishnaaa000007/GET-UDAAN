@@ -56,8 +56,8 @@ export default async function PartnersPage() {
       <FunnelTracker />
 
       {/* HERO */}
-      <section className="film-grain">
-        <div className="container-page flex flex-col items-start gap-5 pt-8 pb-12 md:pt-16 md:pb-20">
+      <section data-theme="night" className="border-b border-line">
+        <div className="container-page flex flex-col items-start gap-6 pt-12 pb-16 md:pt-20 md:pb-24">
           <Badge tone="gold">{L.eyebrow}</Badge>
           <h1 className="type-display-xl text-ink">
             <Highlight text={L.title} />
@@ -75,7 +75,7 @@ export default async function PartnersPage() {
           <SectionHeader eyebrow={L.steps.eyebrow} heading={L.steps.title} className="reveal" />
           <ol className="mt-8 grid gap-4 md:grid-cols-3">
             {L.steps.items.map((step, i) => (
-              <li key={step.title} className="reveal flex gap-4 rounded-md border border-line bg-surface-raised p-4 md:flex-col md:p-6">
+              <li key={step.title} className="reveal flex gap-4 rounded-md border border-line bg-surface-raised p-4 md:flex-col md:p-6 shadow-card">
                 <span className="type-heading grid size-12 flex-none place-items-center rounded-pill border border-line bg-surface text-gold-text">{i + 1}</span>
                 <div className="flex flex-col gap-1">
                   <h3 className="type-title text-ink">{step.title}</h3>
@@ -113,7 +113,7 @@ export default async function PartnersPage() {
                 {L.calc.perSale.replace("{product}", entry.product.name).replace("{amount}", formatINR(perSalePaise)).replace("{pct}", String(Math.round(entry.product.defaultCommissionBps / 100)))} {L.calc.note}
               </p>
               {s.teamBonusEnabled && (
-                <p className="type-small rounded-md border border-line bg-surface-raised p-3 text-ink">
+                <p className="type-small rounded-md border border-line bg-surface-raised p-3 text-ink shadow-card">
                   {L.calc.teamExample
                     .replace("{invited}", "3")
                     .replace("{sales}", "10")
@@ -134,7 +134,7 @@ export default async function PartnersPage() {
           <SectionHeader eyebrow={L.payout.eyebrow} heading={L.payout.title} className="reveal" />
           <ol className="mt-8 grid gap-4 md:grid-cols-3">
             {L.payout.items.filter((p) => !("needs" in p) || (p.needs === "payoutTime" && s.payoutTimeText)).map((p) => (
-              <li key={p.title} className="reveal flex flex-col gap-1 rounded-md border border-line bg-surface-raised p-4 md:p-6">
+              <li key={p.title} className="reveal flex flex-col gap-1 rounded-md border border-line bg-surface-raised p-4 md:p-6 shadow-card">
                 <h3 className="type-title text-ink">{fill(p.title)}</h3>
                 <p className="text-ink-muted">{fill(p.desc)}</p>
               </li>

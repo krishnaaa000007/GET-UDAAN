@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Daily earnings as a gold area chart (one series, one axis, no legend — the title names it).
+ * Daily earnings as a saffron line over a soft gold area (one series, one axis, no legend — the title names it).
  * Colours come from the design tokens; gridlines use the `line` colour.
  */
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -26,7 +26,7 @@ export function EarningsChart({ data, label }: { data: Point[]; label: string })
               if (!active || !payload?.length) return null;
               const p = payload[0].payload as Point;
               return (
-                <div className="type-small rounded-sm border border-line bg-surface-sunken px-3 py-2 text-ink shadow-lift">
+                <div className="type-small rounded-sm border border-line bg-surface-raised px-3 py-2 text-ink shadow-lift">
                   <div className="font-semibold">{fmtDay(p.day)}</div>
                   <div className="text-ink-muted">
                     Clicks: <span className="text-ink">{p.clicks}</span>
@@ -41,7 +41,7 @@ export function EarningsChart({ data, label }: { data: Point[]; label: string })
               );
             }}
           />
-          <Area type="monotone" dataKey="value" stroke="var(--gold)" strokeWidth={2} fill="var(--gold)" fillOpacity={0.15} isAnimationActive={false} />
+          <Area type="monotone" dataKey="value" stroke="var(--saffron)" strokeWidth={2.5} fill="var(--gold)" fillOpacity={0.2} isAnimationActive={false} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

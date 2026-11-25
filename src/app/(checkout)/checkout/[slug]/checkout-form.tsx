@@ -8,9 +8,10 @@
  */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, CircleAlert, MessageCircle } from "lucide-react";
+import landingCopy from "@/content/hi-Latn/landing.json";
+import { Check, CircleAlert, MessageCircle, UserRound, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { TrustRow } from "@/components/ui/basics";
+import { HandUnderline, TrustRow } from "@/components/ui/basics";
 import { Button } from "@/components/ui/button";
 import { CouponField, Input, PhoneInput } from "@/components/ui/form";
 import t from "@/content/hi-Latn/checkout.json";
@@ -56,6 +57,23 @@ function loadRazorpay(): Promise<boolean> {
 
 // Razorpay's own window needs a plain colour value, so we read our gold token from the page.
 const brandGold = () => getComputedStyle(document.documentElement).getPropertyValue("--gold").trim();
+
+/** "Get Udaan Done-for-you": the brand in navy, the plan name in gold with a hand-drawn underline. */
+function ProductTitle({ name }: { name: string }) {
+  const m = name.match(/^(Get Udaan)\s+(.+)$/);
+  if (!m) return <>{name}</>;
+  return (
+    <>
+      {m[1]}{" "}
+      <span className="relative inline-block text-saffron">
+        {m[2]}
+        <HandUnderline className="-bottom-1.5 h-2" />
+      </span>
+    </>
+  );
+}
+
+const heroPhoto: string = landingCopy.hero.personUrl;
 
 export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDays, supportWhatsapp, initialFailed, testimonial, upgrade = null, lockEmail = false }: Props) {
   const router = useRouter();
@@ -155,7 +173,7 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
     <form onSubmit={submit} noValidate className="grid items-start gap-6 md:grid-cols-[1fr_360px] md:gap-8">
       {/* Payment did not go through: calm message, retry, WhatsApp */}
       {failed && (
-        <div role="alert" className="flex flex-col gap-3 rounded-md border border-line bg-surface-raised p-4 md:col-span-2 md:p-6">
+        <div role="alert" className="flex flex-col gap-3 rounded-md border border-line bg-surface-raised p-4 md:col-span-2 md:p-6 shadow-card">
           <div className="flex items-start gap-3">
             <CircleAlert aria-hidden className="mt-1 size-6 flex-none text-fire" />
             <div className="flex flex-col gap-1">
@@ -184,13 +202,25 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
       )}
 
       {/* Order summary — first on phones, sticky on the right on desktop */}
-      <aside className="rounded-lg border border-line bg-surface-raised p-4 md:sticky md:top-6 md:order-last md:p-6">
-        <p className="type-label text-gold-text">{t.summary.eyebrow}</p>
-        <h1 className="type-heading mt-1 text-ink">{product.kind === "SERVICE" ? product.name : t.summary.product.replace("{name}", product.name)}</h1>
-        <ul className="mt-3 flex flex-col gap-1">
+      <aside className="relative rounded-lg border border-gold/50 bg-gradient-to-b from-surface-raised to-gold-soft/60 p-5 md:sticky md:top-6 md:order-last md:p-6 shadow-card">
+        {/* The creator photo peeks in at the top-right, on a soft gold disc (reference look). Decorative. */}
+        {heroPhoto && (
+          <div aria-hidden className="pointer-events-none absolute top-2 right-2 w-28 sm:w-36">
+            <span className="absolute inset-x-[8%] top-[14%] bottom-[4%] rounded-pill bg-gold/45" />
+            {/* eslint-disable-next-line @next/next/no-img-element -- small decorative image, already optimised webp */}
+            <img src={heroPhoto} alt="" className="relative h-auto w-full mix-blend-multiply [mask-image:radial-gradient(closest-side,#000_70%,transparent)]" />
+          </div>
+        )}
+        <p className="type-label relative inline-flex rounded-pill bg-gold-chip px-4 py-1.5 text-on-gold">{t.summary.eyebrow}</p>
+        <h1 className="type-heading relative mt-3 pr-24 text-ink sm:pr-32">
+          <ProductTitle name={product.kind === "SERVICE" ? product.name : t.summary.product.replace("{name}", product.name)} />
+        </h1>
+        <ul className="mt-4 flex flex-col gap-2.5">
           {product.features.map((f) => (
-            <li key={f} className="flex gap-2 text-ink-muted">
-              <Check aria-hidden className="mt-0.5 size-5 flex-none text-success" strokeWidth={2.5} />
+            <li key={f} className="flex gap-3 text-ink">
+              <span aria-hidden className="mt-0.5 grid size-6 flex-none place-items-center rounded-pill bg-gold-chip text-on-gold">
+                <Check className="size-4" strokeWidth={3} />
+              </span>
               {f}
             </li>
           ))}
@@ -231,18 +261,26 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
               <dd>−{formatINR(coupon.discountPaise)}</dd>
             </div>
           )}
-          <div className="flex items-end justify-between gap-3 border-t border-line pt-3">
-            <dt className="font-semibold text-ink">{t.summary.total}</dt>
-            <dd aria-live="polite" className="type-price text-gold-text">
+          <div className="mt-1 flex items-center justify-between gap-3 rounded-md bg-gold-chip px-4 py-3">
+            <dt className="type-title text-on-gold">{t.summary.total}</dt>
+            <dd aria-live="polite" className="type-price text-on-gold">
               {formatINR(total)}
             </dd>
           </div>
         </dl>
-        <p className="type-small mt-2 text-ink-muted">{t.summary.oneTime}</p>
+        <p className="type-small mt-3 flex items-center gap-2 text-ink">
+          <ShieldCheck aria-hidden className="size-5 flex-none text-ink" />
+          {t.summary.oneTime}
+        </p>
       </aside>
 
       <div className="flex flex-col gap-5">
-        <h2 className="type-title text-ink">{t.fields.title}</h2>
+        {/* "Aapki details" = a navy tab attached to the white card that holds the fields (reference look). */}
+        <div className="relative mt-6 flex flex-col gap-5 rounded-lg border border-line bg-surface-raised px-4 pt-12 pb-5 shadow-card md:px-6">
+        <h2 data-theme="night" className="type-title absolute -top-6 -left-px inline-flex items-center gap-3 rounded-t-lg rounded-br-lg px-5 py-3 text-ink">
+          <UserRound aria-hidden className="size-6 fill-current text-gold-text" />
+          {t.fields.title}
+        </h2>
         {/* The only 3 fields */}
         <Input label={t.fields.name} name="name" required autoComplete="name" placeholder={t.fields.namePlaceholder} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} error={fieldErr("name")} />
         <PhoneInput label={t.fields.phone} name="phone" required placeholder={t.fields.phonePlaceholder} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} error={fieldErr("phone")} />
@@ -260,6 +298,7 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           error={fieldErr("email")}
         />
+        </div>
 
         {/* Order bump */}
         {bumps.map((b) => (
@@ -301,7 +340,7 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
           </a>
           )}
           {testimonial && (
-            <figure className="flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4">
+            <figure className="flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4 shadow-card">
               <p className="type-label text-gold-text">{t.proof.eyebrow}</p>
               <blockquote className="text-ink">“{testimonial.quote}”</blockquote>
               <figcaption className="type-small text-ink-muted">

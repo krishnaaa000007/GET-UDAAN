@@ -2,7 +2,7 @@
   "meta": { "title": "Done-with-you", "description": "Get Udaan ki team ke saath apna AI reel page banao — character, pehli videos, page setup aur growth plan." },
   "hero": {
     "eyebrow": "Done-with-you",
-    "title": "APNA PAGE, *HAMARI TEAM* KE SAATH",
+    "title": "Apna page, *hamari team* ke saath",
     "sub": "Akele shuru karna mushkil lagta hai? Hamari team aapke saath baith kar aapka character, pehli videos aur page setup karti hai.",
     "cta": "Apna Slot Book Karo",
     "price": "{price} • ek baar payment",
@@ -10,7 +10,7 @@
   },
   "process": {
     "eyebrow": "Process",
-    "title": "SHURU SE *AAKHIR* TAK",
+    "title": "Shuru se *aakhir* tak",
     "steps": [
       { "title": "Onboarding", "desc": "Hum aapka goal, niche aur audience samajhte hain." },
       { "title": "Character", "desc": "Hamari team aapke page ka character design karti hai." },
@@ -21,13 +21,13 @@
   },
   "included": {
     "eyebrow": "Scope",
-    "title": "ISME *KYA* MILEGA",
+    "title": "Isme *kya* milega",
     "sub": "Jo likha hai wahi milega — na kam, na chhupa hua kuch.",
     "noGuaranteeTitle": "Jo hum vaada nahi karte",
     "noGuarantee": "Views, followers ya income ki koi guarantee nahi. Hum setup aur tareeka dete hain; page chalana aur regular post karna aapka kaam hai."
   },
   "faq": {
-    "title": "AAPKE *SAWAAL*",
+    "title": "Aapke *sawaal*",
     "items": [
       { "q": "Ye course se kaise alag hai?", "a": "Isme Pro course ka sab kuch milta hai, aur saath mein hamari team aapke page par aapke saath kaam karti hai." },
       { "q": "Slot book karne ke baad kya hoga?", "a": "Payment ke baad hamari team aapse WhatsApp ya email par contact karke onboarding shuru karegi." },
@@ -38,7 +38,7 @@
     "refundLink": "Refund policy padho"
   },
   "final": {
-    "title": "TAIYAAR *HO?*",
+    "title": "Taiyaar *ho?*",
     "sub": "Slot book kijiye. Aage ka kaam hum saath mein karenge."
   },
   "sticky": { "note": "Done-with-you • ek baar payment", "cta": "Slot Book Karo" }

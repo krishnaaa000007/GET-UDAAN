@@ -1,12 +1,12 @@
 {
   "landing": {
     "eyebrow": "Get Udaan Partner Program",
-    "title": "TUMHARA PAGE. *TUMHARI KAMAAI.*",
+    "title": "Tumhara page. *Tumhari kamaai.*",
     "sub": "Reel page chalate ho? Apne followers ko Get Udaan batao aur apne link ya coupon se aayi har sale par commission kamao.",
     "cta": "Partner Apply Karo",
     "steps": {
       "eyebrow": "3 simple steps",
-      "title": "KAISE *KAAM* KARTA HAI",
+      "title": "Kaise *kaam* karta hai",
       "items": [
         {
           "title": "Apply karo",
@@ -24,7 +24,7 @@
     },
     "calc": {
       "eyebrow": "Calculator",
-      "title": "KITNA *BAN* SAKTA HAI?",
+      "title": "Kitna *ban* sakta hai?",
       "slider": "Mahine mein kitni sales?",
       "sales": "{n} sales / mahina",
       "estimate": "Andaazan commission",
@@ -35,7 +35,7 @@
     },
     "payout": {
       "eyebrow": "Payout",
-      "title": "PAISA *KAB* MILTA HAI",
+      "title": "Paisa *kab* milta hai",
       "items": [
         {
           "title": "{release} mein wallet mein",
@@ -53,7 +53,7 @@
       ]
     },
     "faq": {
-      "title": "PARTNER *SAWAAL*",
+      "title": "Partner *sawaal*",
       "items": [
         {
           "q": "Kitne followers chahiye?",
@@ -84,7 +84,7 @@
     }
   },
   "apply": {
-    "title": "APPLY *KARO*",
+    "title": "Apply *karo*",
     "sub": "3 chhote steps. 2 minute lagenge.",
     "step": "Step {n} / 3",
     "steps": [
@@ -139,17 +139,17 @@
     "termsLink": "Partner Terms"
   },
   "dashboard": {
-    "title": "PARTNER *DASHBOARD*",
+    "title": "Partner *dashboard*",
     "none": {
       "text": "Tumhara partner account abhi nahi bana hai.",
       "cta": "Partner Apply Karo"
     },
     "pending": {
-      "title": "APPLICATION *REVIEW* MEIN HAI",
+      "title": "Application *review* mein hai",
       "text": "Usually {approval} ghante mein approval. Approve hote hi email aayega."
     },
     "rejected": {
-      "title": "APPLICATION *APPROVE* NAHI HUI"
+      "title": "Application *approve* nahi hui"
     },
     "newSales": "🎉 {n} nayi sales! +{amount}",
     "newSale": "🎉 1 nayi sale! +{amount}",
@@ -190,7 +190,7 @@
     "chart": "Rozana earnings (₹)",
     "chartLabel": "Rozana earnings ka chart",
     "campaigns": {
-      "title": "KAUNSI REEL NE *SABSE ZYADA* BECHA",
+      "title": "Kaunsi reel ne *sabse zyada* becha",
       "campaign": "Campaign",
       "clicks": "Clicks",
       "sales": "Sales",
@@ -203,7 +203,7 @@
       "copy": "Copy"
     },
     "salesList": {
-      "title": "SALES",
+      "title": "Sales",
       "privacy": "Privacy ke liye buyer ka naam aur number chhupa hota hai.",
       "empty": "Is range mein abhi koi sale nahi. Ek nayi reel post karo!",
       "pending": "Pending",
@@ -213,7 +213,7 @@
       "availableOn": "{time} tak wallet mein"
     },
     "milestones": {
-      "title": "MILESTONES",
+      "title": "Milestones",
       "items": [
         {
           "kind": "sales",
@@ -240,14 +240,14 @@
       "locked": "Abhi locked"
     },
     "leaderboard": {
-      "title": "LEADERBOARD",
+      "title": "Leaderboard",
       "sub": "Pichhle 30 din ki sales ke hisaab se top 10.",
       "you": "Tum",
       "rank": "#{n}",
       "sales": "{n} sales"
     },
     "promo": {
-      "title": "PROMO *KIT*",
+      "title": "Promo *kit*",
       "captions": "Captions (copy karke apni reel ke neeche lagao)",
       "hooks": "Reel ke hooks",
       "captionItems": [
@@ -264,7 +264,7 @@
       "copy": "Copy"
     },
     "withdraw": {
-      "title": "WITHDRAW",
+      "title": "Withdraw",
       "available": "Available: {amount}",
       "amount": "Kitna withdraw karna hai? (₹)",
       "tds": "TDS {pct}% ({tds}) katega — tumhe milega {net}.",
@@ -285,7 +285,7 @@
       "tdsCut": "TDS {amount}"
     },
     "payoutDetails": {
-      "title": "PAYOUT DETAILS",
+      "title": "Payout details",
       "hint": "Payment yahin bheji jaayegi. Badalne par security ke liye 24 ghante withdraw band rehta hai.",
       "upi": "UPI ID",
       "or": "ya bank account",

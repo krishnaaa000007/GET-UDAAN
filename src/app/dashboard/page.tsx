@@ -6,7 +6,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, CircleAlert, Play } from "lucide-react";
+import { Award, ArrowRight, CircleAlert, CirclePlay, Flame, Play, TrendingUp } from "lucide-react";
 import { AppFrame } from "@/components/app/app-frame";
 import { CatalogCard } from "@/components/app/catalog-card";
 import { CourseCard } from "@/components/app/course-card";
@@ -47,7 +47,7 @@ export default async function StudentHome({ searchParams }: PageProps<"/dashboar
   const progressPct = lessonsTotal ? Math.round((lessonsDone / lessonsTotal) * 100) : 0;
 
   return (
-    <AppFrame user={user} mode="student" active="home" supportHref={supportWhatsappHref(settings)}>
+    <AppFrame user={user} mode="student" active="home" supportHref={supportWhatsappHref(settings)} progressPct={outlines.length ? progressPct : undefined}>
       <div className="flex flex-col gap-8">
         {sp.denied && (
           <p role="alert" className="flex items-start gap-2 rounded-sm border border-fire bg-surface-raised p-3 text-ink">
@@ -63,15 +63,15 @@ export default async function StudentHome({ searchParams }: PageProps<"/dashboar
 
         {/* The one main action: continue watching (or the certificate when everything is done) */}
         {cont ? (
-          <section className="flex flex-col gap-4 rounded-lg border-2 border-gold bg-gold-soft p-4 md:flex-row md:items-center md:gap-6 md:p-6">
-            <a href={cont.href} aria-hidden tabIndex={-1} className="relative grid aspect-video w-full flex-none place-items-center overflow-hidden rounded-md bg-surface-sunken md:w-64">
+          <section className="flex flex-col gap-4 rounded-lg border border-gold/60 bg-gradient-to-br from-gold-soft to-surface-raised p-4 shadow-card md:flex-row md:items-center md:gap-6 md:p-6">
+            <a href={cont.href} aria-hidden tabIndex={-1} className="relative grid aspect-video w-full flex-none place-items-center overflow-hidden rounded-md bg-bezel md:w-64">
               <SpeedTrails className="absolute top-3 left-3 h-6 w-7" />
               <span className="grid size-14 place-items-center rounded-pill bg-gold text-on-gold">
                 <Play className="size-6" />
               </span>
             </a>
             <div className="flex min-w-0 flex-1 flex-col gap-3">
-              <p className="type-label text-gold-text">{cont.started ? d.continue.eyebrow : d.continue.eyebrowStart}</p>
+              <p className="type-label inline-flex self-start rounded-pill bg-gold-chip px-3 py-1 text-on-gold">{cont.started ? d.continue.eyebrow : d.continue.eyebrowStart}</p>
               <h2 className="type-title text-ink">{cont.title}</h2>
               <p className="type-small text-ink-muted">{cont.course}</p>
               {cont.lessonPct > 0 && <ProgressBar value={cont.lessonPct} label={d.continue.lessonProgress} />}
@@ -93,10 +93,10 @@ export default async function StudentHome({ searchParams }: PageProps<"/dashboar
         {/* Numbers that go up */}
         {outlines.length > 0 && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <StatCard label={h.stats.lessons} value={`${lessonsDone}/${lessonsTotal}`} />
-            <StatCard label={h.stats.progress} value={`${progressPct}%`} />
-            <StatCard label={h.stats.streak} value={String(streak)} />
-            <StatCard label={h.stats.certificates} value={String(certificates)} />
+            <StatCard icon={CirclePlay} label={h.stats.lessons} value={`${lessonsDone}/${lessonsTotal}`} />
+            <StatCard icon={TrendingUp} label={h.stats.progress} value={`${progressPct}%`} />
+            <StatCard icon={Flame} label={h.stats.streak} value={String(streak)} />
+            <StatCard icon={Award} label={h.stats.certificates} value={String(certificates)} />
           </div>
         )}
 
@@ -108,7 +108,7 @@ export default async function StudentHome({ searchParams }: PageProps<"/dashboar
         )}
 
         {project && (
-          <section className="flex flex-col items-start gap-2 rounded-lg border border-line bg-surface-raised p-4 md:p-6">
+          <section className="flex flex-col items-start gap-2 rounded-lg border border-line bg-surface-raised p-4 md:p-6 shadow-card">
             <p className="type-label text-gold-text">{d.projectCard.eyebrow}</p>
             <h2 className="type-title text-ink">{d.projectCard.title}</h2>
             <p className="text-ink-muted">{project.stage >= STAGE_DONE ? d.projectCard.done : d.projectCard.stage.replace("{stage}", SERVICE_STAGES[project.stage].title)}</p>

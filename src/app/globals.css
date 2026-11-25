@@ -2,56 +2,63 @@
 
 /*
  * GET UDAAN design tokens — the single source of truth (see DESIGN.md section 3).
- * Night is the default theme. Day is for invoices, emails, certificates and print:
- * wrap that area in <div data-theme="day">.
+ * "Daylight" (cream) is the default everywhere. "Night" (deep navy) is for the header, footer,
+ * app sidebars, video areas and at most one or two contrast sections per page:
+ * wrap that area in <div data-theme="night">. "day" is an alias of the default (certificates, print).
  * Never put a raw hex colour in a page or component — use the classes these tokens create
  * (bg-surface, text-ink, text-gold-text, border-line ...).
+ * Every text pair passes WCAG AA (numbers in DESIGN.md §3.1).
  */
 :root,
-[data-theme="night"] {
-  color-scheme: dark;
-  --surface: #0d0d12;
-  --surface-raised: #17171f;
-  --surface-raised-2: #1e1e28; /* hover, inputs, nested cards */
-  --surface-sunken: #08080b;
-  --line: #2a2a35;
-  --ink: #f6f1e7;
-  --ink-muted: #a8a3b3;
-  --gold: #ffb627;
-  --gold-deep: #e89c00;
-  --on-gold: #15131a;
-  --gold-text: #ffb627;
-  --gold-soft: rgba(255, 182, 39, 0.1);
-  --fire: #ff6a45;
-  --on-fire: #15131a;
-  --success: #2dd4a7;
-  --focus-ring: #ffb627;
-  /* Gold glow: ONLY the primary CTA and the featured card. */
-  --glow-gold: 0 0 0 1px rgba(255, 182, 39, 0.35), 0 12px 40px -12px rgba(255, 182, 39, 0.45);
-  /* No grey drop shadows: floating things get a hairline edge instead. */
-  --lift: 0 0 0 1px var(--line);
-  /* "Night to sunrise" sky */
-  --sunrise: #2a1a08;
-  --dusk: color-mix(in srgb, var(--surface) 55%, var(--sunrise));
-  --bezel: #1a1a22;
+[data-theme="day"] {
+  color-scheme: light;
+  --surface: #fff8f0; /* warm cream page */
+  --surface-raised: #ffffff; /* cards */
+  --surface-raised-2: #fbf1e4; /* hover, nested cards, progress tracks */
+  --surface-sunken: #f8eee1; /* inputs, prompt boxes */
+  --line: #eedfcb; /* hairlines */
+  --ink: #14213a; /* navy ink, 15.2:1 on cream */
+  --ink-muted: #5a5f6e; /* 6.1:1 on cream */
+  --gold: #ffb627; /* Udaan Gold: FILL only (buttons, progress, logo tile) */
+  --gold-deep: #f5a300;
+  --on-gold: #14213a; /* 9.2:1 */
+  --gold-text: #a84b08; /* gold used as text, 5.4:1 on cream, 5.0:1 on inputs */
+  --gold-soft: #fff1d6; /* tinted chips, featured tier */
+  --saffron: #d96a00; /* the ONE highlighted word in big headings (24px+ only, 3.3:1) */
+  --fire: #c2361a;
+  --on-fire: #ffffff;
+  --success: #0b7a5c;
+  --focus-ring: #d96a00;
+  /* Depth on light: soft navy-tinted shadows; the gold button gets a warm glow (reference look). */
+  --glow-gold: 0 10px 24px -8px rgba(245, 163, 0, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.08);
+  --lift: 0 24px 48px -16px rgba(20, 33, 58, 0.25), 0 2px 6px rgba(20, 33, 58, 0.06);
+  --card-shadow: 0 10px 30px -14px rgba(20, 33, 58, 0.18), 0 1px 2px rgba(20, 33, 58, 0.04);
+  --gold-chip: #ffe08a; /* yellow pill chips (eyebrows, "Code FIRST100"); navy text on it, 12:1 */
+  --bezel: #14213a;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-theme="day"] {
-  color-scheme: light;
-  --surface: #fbf7ef;
-  --surface-raised: #fffdf8;
-  --surface-raised-2: #f7f2e8;
-  --surface-sunken: #f2ece0;
-  --line: #e5ddcc;
-  --ink: #15131a;
-  --ink-muted: #5d5866;
-  --gold-text: #8a5b00;
-  --gold-soft: #fff1d1;
-  --fire: #c2361a;
-  --on-fire: #fffdf8;
-  --success: #0b7a5c;
-  --lift: 0 8px 24px rgba(21, 19, 26, 0.12);
+[data-theme="night"] {
+  color-scheme: dark;
+  --surface: #0f1b2d; /* deep navy */
+  --surface-raised: #16253d;
+  --surface-raised-2: #1d2e4a;
+  --surface-sunken: #0b1524;
+  --line: rgba(255, 248, 240, 0.12);
+  --ink: #fff8f0; /* 17:1 on navy */
+  --ink-muted: #a9b4c7; /* 8.3:1 */
+  --gold-text: #ffc21a; /* 10.7:1 */
+  --gold-soft: rgba(255, 194, 26, 0.12);
+  --saffron: #ffc21a;
+  --fire: #ff7a59;
+  --on-fire: #14213a;
+  --success: #4cc38a;
+  --focus-ring: #ffc21a;
+  --glow-gold: 0 10px 28px -8px rgba(255, 182, 39, 0.45), inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+  --gold-chip: #ffc21a;
+  --lift: 0 0 0 1px var(--line), 0 16px 40px -12px rgba(0, 0, 0, 0.5);
+  --card-shadow: none;
+  --bezel: #0b1524;
 }
 
 /* Map the tokens to Tailwind classes (Tailwind v4 does this in CSS, not tailwind.config.ts). */
@@ -60,9 +67,9 @@
   --color-surface-raised: var(--surface-raised);
   --color-surface-sunken: var(--surface-sunken);
   --color-surface-raised-2: var(--surface-raised-2);
-  --color-sunrise: var(--sunrise);
-  --color-dusk: var(--dusk);
   --color-bezel: var(--bezel);
+  --color-saffron: var(--saffron);
+  --color-gold-chip: var(--gold-chip);
   --color-line: var(--line);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
@@ -76,20 +83,23 @@
   --color-success: var(--success);
   --color-focus-ring: var(--focus-ring);
 
-  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  /* Headings: Plus Jakarta Sans ExtraBold (sentence case). Anton is retired from the UI; the logo SVG keeps its own lettering. */
+  --font-display: var(--font-jakarta), var(--font-poppins), system-ui, sans-serif;
+  --font-hand: var(--font-caveat), "Comic Sans MS", cursive;
   --font-body: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-sans: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius-sm: 8px;
-  --radius-md: 14px; /* buttons */
+  --radius-md: 12px; /* buttons */
   --radius-lg: 20px; /* cards */
-  --radius-sheet: 24px; /* bottom sheets, big panels */
+  --radius-sheet: 28px; /* bottom sheets, big panels, navy bands */
   --radius-phone: 36px; /* phone mockups */
   --radius-input: 12px;
   --radius-pill: 999px;
 
   --shadow-glow-gold: var(--glow-gold);
   --shadow-lift: var(--lift);
+  --shadow-card: var(--card-shadow);
 
   /* 13px is the smallest text allowed anywhere, so "text-xs" is 13px here (not Tailwind's 12px). */
   --text-xs: 0.8125rem;
@@ -171,63 +181,62 @@ blockquote {
   outline-offset: 2px;
 }
 
-/* ---------- Type styles (visual polish brief §2) ----------
- * Anton = uppercase headlines of 6 words or fewer, prices, big numbers. Poppins = everything else.
- * Nothing below 13px anywhere. */
+/* ---------- Type styles ----------
+ * Bricolage Grotesque = headings, prices, big numbers. Sentence case, tight tracking on big sizes only.
+ * Poppins = everything else. Hierarchy comes from size and colour, not CAPS. Nothing below 13px anywhere. */
 @utility type-display-xl {
-  /* hero headline only: 52px -> 96px */
+  /* hero headline only: 52px -> 112px (reference look: very big and heavy) */
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(52px, 6.63vw + 28px, 96px);
-  line-height: 0.95;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-weight: 800;
+  font-size: clamp(52px, 6.4vw + 20px, 112px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   text-wrap: balance;
 }
 @utility type-display {
-  /* display-l, section headlines: 38px -> 64px */
+  /* section headlines: 32px -> 52px */
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(38px, 3.92vw + 24px, 64px);
-  line-height: 1;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-weight: 800;
+  font-size: clamp(32px, 3vw + 21px, 52px);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 @utility type-heading {
-  /* display-m, card titles: 28px -> 40px */
+  /* card titles, dashboard titles: 24px -> 32px */
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(28px, 1.81vw + 21.5px, 40px);
-  line-height: 1.05;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  font-weight: 700;
+  font-size: clamp(24px, 1.2vw + 19.5px, 32px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 @utility type-price {
-  /* stat: prices, 40px -> 56px */
+  /* prices: 40px -> 56px */
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: clamp(40px, 2.41vw + 31.3px, 56px);
   line-height: 1;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 @utility type-stat {
-  /* stat: big numbers (40+, 300+), 40px -> 56px */
+  /* big numbers (40+, 300+): 32px -> 44px */
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(40px, 2.41vw + 31.3px, 56px);
+  font-weight: 700;
+  font-size: clamp(32px, 1.8vw + 25.5px, 44px);
   line-height: 1;
+  letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
 }
 @utility type-price-sm {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 800;
   font-size: 28px;
   line-height: 1;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
-/* Hindi-script (Devanagari) headings: Anton has no Devanagari, so use Poppins bold. */
 @utility type-heading-hi {
   font-family: var(--font-body);
   font-weight: 700;
@@ -263,12 +272,11 @@ blockquote {
   letter-spacing: 0.1px;
 }
 @utility type-label {
-  /* eyebrow. 13px everywhere: the brief's 12px mobile size would break its own 13px minimum. */
+  /* eyebrows, badges, small headings: sentence case, no wide tracking */
   font-size: 13px;
-  line-height: 1.2;
+  line-height: 1.25;
   font-weight: 600;
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
+  letter-spacing: 0;
 }
 @utility type-button {
   font-size: 17px;
@@ -314,7 +322,7 @@ blockquote {
   gap: 8px;
   min-height: 48px;
   padding: 0 24px;
-  border-radius: 14px;
+  border-radius: 999px;
   background: var(--gold);
   color: var(--on-gold);
   font-weight: 700;
@@ -341,7 +349,7 @@ blockquote {
   gap: 8px;
   min-height: 48px;
   padding: 0 16px;
-  border-radius: 14px;
+  border-radius: 999px;
   border: 2px solid var(--ink);
   color: var(--ink);
   font-weight: 700;
@@ -357,7 +365,8 @@ blockquote {
 @utility card {
   background: var(--surface-raised);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
 }
 
 @utility field {
@@ -370,15 +379,15 @@ blockquote {
   color: var(--ink);
   font-size: 16px; /* 16px stops iOS zooming into inputs */
   &:focus {
-    border-color: var(--gold);
+    border-color: var(--gold-text);
   }
 }
 
 @utility font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
 }
 
 /* Skeleton shimmer */
@@ -420,7 +429,7 @@ details > summary::-webkit-details-marker {
 
 /* Bottom sheet / modal backdrop */
 dialog.sheet::backdrop {
-  background: color-mix(in srgb, var(--surface-sunken) 75%, transparent);
+  background: rgba(15, 27, 45, 0.6); /* navy dim */
 }
 
 /* Reduced motion: turn every animation and transition off. */
@@ -437,16 +446,9 @@ dialog.sheet::backdrop {
 }
 
 /* Subtle film grain for dark hero areas (a tiny inline SVG — no image download). */
+/* Retired: film grain (unslop: no grain/noise decoration). Kept as a no-op so old markup still works. */
 @utility film-grain {
   position: relative;
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.035;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
 }
 
 /* Section reveal (brief §7): fade up 16px, 60ms stagger, once.
@@ -486,81 +488,33 @@ dialog.sheet::backdrop {
 }
 
 /* =====================================================================
- * THEME: "NIGHT TO SUNRISE FLIGHT" (visual polish brief §1)
- * Visitors start at night and fly into sunrise as they scroll toward buying.
- * All CSS, per section, no fixed images (no layout shift, no scroll jank).
+ * SECTION BACKGROUNDS (daylight theme)
+ * The old "night to sunrise" sky (stars, horizon glow, sun glow, dusk gradients) is retired:
+ * unslop says no colour washes or glows behind content. The class names stay so pages keep working.
+ *  - sky-stars / sky-horizon / sky-dusk / sky-sunrise-start: plain cream section
+ *  - sky-sunrise (final CTA): a deep-navy contrast band
+ *  - sun-glow: hidden
  * ===================================================================== */
-
-/* Top of the page: night with faint static stars. */
 @utility sky-stars {
   position: relative;
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.25;
-    background-image:
-      radial-gradient(1px 1px at 8% 14%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 22% 62%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 35% 28%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 48% 8%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 57% 47%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 68% 18%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 79% 71%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 88% 33%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 94% 9%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 14% 86%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 41% 79%, var(--ink) 50%, transparent 51%),
-      radial-gradient(1px 1px at 63% 91%, var(--ink) 50%, transparent 51%);
-  }
 }
-
-/* Middle of the page: a warm horizon glow rising from the section's bottom edge.
- * The glow spills a little into the next section so there is no visible seam. */
 @utility sky-horizon {
   position: relative;
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -18%;
-    height: 55%;
-    pointer-events: none;
-    background: radial-gradient(60% 50% at 50% 50%, rgba(255, 182, 39, 0.08), transparent 70%);
-  }
 }
-
-/* Pricing: night warming into dusk, with a big soft sun behind the cards. */
 @utility sky-sunrise-start {
   position: relative;
-  background: linear-gradient(180deg, var(--surface) 0%, var(--dusk) 100%);
-  /* the sun glow is wider than a phone; clip it sideways without making a scroll box */
-  overflow-x: clip;
+  background: var(--surface);
 }
 @utility sky-dusk {
   position: relative;
-  background: var(--dusk);
+  background: var(--surface-raised-2);
 }
-/* Final CTA: full sunrise. */
 @utility sky-sunrise {
   position: relative;
-  background: linear-gradient(180deg, var(--dusk) 0%, var(--sunrise) 100%);
   overflow: hidden;
 }
 @utility sun-glow {
-  /* place inside a relative section; sits behind content */
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-  width: min(900px, 140vw);
-  aspect-ratio: 1;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 182, 39, 0.22) 0%, rgba(255, 182, 39, 0.08) 40%, transparent 68%);
-  filter: blur(60px);
+  display: none;
 }
 
 /* ---------- The gold flight path (brief §1.2) ----------
@@ -605,9 +559,9 @@ dialog.sheet::backdrop {
   fill: none;
   stroke: var(--gold);
   stroke-width: 2px;
+  opacity: 0.7;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 6px rgba(255, 182, 39, 0.35));
 }
 @keyframes flight-draw {
   from {
@@ -663,12 +617,9 @@ dialog.sheet::backdrop {
   position: relative;
   aspect-ratio: 9 / 16;
   border-radius: var(--radius-phone);
-  padding: 10px;
+  padding: 8px;
   background: var(--bezel);
-  box-shadow:
-    inset 0 0 0 1px rgba(246, 241, 231, 0.08),
-    0 0 0 1px rgba(255, 182, 39, 0.35),
-    0 18px 60px -20px rgba(255, 182, 39, 0.4);
+  box-shadow: 0 30px 60px -24px rgba(20, 33, 58, 0.45), 0 2px 6px rgba(20, 33, 58, 0.08);
 }
 @keyframes float-y {
   0%,
@@ -679,9 +630,9 @@ dialog.sheet::backdrop {
     transform: translateY(-6px) rotate(var(--tilt, 0deg));
   }
 }
+/* No floating loops (unslop): the tilt stays, the motion is gone. */
 @utility float-slow {
   transform: rotate(var(--tilt, 0deg));
-  animation: float-y 6s ease-in-out infinite;
 }
 
 /* ---------- Hero gold word: one shimmer sweep on load (600ms) ---------- */
@@ -693,14 +644,9 @@ dialog.sheet::backdrop {
     background-position: 0% 0;
   }
 }
+/* The highlighted hero word: solid saffron, no shimmer or gradient text (unslop). */
 @utility shimmer-once {
-  background-image: linear-gradient(110deg, var(--gold-text) 0%, var(--gold-text) 40%, #fff1c9 50%, var(--gold-text) 60%, var(--gold-text) 100%);
-  background-size: 250% 100%;
-  background-position: 0% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer-sweep 600ms var(--ease-out) 300ms 1 both;
+  color: var(--saffron);
 }
 
 /* ---------- Cards that lift on hover (desktop pointers only) ---------- */
@@ -710,8 +656,8 @@ dialog.sheet::backdrop {
     border-color 150ms var(--ease-out);
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      transform: translateY(-4px);
-      border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--ink) 22%, transparent);
     }
   }
 }
@@ -744,5 +690,86 @@ dialog.sheet::backdrop {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     mask-image: none;
+  }
+}
+
+/* =====================================================================
+ * REFERENCE LOOK (Nov 2026): highlighter brush, warm hero glow, dots, framed media
+ * ===================================================================== */
+
+/* The key word in a heading sits on a hand-painted gold brush stroke (navy text on gold, 9:1). */
+@utility hl-brush {
+  position: relative;
+  display: inline-block;
+  padding: 0 0.1em;
+  color: var(--on-gold);
+  z-index: 0;
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0.06em -0.1em -0.04em -0.22em;
+    background: var(--gold);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20100%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M18%2012%20L70%206%20L160%209%20L250%205%20L330%208%20L384%206%20L392%2016%20L382%2026%20L396%2038%20L386%2050%20L398%2062%20L384%2074%20L392%2086%20L330%2092%20L240%2090%20L150%2095%20L70%2092%20L20%2096%20L8%2086%20L18%2076%20L4%2064%20L16%2052%20L2%2040%20L14%2028%20L6%2018%20Z%27%2F%3E%3Cpath%20d%3D%27M0%2094%20L130%2090%20L128%2099%20L4%20100%20Z%27%20fill-opacity%3D%270.55%27%2F%3E%3Cpath%20d%3D%27M270%200%20L398%202%20L396%208%20L280%206%20Z%27%20fill-opacity%3D%270.5%27%2F%3E%3Cpath%20d%3D%27M30%2046%20L120%2044%20L118%2047%20L32%2049%20Z%27%20fill-opacity%3D%270%27%20%2F%3E%3C%2Fsvg%3E") center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20400%20100%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M18%2012%20L70%206%20L160%209%20L250%205%20L330%208%20L384%206%20L392%2016%20L382%2026%20L396%2038%20L386%2050%20L398%2062%20L384%2074%20L392%2086%20L330%2092%20L240%2090%20L150%2095%20L70%2092%20L20%2096%20L8%2086%20L18%2076%20L4%2064%20L16%2052%20L2%2040%20L14%2028%20L6%2018%20Z%27%2F%3E%3Cpath%20d%3D%27M0%2094%20L130%2090%20L128%2099%20L4%20100%20Z%27%20fill-opacity%3D%270.55%27%2F%3E%3Cpath%20d%3D%27M270%200%20L398%202%20L396%208%20L280%206%20Z%27%20fill-opacity%3D%270.5%27%2F%3E%3Cpath%20d%3D%27M30%2046%20L120%2044%20L118%2047%20L32%2049%20Z%27%20fill-opacity%3D%270%27%20%2F%3E%3C%2Fsvg%3E") center / 100% 100% no-repeat;
+    transform: rotate(-2deg);
+  }
+}
+
+/* Warm sunlight in the top-right corner of a cream hero, plus a soft dot grid bottom-right. */
+@utility hero-glow {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 70% at 92% 0%, rgba(255, 182, 39, 0.22), transparent 70%),
+      radial-gradient(40% 50% at 0% 100%, rgba(255, 182, 39, 0.1), transparent 70%);
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    right: 0;
+    bottom: 24px;
+    width: 160px;
+    height: 160px;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: radial-gradient(var(--gold) 1.5px, transparent 1.6px);
+    background-size: 14px 14px;
+    -webkit-mask: radial-gradient(closest-side, #000, transparent);
+    mask: radial-gradient(closest-side, #000, transparent);
+  }
+}
+
+/* A white frame around featured media (hero video), with a warm halo. */
+@utility media-frame {
+  position: relative;
+  padding: 8px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow:
+    0 30px 60px -24px rgba(20, 33, 58, 0.35),
+    0 0 0 1px var(--line),
+    0 0 0 6px rgba(255, 214, 102, 0.35),
+    0 0 70px 4px rgba(255, 182, 39, 0.45);
+}
+
+@utility font-hand {
+  font-family: var(--font-hand);
+  letter-spacing: 0;
+}
+
+/* Phones: the public header floats as a rounded navy bar (reference look). */
+@utility header-float {
+  @media (width < 48rem) {
+    margin: 8px 8px 0;
+    border-radius: 20px;
+    border-bottom: 0;
   }
 }

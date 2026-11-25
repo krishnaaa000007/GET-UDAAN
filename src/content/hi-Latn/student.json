@@ -45,20 +45,20 @@
       "cta": "Course Dekho"
     },
     "courses": {
-      "title": "MERE *COURSES*",
+      "title": "Mere *courses*",
       "lessonsDone": "{done} / {total} lessons poore",
       "moduleLabel": "Module {n} — {title}",
       "certificateLocked": "100% poora karne par certificate milega.",
       "certificate": "Certificate Dekho"
     },
     "downloads": {
-      "title": "DOWNLOADS",
+      "title": "Downloads",
       "empty": "Abhi koi download nahi hai.",
       "locked": "{title} — sirf Done-for-you mein",
       "download": "{title} download karo"
     },
     "profile": {
-      "title": "PROFILE",
+      "title": "Profile",
       "purchases": "Purchase history",
       "order": "Order #{number}",
       "refunded": "Refund ho gaya",
@@ -133,19 +133,19 @@
     "shareMessage": "Maine Get Udaan ka course poora kar liya! Mera certificate dekho:",
     "back": "Dashboard par Jao",
     "notYet": {
-      "title": "CERTIFICATE ABHI *LOCKED* HAI",
+      "title": "Certificate abhi *locked* hai",
       "text": "Aapne {percent}% course poora kiya hai. Saare lessons complete karte hi certificate khul jaayega.",
       "cta": "Course Continue Karo"
     },
     "notFound": {
-      "title": "YE CERTIFICATE *NAHI MILA*",
+      "title": "Ye certificate *nahi mila*",
       "text": "Ye link galat hai ya certificate abhi jaari nahi hua.",
       "cta": "Home par Jao"
     }
   },
   "project": {
     "eyebrow": "Done-for-you",
-    "title": "TEAM KE SAATH *PROJECT*",
+    "title": "Team ke saath *project*",
     "order": "Order #{number}",
     "stages": {
       "done": "Poora ho gaya",
@@ -156,7 +156,7 @@
     "filesNone": "Is stage ki files yahan dikhengi.",
     "fileOpen": "{title} kholo",
     "messages": {
-      "title": "TEAM SE *BAAT* KARO",
+      "title": "Team se *baat* karo",
       "empty": "Shuruaat ke liye apna Instagram page link, niche aur goal yahan bhejo — hamari team jawab degi.",
       "team": "Get Udaan team",
       "you": "Aap",
@@ -171,7 +171,7 @@
       "generic": "Message nahi gaya. Dobara try kijiye."
     },
     "none": {
-      "title": "ABHI KOI *PROJECT* NAHI",
+      "title": "Abhi koi *project* nahi",
       "text": "Done-for-you lene ke baad hamari team ke saath aapka project yahan dikhega.",
       "cta": "Plans Dekho"
     },
@@ -187,6 +187,7 @@
     }
   },
   "app": {
+    "levelUp": { "title": "Level up!", "text": "Aur lessons poore karo, aage badho.", "label": "Course progress" },
     "student": "Student",
     "partner": "Partner",
     "switchLabel": "Mode badlo",

@@ -48,7 +48,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col px-4 py-6">
-      <Logo />
+      <Logo variant="on-light" />
       <div className="mt-8 card p-6">
         <div role="tablist" aria-label="Login as" className="mb-6 grid grid-cols-2 rounded-pill border border-line bg-surface-sunken p-1 text-sm font-semibold">
           {(Object.keys(MODES) as (keyof typeof MODES)[]).map((k) => (

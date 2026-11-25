@@ -116,7 +116,7 @@ export default async function LessonPage({ params }: PageProps<"/learn/[course]/
                 <ul className="grid gap-2 sm:grid-cols-2">
                   {current.assets.map((a) => (
                     <li key={a.id}>
-                      <a href={`/api/assets/${a.id}`} className="flex min-h-14 items-center gap-3 rounded-md border border-line bg-surface-raised p-3 text-ink transition-colors duration-150 hover:border-gold">
+                      <a href={`/api/assets/${a.id}`} className="flex min-h-14 items-center gap-3 rounded-md border border-line bg-surface-raised p-3 text-ink transition-colors duration-150 hover:border-gold shadow-card">
                         <Download aria-hidden className="size-5 flex-none text-gold-text" />
                         {a.title}
                       </a>
@@ -141,7 +141,7 @@ export default async function LessonPage({ params }: PageProps<"/learn/[course]/
 
         {/* Desktop: lesson list always visible */}
         <aside className="hidden lg:block">
-          <div className="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-md border border-line bg-surface-raised p-4">{lessonList("side")}</div>
+          <div className="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-md border border-line bg-surface-raised p-4 shadow-card">{lessonList("side")}</div>
         </aside>
       </main>
     </AppShell>

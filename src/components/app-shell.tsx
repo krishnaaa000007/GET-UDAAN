@@ -27,7 +27,7 @@ export function AppShell({ user, children, wide = false, sticky = true, studentT
   ];
   return (
     <>
-      <header className={cn("z-30 border-b border-line bg-surface", sticky && "sticky top-0")}>
+      <header data-theme="night" className={cn("z-30 border-b border-line bg-surface", sticky && "sticky top-0")}>
         <div className={cn("mx-auto flex h-16 w-full items-center justify-between gap-3 px-4 md:px-6", wide ? "max-w-7xl" : "max-w-[1120px]")}>
           {/* Phones with extra menu links get the small mark so the links fit; everyone else gets the full logo. */}
           <span className={links.length > 1 ? "md:hidden" : "hidden"}>

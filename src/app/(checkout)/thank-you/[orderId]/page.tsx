@@ -83,7 +83,7 @@ export default async function ThankYouPage({ params }: PageProps<"/thank-you/[or
       </div>
 
       {/* Order details */}
-      <dl className="flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4">
+      <dl className="flex flex-col gap-2 rounded-md border border-line bg-surface-raised p-4 shadow-card">
         <div className="flex justify-between gap-3">
           <dt className="font-semibold text-ink">{t.thankYou.order.replace("{number}", String(order.number))}</dt>
           <dd className="type-small text-ink-muted">{formatIST(order.paidAt ?? order.createdAt, "date")}</dd>
@@ -135,7 +135,7 @@ export default async function ThankYouPage({ params }: PageProps<"/thank-you/[or
       )}
 
       {/* Share card */}
-      <section className="flex flex-col gap-3 rounded-md border border-line bg-surface-raised p-6">
+      <section className="flex flex-col gap-3 rounded-md border border-line bg-surface-raised p-6 shadow-card">
         <h2 className="type-title text-ink">{t.thankYou.share.title}</h2>
         <p className="text-ink-muted">{t.thankYou.share.text}</p>
         <ShareLink href={shareHref} className={buttonClass({ variant: "secondary", block: true })}>

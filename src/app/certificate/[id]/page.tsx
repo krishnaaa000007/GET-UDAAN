@@ -1,6 +1,6 @@
 /**
  * CERTIFICATE (DESIGN.md 7.6) — also the public "verify" page that the QR code opens.
- * Day theme, stacked logo, student name in Anton, course, date, certificate ID, QR.
+ * Day theme, stacked logo, student name in Bricolage, course, date, certificate ID, QR.
  * A certificate exists only when every lesson of the course is completed (checked live, never stored as a claim).
  */
 import type { Metadata } from "next";
@@ -36,7 +36,7 @@ function QrCode({ value, label }: { value: string; label: string }) {
 function Message({ title, text, cta }: { title: string; text: string; cta: { href: string; label: string } }) {
   return (
     <main className="container-page flex min-h-dvh flex-col items-center justify-center gap-6 py-12 text-center">
-      <Logo />
+      <Logo variant="on-light" />
       <SpeedTrails className="h-10 w-12" />
       <h1 className="type-display text-ink">
         <Highlight text={title} />

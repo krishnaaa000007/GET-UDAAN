@@ -10,7 +10,7 @@ export function CatalogCard({ item, compact = false }: { item: CatalogItem; comp
   const e = t.explore;
   const owned = item.state === "owned";
   return (
-    <article className="flex flex-col gap-3 rounded-lg border border-line bg-surface-raised p-4 md:p-5">
+    <article className="flex flex-col gap-3 rounded-lg border border-line bg-surface-raised p-4 md:p-5 shadow-card">
       <div className="flex items-start justify-between gap-3">
         <h3 className="type-title text-ink">{item.name}</h3>
         <Badge tone={owned ? "neutral" : "gold"}>{owned ? e.owned : item.state === "upgrade" ? e.upgrade : e.fresh}</Badge>

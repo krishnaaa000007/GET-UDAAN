@@ -5,7 +5,7 @@
   "progressLabel": "Course progress",
   "notesTitle": "Is lesson ke notes",
   "upgrade": {
-    "title": "YE TOH SIRF *EK LESSON* THA.",
+    "title": "Ye toh sirf *ek lesson* tha",
     "text": "Baaki {remaining} lessons + 300+ prompts {price} mein. Ek baar payment, lifetime access.",
     "cta": "{price} mein Join Karo",
     "stickyNote": "Baaki {remaining} lessons unlock karo",
@@ -13,7 +13,7 @@
   },
   "prompts": {
     "eyebrow": "Free bonus",
-    "title": "AAPKE *20 PROMPTS*",
+    "title": "Aapke *20 prompts*",
     "text": "Kisi bhi free AI image tool mein copy-paste karo. Ye sirf shuruaat hai — poore course mein 300+ prompts milte hain.",
     "copy": "Copy",
     "copyLabel": "Prompt {n} copy karo",

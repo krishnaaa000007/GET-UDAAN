@@ -46,7 +46,7 @@
     "generic": "Kuch gadbad ho gayi. Dobara try karein ya WhatsApp par message karein."
   },
   "waiting": {
-    "title": "PAYMENT CONFIRM HO RAHA HAI…",
+    "title": "Payment confirm ho raha hai…",
     "text": "Is page ko band mat kijiye. Isme kuch second lagte hain.",
     "slow": "Zyada time lag raha hai? Paisa kat gaya ho toh chinta mat kijiye — confirmation email aa jaayega. Phir bhi problem ho toh WhatsApp par order number bhejiye.",
     "whatsapp": "WhatsApp par help lo"
@@ -80,5 +80,6 @@
   "proof": {
     "eyebrow": "Students kya kehte hain",
     "resultsVary": "Results vary. Ye is student ka apna experience hai."
-  }
+  },
+  "secureStrip": "100% Secure & Trusted"
 }

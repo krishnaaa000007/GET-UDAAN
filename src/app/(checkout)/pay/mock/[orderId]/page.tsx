@@ -49,7 +49,7 @@ export default async function MockPayPage({ params }: PageProps<"/pay/mock/[orde
         <FlaskConical aria-hidden className="mt-0.5 size-5 flex-none" />
         {t.mock.banner}
       </p>
-      <div className="flex flex-col items-center gap-1 rounded-lg border border-line bg-surface-raised p-6 text-center">
+      <div className="flex flex-col items-center gap-1 rounded-lg border border-line bg-surface-raised p-6 text-center shadow-card">
         <p className="type-small text-ink-muted">{t.mock.payTo}</p>
         <p className="type-price text-ink">{formatINR(order.totalPaise)}</p>
         <p className="type-small text-ink-muted">{order.items.map((i) => i.name).join(" + ")}</p>

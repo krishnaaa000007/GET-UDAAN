@@ -23,17 +23,17 @@ export function SpeedTrails({ className, animated = false }: { className?: strin
 /* ---------- Badge ---------- */
 type BadgeTone = "gold" | "solid" | "fire" | "success" | "neutral";
 const badgeTones: Record<BadgeTone, string> = {
-  gold: "bg-gold-soft text-gold-text",
+  gold: "bg-gold-chip text-on-gold",
   solid: "bg-gold text-on-gold",
   fire: "bg-fire text-on-fire",
-  success: "border border-success text-success",
+  success: "bg-success/10 text-success",
   neutral: "border border-line bg-surface-raised text-ink-muted",
 };
 
 /** tone "success" always shows a tick so the meaning never depends on colour alone. */
 export function Badge({ tone = "gold", children, className }: { tone?: BadgeTone; children: ReactNode; className?: string }) {
   return (
-    <span className={cn("type-label inline-flex items-center gap-1 rounded-pill px-3 py-1.5", badgeTones[tone], className)}>
+    <span className={cn("type-label inline-flex items-center gap-1.5 rounded-pill px-3.5 py-1.5", badgeTones[tone], className)}>
       {tone === "success" && <Check aria-hidden className="size-3.5" strokeWidth={3} />}
       {children}
     </span>
@@ -44,18 +44,18 @@ export function Badge({ tone = "gold", children, className }: { tone?: BadgeTone
 export function StatChip({ value, label, className }: { value: string; label: string; className?: string }) {
   return (
     <div className={cn("inline-flex flex-col items-start gap-2", className)}>
-      <span className="type-stat text-gold-text">
+      <span className="type-stat text-ink">
         <CountUp value={value} />
       </span>
-      <span className="type-label text-ink-muted">{label}</span>
+      <span className="type-small text-ink-muted">{label}</span>
     </div>
   );
 }
 
 /* ---------- SectionHeader ---------- */
 /**
- * Eyebrow + Anton heading + optional sub line.
- * To make a word gold, wrap it in *stars* in the heading text: "PHONE SE *VIRAL* TAK".
+ * Eyebrow chip + heading + optional sub line.
+ * To highlight ONE word, wrap it in *stars* in the heading text: "Phone se *viral* tak".
  */
 export function SectionHeader({
   eyebrow,
@@ -85,7 +85,7 @@ export function SectionHeader({
         className,
       )}
     >
-      {eyebrow && <p className="type-label inline-flex rounded-pill bg-gold-soft px-3 py-2 text-gold-text">{eyebrow}</p>}
+      {eyebrow && <p className="type-label inline-flex rounded-pill bg-gold-chip px-4 py-2 text-on-gold">{eyebrow}</p>}
       <Tag className={cn(sizeClass, "text-ink")}>
         <Highlight text={heading} />
       </Tag>
@@ -94,14 +94,17 @@ export function SectionHeader({
   );
 }
 
-/** Turns "PHONE SE *VIRAL* TAK" into text with the starred word in gold. */
-export function Highlight({ text, shimmer = false }: { text: string; shimmer?: boolean }) {
+/**
+ * Turns "Phone se *viral* tak" into text with the starred word on a hand-painted gold brush stroke
+ * (navy text on gold). `shimmer` is kept for older pages; it no longer changes anything.
+ */
+export function Highlight({ text }: { text: string; shimmer?: boolean }) {
   const parts = text.split("*");
   return (
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <span key={i} className={shimmer ? "shimmer-once text-gold-text" : "text-gold-text"}>
+          <span key={i} className="hl-brush">
             {p}
           </span>
         ) : (
@@ -109,6 +112,45 @@ export function Highlight({ text, shimmer = false }: { text: string; shimmer?: b
         ),
       )}
     </>
+  );
+}
+
+/** Body text where *stars* mark a phrase to show in bold navy with a hand-drawn gold underline ("step by step, *Hinglish mein*"). */
+export function Emphasis({ text }: { text: string }) {
+  const parts = text.split("*");
+  return (
+    <>
+      {parts.map((p, i) =>
+        i % 2 === 1 ? (
+          <strong key={i} className="relative inline-block font-bold whitespace-nowrap text-ink">
+            {p}
+            <HandUnderline className="-bottom-2 h-2" />
+          </strong>
+        ) : (
+          p
+        ),
+      )}
+    </>
+  );
+}
+
+/** Three short gold strokes bursting outwards: a small "spark" accent next to a heading or media. */
+export function Sparks({ className, flip = false }: { className?: string; flip?: boolean }) {
+  return (
+    <svg aria-hidden viewBox="0 0 48 48" className={cn("pointer-events-none size-10 text-gold", flip && "-scale-x-100", className)} fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round">
+      <path d="M8 30 L2 34" />
+      <path d="M14 18 L8 8" />
+      <path d="M26 14 L28 3" />
+    </svg>
+  );
+}
+
+/** The brand signature: one hand-drawn gold stroke under the hero word. Use it once per page, nowhere else. */
+export function HandUnderline({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 200 14" preserveAspectRatio="none" className={cn("pointer-events-none absolute inset-x-0 w-full text-gold", className ?? "-bottom-[0.14em] h-[0.2em]")}>
+      <path d="M3 10 C 50 3, 120 2, 197 7" stroke="currentColor" strokeWidth="5" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+    </svg>
   );
 }
 
@@ -128,8 +170,8 @@ export function IncomeDisclaimer({ className }: { className?: string }) {
 export function GuaranteeBox({ days, policyHref = "/legal/refund", className }: { days: number; policyHref?: string; className?: string }) {
   const fill = (s: string) => s.replaceAll("{days}", String(days));
   return (
-    <div className={cn("flex flex-col items-center gap-6 rounded-lg border border-line bg-surface-raised p-6 text-center md:flex-row md:items-center md:gap-8 md:p-10 md:text-left", className)}>
-      <span aria-hidden className="grid size-24 flex-none place-items-center rounded-pill bg-gold-soft">
+    <div className={cn("flex flex-col items-center gap-6 rounded-lg border border-line bg-surface-raised p-6 text-center shadow-card md:flex-row md:items-center md:gap-8 md:p-10 md:text-left", className)}>
+      <span aria-hidden className="grid size-20 flex-none place-items-center rounded-lg bg-gold-soft">
         <ShieldCheck className="size-12 text-gold-text" strokeWidth={1.75} />
       </span>
       <div className="flex flex-col items-center gap-3 md:items-start">
@@ -176,7 +218,7 @@ export function TrustRow({ refundDays, whatsappHref, className }: { refundDays?:
 /* ---------- EmptyState: one sentence + one next step ---------- */
 export function EmptyState({ text, action, className }: { text: string; action?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex flex-col items-center gap-4 rounded-lg border border-line bg-surface-raised px-6 py-10 text-center", className)}>
+    <div className={cn("flex flex-col items-center gap-4 rounded-lg border border-line bg-surface-raised px-6 py-10 text-center shadow-card", className)}>
       <SpeedTrails className="h-10 w-12" />
       <p className="max-w-sm text-ink-muted">{text}</p>
       {action}

@@ -10,26 +10,35 @@ import {
   Briefcase,
   Check,
   CirclePlay,
+  Cpu,
   FileText,
   Handshake,
   IndianRupee,
   LayoutTemplate,
   Lightbulb,
+  Play,
+  Rocket,
+  ShieldCheck,
   Scissors,
   ShoppingBag,
   Sparkles,
+  Tag,
+  Ticket,
   TrendingDown,
+  Users,
+  Video,
   Wallet,
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { CameraTile, ChartDoodle, Clouds, CrownDoodle, HandNote, OfferArt, PlaneDoodle, PlayTile } from "@/components/landing/hero-art";
 import { FunnelTracker, LeadSheet } from "@/components/landing/islands";
 import { CountUp } from "@/components/theme/count-up";
 import { FlightMeasured, FlightSpark } from "@/components/theme/flight-measured";
 import { FlightPath } from "@/components/theme/flight-path";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { Accordion, AccordionItem, CurriculumModule } from "@/components/ui/accordion";
-import { Badge, GuaranteeBox, Highlight, IncomeDisclaimer, SectionHeader, SpeedTrails, StatChip, TrustRow } from "@/components/ui/basics";
+import { Badge, Emphasis, GuaranteeBox, HandUnderline, Highlight, IncomeDisclaimer, SectionHeader, Sparks, SpeedTrails, StatChip, TrustRow } from "@/components/ui/basics";
 import { Button } from "@/components/ui/button";
 import { PriceCard, TestimonialCard, TierCompareTable } from "@/components/ui/commerce";
 import { Countdown, RecentPurchaseToast, StickyBuyBar } from "@/components/ui/interactive";
@@ -70,9 +79,79 @@ const Icon = ({ name, className }: { name: string; className?: string }) => {
   return <I aria-hidden className={className} />;
 };
 
+/** "Udaan *bharo*": the plain words get a gold hand underline, the starred word sits on the brush. */
+const FinalTitle = ({ text }: { text: string }) => {
+  const [plain, starred = ""] = text.split("*");
+  return (
+    <>
+      {plain.trim() && (
+        <span className="relative mr-[0.18em] inline-block">
+          {plain.trim()}
+          <HandUnderline className="-bottom-[0.08em] h-[0.14em]" />
+        </span>
+      )}
+      {starred && <Highlight text={`*${starred}*`} />}
+    </>
+  );
+};
+
+/** Body text where *stars* mark words in bold gold ("Pehli *reel* aaj hi banao. *Phone hai?*"). */
+const GoldWords = ({ text }: { text: string }) => (
+  <>
+    {text.split("*").map((p, i) =>
+      i % 2 === 1 ? (
+        <strong key={i} className="font-bold text-gold-text">
+          {p}
+        </strong>
+      ) : (
+        p
+      ),
+    )}
+  </>
+);
+
+/** The flight motif as a paper plane with a dashed trail (problem panel, final CTA). */
+const PaperPlane = ({ className, solid = false }: { className?: string; solid?: boolean }) => (
+  <svg aria-hidden viewBox="0 0 240 140" className={className} fill="none">
+    {!solid && <path d="M8 120 C 60 120, 90 90, 130 80" stroke="var(--gold)" strokeWidth="3" strokeDasharray="2 10" strokeLinecap="round" opacity="0.7" />}
+    <path d="M232 10 L120 66 L150 76 Z" fill={solid ? "currentColor" : "var(--gold)"} />
+    <path d="M232 10 L150 76 L160 116 Z" fill={solid ? "currentColor" : "var(--gold-deep)"} opacity={solid ? 0.85 : 1} />
+    <path d="M150 76 L160 116 L176 90 Z" fill={solid ? "currentColor" : "#c98500"} opacity={solid ? 0.7 : 1} />
+  </svg>
+);
+
+/** The white numbers strip under the hero: icon tile + big number + label, divided by hairlines. */
+function statIcon(x: { value: string; label: string }): LucideIcon {
+  if (x.value.startsWith("₹")) return IndianRupee;
+  if (/prompt|ai/i.test(x.label)) return Cpu;
+  if (/lesson|video/i.test(x.label)) return Video;
+  return Users;
+}
+const HeroStats = ({ stats, label }: { stats: { value: string; label: string }[]; label: string }) => (
+  <ul aria-label={label} className={cn("grid w-full rounded-lg border border-line bg-surface-raised/90 px-2 py-5 shadow-card sm:px-6 sm:py-6", stats.length >= 4 ? "grid-cols-2 gap-y-4 sm:grid-cols-4" : "grid-cols-3")}>
+    {stats.map((x, i) => {
+      const I = statIcon(x);
+      return (
+        <li key={x.label} className={cn("flex flex-col items-center gap-2 px-1 text-center sm:flex-row sm:justify-center sm:gap-5 sm:px-4 sm:text-left", i > 0 && "border-l border-line")}>
+          <span aria-hidden className={cn("grid flex-none place-items-center", x.value.startsWith("₹") ? "size-11 rounded-pill bg-gold text-on-gold sm:size-16" : "size-11 text-ink sm:size-16")}>
+            <I className={x.value.startsWith("₹") ? "size-6 sm:size-8" : "size-9 sm:size-14"} strokeWidth={x.value.startsWith("₹") ? 2.4 : 2} fill={I === Video ? "currentColor" : "none"} />
+          </span>
+          <span className="flex flex-col">
+            <span className="type-stat text-ink">
+              <CountUp value={x.value} />
+            </span>
+            <span className="type-small font-medium text-ink sm:text-[18px]">{x.label}</span>
+          </span>
+        </li>
+      );
+    })}
+  </ul>
+);
+
 /** A landing section: brief §4 rhythm (72px / 112px), its own flight-path segment, content above it. */
-const Section = ({ id, children, className, bend = "left" }: { id?: string; children: ReactNode; className?: string; bend?: "left" | "right" | "straight" }) => (
-  <section id={id} className={cn("section-y relative scroll-mt-16", className)}>
+const Section = ({ id, children, className, bend = "left", night = false }: { id?: string; children: ReactNode; className?: string; bend?: "left" | "right" | "straight"; night?: boolean }) => (
+  // night = a deep-navy contrast band. Use it for at most two sections per page (problem + final CTA).
+  <section id={id} data-theme={night ? "night" : undefined} className={cn("section-y relative scroll-mt-16", className)}>
     <FlightPath bend={bend} />
     <div className="container-page relative z-[1]">{children}</div>
   </section>
@@ -135,30 +214,72 @@ export default async function LandingPage() {
         <>
       {/* 1. HERO WITH THE FREE MASTERCLASS — the video is the first thing people see (set Settings → masterclassVideoUrl).
           One set of elements; the grid puts them in order on a phone (text, video, offer) and in two columns on desktop. */}
-      <section id="hero" className="sky-stars film-grain relative overflow-hidden">
+      <section id="hero" className="hero-glow relative overflow-hidden">
         <FlightPath bend="right" />
-        <div className="container-page relative z-[1] grid gap-x-12 gap-y-6 pt-6 pb-10 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-8 lg:py-14">
-          <div className="flex flex-col items-start lg:col-start-1 lg:row-start-1 lg:self-end">
-            <Badge tone="gold">{mc.eyebrow}</Badge>
-            <h1 className="type-display-xl mt-4 text-ink">
-              <Highlight text={c.hero.headline} shimmer />
-            </h1>
-            <p className="type-body-lg mt-3 max-w-[34ch] text-ink-muted lg:max-w-[40ch]">{c.hero.sub}</p>
+        <div className="container-page relative z-[1] grid gap-x-14 gap-y-7 pt-6 pb-8 lg:grid-cols-[1.02fr_1fr] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-y-10 lg:pt-14 lg:pb-12">
+          {/* Headline block. Phones: the creator photo stands on the right, poster style (reference 2). */}
+          <div className="relative flex flex-col items-start lg:col-start-1 lg:row-start-1 lg:self-end">
+            {c.hero.personUrl && (
+              <div aria-hidden className="pointer-events-none absolute -top-4 -right-6 w-[54%] max-w-[260px] sm:hidden">
+                <span className="absolute top-[18%] right-[6%] h-[70%] w-[78%] rounded-[45%] bg-gold/35" />
+                <Image src={c.hero.personUrl} alt="" width={520} height={650} priority unoptimized className="relative h-auto w-full object-contain mix-blend-multiply [mask-image:linear-gradient(to_bottom,#000_82%,transparent)]" />
+                <PlayTile className="absolute -top-[2%] left-[12%] w-10" />
+                <CameraTile className="absolute top-[40%] right-[8%] w-10" />
+                <HandNote className="absolute top-[8%] right-[6%] text-[22px]">{c.hero.handNote}</HandNote>
+              </div>
+            )}
+            <Badge tone="gold" className="type-body-s relative !font-semibold">
+              <Play aria-hidden className="size-4 fill-current" />
+              {mc.eyebrow}
+            </Badge>
+            <div className="relative mt-5 flex items-start">
+              <h1 className={cn("type-display-xl relative text-ink", c.hero.personUrl && "max-sm:max-w-[72%] max-sm:!text-[46px]")}>
+                <Highlight text={c.hero.headline} />
+              </h1>
+              <Sparks className="mt-1 -ml-2 hidden size-16 flex-none sm:block" />
+            </div>
+            <p className={cn("type-body-lg relative mt-6 max-w-[38ch] text-ink lg:text-[22px] lg:leading-[1.5]", c.hero.personUrl && "max-sm:mt-8")}>
+              <Emphasis text={c.hero.sub} />
+            </p>
           </div>
 
-          <div className="w-full lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
-            <MasterclassVideo video={masterclass.video} title={mc.meta.title} />
+          {/* The masterclass video in a white frame with a warm glow (reference 3). */}
+          <div className="relative w-full lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
+            <Sparks className="absolute -top-14 left-[52%] hidden size-16 -rotate-6 lg:block" />
+            <Sparks className="absolute -top-6 -left-8 size-10 -rotate-45 sm:hidden" />
+            <div className="media-frame">
+              <div className="overflow-hidden rounded-[16px]">
+                <MasterclassVideo video={masterclass.video} title={mc.meta.title} className="rounded-none border-0 bg-bezel" />
+              </div>
+            </div>
+            <Sparks flip className="absolute -right-5 -bottom-10 size-12 rotate-12" />
           </div>
 
+          {/* The offer: phones = centred card with a big brushed "10% off"; desktop = wide card with art on the right. */}
           <div className="flex flex-col lg:col-start-1 lg:row-start-2 lg:self-start">
             {masterclass.offer ? (
-              <div className="flex w-full flex-col items-center gap-3 rounded-lg border-2 border-gold bg-gold-soft p-4 text-center sm:items-start sm:text-left md:p-5">
-                <Badge tone="solid">{mc.offer.chip.replace("{code}", masterclass.offer.code)}</Badge>
-                <p className="type-title text-ink">{mc.offer.title.replace("{pct}", String(masterclass.offer.pct))}</p>
-                <p className="type-small text-ink-muted">{mc.offer.text}</p>
-                <Button href={masterclass.checkoutHref} size="lg" block arrow data-cta="hero_masterclass_first100" className="sm:w-auto">
+              <div className="relative mt-4 flex w-full flex-col items-center gap-3 rounded-lg border-2 border-gold/60 bg-gradient-to-br from-gold-soft via-gold-soft/70 to-surface-raised px-5 pt-9 pb-6 text-center shadow-card sm:mt-0 sm:items-start sm:pt-5 sm:pr-40 sm:text-left md:p-6 md:pr-44">
+                <Badge tone="solid" className="type-body-s absolute -top-5 left-1/2 -translate-x-1/2 !px-5 !py-2 !text-[17px] !font-bold whitespace-nowrap sm:static sm:translate-x-0 sm:!text-[15px]">
+                  <Ticket aria-hidden className="size-5" />
+                  {mc.offer.chip.replace("{code}", masterclass.offer.code)}
+                </Badge>
+                <p className="type-title text-ink max-sm:text-[24px] max-sm:leading-tight">
+                  {mc.offer.lead}
+                  <span className="mt-2 flex items-center justify-center gap-3 sm:mt-0 sm:inline sm:gap-0">
+                    <Sparks flip className="size-8 rotate-[200deg] sm:hidden" />
+                    <span className="type-display !text-[44px] whitespace-nowrap sm:hidden">
+                      <Highlight text={`*${mc.offer.highlight.replace("{pct}", String(masterclass.offer.pct))}*`} />
+                    </span>
+                    <span className="hidden sm:inline"> {mc.offer.highlight.replace("{pct}", String(masterclass.offer.pct))}</span>
+                    <Sparks className="size-8 rotate-[160deg] sm:hidden" />
+                  </span>
+                </p>
+                <p className="type-small text-ink-muted max-sm:text-[16px]">{mc.offer.text}</p>
+                <Button href={masterclass.checkoutHref} size="lg" block arrow data-cta="hero_masterclass_first100" className="mt-1 !px-5 sm:w-auto sm:!px-8">
+                  <Tag aria-hidden className="mr-1 inline size-5 -rotate-12 align-[-3px]" />
                   {mc.offer.cta.replace("{pct}", String(masterclass.offer.pct))}
                 </Button>
+                <OfferArt className="pointer-events-none absolute top-1/2 right-1 hidden w-40 -translate-y-1/2 sm:block md:w-44" />
               </div>
             ) : (
               <Button href={entryHref} size="lg" block arrow data-cta="hero_primary" className="sm:w-auto sm:self-start">
@@ -166,20 +287,16 @@ export default async function LandingPage() {
               </Button>
             )}
             <p className="type-small mt-3 w-full text-center text-ink-muted sm:text-left">{c.hero.trust.replace("{days}", String(days))}</p>
-            <ul className={cn("mt-8 grid w-full", stats.length === 4 ? "grid-cols-2 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-line" : "grid-cols-3 divide-x divide-line")}>
-              {stats.map((x) => (
-                <li key={x.label} className="px-3 first:pl-0">
-                  <StatChip value={x.value} label={x.label} />
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
-        <div className="container-page relative z-[1] pb-14">
+        <div className="container-page relative z-[1] flex flex-col gap-6 pb-14">
+          <HeroStats stats={stats} label={c.hero.statsLabel} />
           <ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
             {c.hero.doubtKillers.map((d) => (
-              <li key={d} className="flex items-start gap-3 text-ink">
-                <Check aria-hidden className="mt-1 size-5 flex-none text-success" strokeWidth={2.5} />
+              <li key={d} className="flex items-start gap-3 font-medium text-ink">
+                <span aria-hidden className="mt-0.5 grid size-6 flex-none place-items-center rounded-pill bg-success text-white">
+                  <Check className="size-4" strokeWidth={3} />
+                </span>
                 {d}
               </li>
             ))}
@@ -190,7 +307,7 @@ export default async function LandingPage() {
       ) : (
         <>
       {/* 1. HERO — night sky with stars; the flight path starts here */}
-      <section id="hero" className="sky-stars film-grain relative overflow-hidden">
+      <section id="hero" className="relative overflow-hidden">
         <FlightPath bend="right" />
         <div className="container-page relative z-[1] grid items-center gap-12 pt-6 pb-16 lg:min-h-[calc(88vh-64px)] lg:grid-cols-2 lg:gap-10 lg:py-16">
           <div className="flex flex-col items-start">
@@ -198,7 +315,7 @@ export default async function LandingPage() {
             <h1 className="type-display-xl mt-5 text-ink">
               <Highlight text={c.hero.headline} shimmer />
             </h1>
-            <p className="type-body-lg mt-4 max-w-[34ch] text-ink-muted">{c.hero.sub}</p>
+            <p className="type-body-lg mt-6 max-w-[34ch] text-ink"><Emphasis text={c.hero.sub} /></p>
             <div className="mt-7 flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row sm:gap-6 md:mt-9">
               <Button href={entryHref} size="lg" block arrow data-cta="hero_primary" className="sm:w-auto">
                 {heroCta}
@@ -237,7 +354,7 @@ export default async function LandingPage() {
               {c.hero.doubtKillers.map((d, i) => (
                 <li
                   key={d}
-                  className="flex w-[86%] items-center gap-4 rounded-lg border border-line bg-surface-raised p-5"
+                  className="flex w-[86%] items-center gap-4 rounded-lg border border-line bg-surface-raised p-5 shadow-card"
                   style={{ marginLeft: `${[0, 10, 3, 14][i % 4]}%`, transform: `rotate(${[-2, 1.5, -1, 2][i % 4]}deg)` }}
                 >
                   <span className="grid size-11 flex-none place-items-center rounded-md bg-gold-soft">
@@ -278,21 +395,24 @@ export default async function LandingPage() {
         </Section>
       )}
 
-      {/* 3. PROBLEM — compact tiles, each pain icon crossed out in fire */}
+      {/* 3. PROBLEM — a rounded navy panel on cream (reference look); gold icon tiles, pain crossed out in fire */}
       <Section bend="left">
-        <SectionHeader heading={c.problem.title} className="reveal" />
-        <ul className="mt-10 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-          {c.problem.points.map((p) => (
-            <li key={p.text} className="reveal flex flex-col gap-4 rounded-lg border border-line bg-surface-raised p-4 md:p-6">
-              <span aria-hidden className="relative grid size-11 place-items-center rounded-md bg-surface-raised-2">
-                <Icon name={p.icon} className="size-5 text-ink-muted" />
-                <span className="absolute h-0.5 w-9 -rotate-45 rounded-pill bg-fire" />
-              </span>
-              <span className="type-body-s text-ink">{p.text}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="type-heading reveal mt-12 text-center text-gold-text">{c.problem.answer}</p>
+        <div data-theme="night" className="reveal relative overflow-hidden rounded-sheet px-5 py-10 md:px-12 md:py-14">
+          <PaperPlane className="pointer-events-none absolute -top-2 -right-4 hidden w-64 opacity-90 md:block" />
+          <SectionHeader heading={c.problem.title} className="relative" />
+          <ul className="relative mt-10 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+            {c.problem.points.map((p) => (
+              <li key={p.text} className="flex flex-col gap-4 rounded-lg border border-line bg-surface-raised p-4 md:p-6">
+                <span aria-hidden className="relative grid size-12 place-items-center rounded-pill bg-gold text-on-gold">
+                  <Icon name={p.icon} className="size-6" />
+                  <span className="absolute h-0.5 w-10 -rotate-45 rounded-pill bg-fire" />
+                </span>
+                <span className="type-body-s font-medium text-ink">{p.text}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="type-heading relative mt-10 text-center text-gold-text md:text-left">{c.problem.answer}</p>
+        </div>
       </Section>
 
       {/* 4. WAYS CREATORS EARN — numbered cards on a raised band; honesty line right under it */}
@@ -348,7 +468,7 @@ export default async function LandingPage() {
               </li>
             ))}
           </ul>
-          <div className="reveal mt-8 rounded-sheet border border-line bg-surface-raised p-4 md:p-8">
+          <div className="reveal mt-8 rounded-sheet border border-line bg-surface-raised p-4 md:p-8 shadow-card">
             <Accordion>
               {course.modules.map((m, i) => (
                 <CurriculumModule
@@ -385,7 +505,7 @@ export default async function LandingPage() {
                     <Icon name={b.icon} className="size-5 text-gold-text" />
                   </span>
                   <SpeedTrails className="absolute top-4 right-4 h-5 w-6 opacity-60" />
-                  <span className="font-display text-[22px] leading-[1.05] tracking-[0.3px] text-ink uppercase md:text-[26px]">{b.title}</span>
+                  <span className="font-display text-[22px] leading-[1.1] text-ink md:text-[26px]">{b.title}</span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <h3 className="type-title sr-only">{b.title}</h3>
@@ -437,7 +557,7 @@ export default async function LandingPage() {
       {c.team.name && c.team.bio && (
         <Section bend="right">
           <SectionHeader eyebrow={c.team.eyebrow} heading={c.team.title} className="reveal" />
-          <div className="reveal mt-10 flex flex-col gap-6 rounded-lg border border-line bg-surface-raised p-6 md:flex-row md:items-center md:p-8">
+          <div className="reveal mt-10 flex flex-col gap-6 rounded-lg border border-line bg-surface-raised p-6 md:flex-row md:items-center md:p-8 shadow-card">
             {c.team.photoUrl && <Image src={c.team.photoUrl} alt={c.team.name} width={160} height={160} unoptimized loading="lazy" className="size-32 flex-none rounded-lg object-cover md:size-40" />}
             <div className="flex flex-col items-start gap-2">
               <h3 className="type-heading text-ink">{c.team.name}</h3>
@@ -454,8 +574,7 @@ export default async function LandingPage() {
       )}
 
       {/* 9. PRICING — sunrise begins: a big soft sun behind the cards */}
-      <Section id="pricing" bend="left" className="sky-sunrise-start">
-        <span aria-hidden className="sun-glow top-[30%]" />
+      <Section id="pricing" bend="left">
         <div className="relative">
           <SectionHeader eyebrow={c.pricing.eyebrow} heading={c.pricing.title} align="center" className="reveal" />
           <Countdown deadline={deadline?.toISOString()} className="mt-6" />
@@ -514,14 +633,14 @@ export default async function LandingPage() {
       <Section bend="right" className="sky-dusk">
         <div className="reveal grid overflow-hidden rounded-sheet border border-line md:grid-cols-2">
           <div className="flex flex-col justify-center gap-4 bg-surface p-6 md:p-12">
-            <p className="type-label self-start rounded-pill bg-gold-soft px-3 py-2 text-gold-text">{c.partner.eyebrow}</p>
+            <p className="type-label self-start rounded-sm bg-gold-soft px-3 py-1.5 text-gold-text">{c.partner.eyebrow}</p>
             <h2 className="type-display text-ink">
               <Highlight text={c.partner.title} />
             </h2>
           </div>
           <div className="flex flex-col items-start gap-5 bg-gold-soft p-6 md:p-12">
             {maxCommissionPct > 0 && (
-              <p className="type-stat text-gold-text">
+              <p className="type-stat text-ink">
                 <CountUp value={`${maxCommissionPct}%`} />
               </p>
             )}
@@ -534,24 +653,59 @@ export default async function LandingPage() {
         </div>
       </Section>
 
-      {/* 13. FINAL CTA — full sunrise; the flight path arrives at the button with a spark */}
-      <section id="final-cta" className="sky-sunrise film-grain section-y relative">
-        <span aria-hidden className="sun-glow -bottom-[45%]" />
+      {/* 13. FINAL CTA (reference 4) — navy hero: huge "Udaan bharo" (gold underline + brush), gold-highlighted sub, one big CTA,
+          an icon row, the creator inside a gold sun with doodles, and puffy cream clouds. The flight path still ends at the button. */}
+      <section id="final-cta" data-theme="night" className="relative overflow-hidden pt-14 pb-36 md:pt-20 md:pb-48">
         <FlightMeasured mode="end" />
-        <div className="container-page relative z-[1] flex flex-col items-center gap-6 text-center">
-          <h2 className="type-display-xl text-ink">
-            <Highlight text={c.finalCta.title} />
-          </h2>
-          <p className="type-body-lg max-w-reading text-ink-muted">{c.finalCta.sub}</p>
-          <div data-flight-anchor className="mt-3 w-full sm:w-auto">
-            <FlightSpark>
-              <Button href={entryHref} size="lg" arrow block data-cta="final_cta" className="sm:w-auto">
-                {heroCta}
-              </Button>
-            </FlightSpark>
+        <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_70%_at_75%_40%,rgba(255,255,255,0.07),transparent_70%)]" />
+        <div className="container-page relative z-[1] grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
+          <div className="flex flex-col items-center gap-6 text-center lg:items-start lg:text-left">
+            <Badge tone="gold" className="type-body-s relative !font-semibold">
+              <Rocket aria-hidden className="size-4" />
+              {mc.eyebrow}
+              <Sparks className="absolute -top-6 -right-9 size-9 rotate-12" />
+            </Badge>
+            <h2 className="type-display-xl text-ink lg:!text-[96px] lg:whitespace-nowrap">
+              <FinalTitle text={c.finalCta.title} />
+            </h2>
+            <p className="type-body-lg max-w-[30ch] font-medium text-ink lg:text-[30px] lg:leading-[1.3]">
+              <GoldWords text={c.finalCta.sub} />
+            </p>
+            <div data-flight-anchor className="mt-2 w-full sm:w-auto">
+              <FlightSpark>
+                <Button href={entryHref} size="lg" arrow block data-cta="final_cta" className="sm:w-auto lg:!min-h-[72px] lg:!px-12 lg:!text-[24px]">
+                  {heroCta}
+                </Button>
+              </FlightSpark>
+            </div>
+            <ul className="mt-2 grid w-full max-w-xl grid-cols-3">
+              {[
+                { icon: CirclePlay, text: `${lessons.length || 40}+ ${c.hero.lessonsLabel}` },
+                { icon: Cpu, text: c.hero.stats[0] ? `${c.hero.stats[0].value} ${c.hero.stats[0].label}` : "" },
+                { icon: ShieldCheck, text: c.finalCta.lifetime },
+              ]
+                .filter((x) => x.text)
+                .map((x, i) => (
+                  <li key={x.text} className={cn("flex flex-col items-center gap-2 px-2 text-center sm:flex-row sm:text-left", i > 0 && "border-l border-line")}>
+                    <x.icon aria-hidden className="size-9 flex-none text-gold-text md:size-11" strokeWidth={1.8} />
+                    <span className="type-small font-medium text-ink md:text-[17px] md:leading-snug">{x.text}</span>
+                  </li>
+                ))}
+            </ul>
+            <p className="type-small text-ink-muted">{c.hero.trust.replace("{days}", String(days))}</p>
           </div>
-          <TrustRow className="justify-center" refundDays={days} whatsappHref={wa} />
+          <div aria-hidden className="relative mx-auto hidden aspect-square w-full max-w-[460px] lg:block">
+            {/* The photo has a plain cream background: "multiply" lets the gold sun show through it, no cut-out needed. */}
+            <span className="absolute inset-[6%] overflow-hidden rounded-pill bg-gold">
+              {c.hero.personUrl && <Image src={c.hero.personUrl} alt="" fill sizes="460px" unoptimized className="object-cover object-top mix-blend-multiply" />}
+            </span>
+            {!c.hero.personUrl && <PaperPlane className="absolute inset-[14%] text-on-gold" solid />}
+            <CrownDoodle className="absolute -top-4 left-[6%] w-20 -rotate-12" />
+            <PlaneDoodle className="absolute -top-2 -right-16 w-36 text-ink" />
+            <ChartDoodle className="absolute top-[34%] -right-24 w-28 text-ink/80" />
+          </div>
         </div>
+        <Clouds className="absolute inset-x-0 bottom-0 h-28 w-full md:h-44" />
       </section>
 
       {/* 14. STICKY BUY BAR (mobile) — hidden while pricing, the final CTA or the footer is on screen */}

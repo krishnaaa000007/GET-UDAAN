@@ -183,7 +183,7 @@ export function Countdown({ deadline, label = ui.countdown.label, className }: {
       <span className="type-label text-fire">{label}</span>
       <div className="flex gap-2">
         {parts.map((p) => (
-          <div key={p.unit} className="flex min-w-16 flex-col items-center rounded-md border border-line bg-surface-raised px-3 py-2">
+          <div key={p.unit} className="flex min-w-16 flex-col items-center rounded-md border border-line bg-surface-raised px-3 py-2 shadow-card">
             <span className="type-heading text-ink tabular-nums">{String(p.n).padStart(2, "0")}</span>
             <span className="type-label text-ink-muted">{p.unit}</span>
           </div>

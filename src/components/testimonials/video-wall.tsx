@@ -51,7 +51,7 @@ export function VideoWall({ videos, closeLabel, playLabel }: { videos: WallVideo
                     onClick={() => setOpen(v)}
                     aria-label={`${playLabel}: ${v.label}`}
                     data-cta={`video_testimonial_${v.id}`}
-                    className="group relative block aspect-[9/16] w-full overflow-hidden rounded-lg border border-line bg-surface-sunken text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+                    className="group relative block aspect-[9/16] w-full overflow-hidden rounded-lg border border-line bg-bezel text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element -- remote poster on R2; plain lazy img keeps it light */}
                     <img src={v.poster} alt="" loading="lazy" decoding="async" className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.04]" />

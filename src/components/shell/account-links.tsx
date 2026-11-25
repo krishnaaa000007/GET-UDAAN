@@ -26,12 +26,13 @@ export function AccountLinks() {
       </Button>
     );
   return (
-    <div className="flex items-center gap-1">
-      <Link href="/login" className="inline-flex min-h-12 items-center rounded-sm px-3 text-[15px] font-semibold text-ink-muted transition-colors duration-150 hover:text-ink">
+    <div className="flex items-center gap-1 sm:gap-2">
+      <Link href="/login" className="inline-flex min-h-12 items-center rounded-sm px-2 text-[15px] font-semibold text-ink transition-colors duration-150 hover:text-gold-text sm:px-3">
         {h.login}
       </Link>
-      {/* Outline, not gold: the page's main CTA is the only gold button on screen. */}
-      <Button href="/#pricing" variant="secondary" size="sm" data-cta="header_join">
+      <span aria-hidden className="h-6 w-px bg-line" />
+      {/* Small gold pill (reference look). It is smaller than the page's main CTA so that one still leads. */}
+      <Button href="/#pricing" size="sm" arrow data-cta="header_join" className="ml-1 !min-h-10 px-4 text-[15px] sm:ml-2 sm:px-5">
         {h.join}
       </Button>
     </div>

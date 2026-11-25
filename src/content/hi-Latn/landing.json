@@ -1,8 +1,8 @@
 {
   "hero": {
     "eyebrow": "Hinglish • Phone se • Free tools",
-    "headline": "PHONE SE *VIRAL* TAK",
-    "sub": "Sirf phone aur free AI tools se apna viral AI reel page banao — step by step, Hinglish mein.",
+    "headline": "Phone se *viral* tak",
+    "sub": "Sirf phone aur free AI tools se apna viral AI reel page banao — step by step, *Hinglish mein*.",
     "cta": "{price} mein Join Karo",
     "secondaryCta": "Free Lesson Dekho",
     "trust": "UPI • {days}-din refund • Lifetime access",
@@ -28,16 +28,20 @@
     "videoWebmUrl": "",
     "posterUrl": "",
     "peekPosterUrl": "",
-    "reelLabel": "Get Udaan team ki banayi sample AI reel"
+    "reelLabel": "Get Udaan team ki banayi sample AI reel",
+    "personUrl": "/hero/creator.webp",
+    "personAlt": "Get Udaan creator phone ke saath",
+    "statsLabel": "Course mein kya hai",
+    "handNote": "Viral!"
   },
   "reels": {
     "eyebrow": "Made by Get Udaan team",
-    "title": "YE SAB *PHONE SE* BANA HAI",
+    "title": "Ye sab *phone se* bana hai",
     "sub": "Koi camera nahi, koi studio nahi. Bas phone aur free AI tools.",
     "items": []
   },
   "problem": {
-    "title": "KYA YE AAPKE *SAATH* HO RAHA HAI?",
+    "title": "Kya ye aapke *saath* ho raha hai?",
     "points": [
       {
         "icon": "trending-down",
@@ -60,7 +64,7 @@
   },
   "earn": {
     "eyebrow": "Skill ke baad kya?",
-    "title": "CREATORS *KAISE* KAMATE HAIN",
+    "title": "Creators *kaise* kamate hain",
     "items": [
       {
         "icon": "handshake",
@@ -86,7 +90,7 @@
   },
   "howItWorks": {
     "eyebrow": "5 simple steps",
-    "title": "KAISE *KAAM* KARTA HAI",
+    "title": "Kaise *kaam* karta hai",
     "steps": [
       {
         "title": "Character banao",
@@ -117,13 +121,13 @@
   },
   "curriculum": {
     "eyebrow": "Course ke andar",
-    "title": "AAP *KYA* SEEKHOGE",
+    "title": "Aap *kya* seekhoge",
     "summary": "{lessons} lessons • {min} min • 720p • Hinglish",
     "moduleLabel": "Module {n} — {title}"
   },
   "bonuses": {
     "eyebrow": "Bonus",
-    "title": "SAATH MEIN *MILEGA*",
+    "title": "Saath mein *milega*",
     "items": [
       {
         "icon": "sparkles",
@@ -149,11 +153,11 @@
   },
   "testimonials": {
     "eyebrow": "Real students",
-    "title": "STUDENTS KE *RESULTS*"
+    "title": "Students ke *results*"
   },
   "team": {
     "eyebrow": "Asli log, asli team",
-    "title": "GET UDAAN KE *PEECHE* KAUN HAI?",
+    "title": "Get Udaan ke *peeche* kaun hai?",
     "name": "",
     "role": "",
     "bio": "",
@@ -163,7 +167,7 @@
   },
   "pricing": {
     "eyebrow": "Ek baar payment • Lifetime access",
-    "title": "APNA *PLAN* CHUNO",
+    "title": "Apna *plan* chuno",
     "featuredBadge": "Recommended",
     "oneTime": "one-time",
     "laterPrice": "{date} ke baad {price}",
@@ -251,7 +255,7 @@
   },
   "faq": {
     "eyebrow": "Sawaal",
-    "title": "AAPKE *SAWAAL*",
+    "title": "Aapke *sawaal*",
     "items": [
       {
         "q": "Kya laptop chahiye?",
@@ -297,13 +301,14 @@
   },
   "partner": {
     "eyebrow": "Partner program",
-    "title": "VIRAL PAGE HAI? *PARTNER* BANO",
+    "title": "Viral page hai? *Partner* bano",
     "text": "Tumhara page, tumhari kamaai — apne link ya coupon se aayi har sale pe {pct}% tak commission.",
     "cta": "Partner Apply Karo"
   },
   "finalCta": {
-    "title": "UDAAN *BHARO.*",
-    "sub": "Pehli reel aaj hi banao. Phone hai? Bas itna kaafi hai."
+    "title": "Udaan *bharo*",
+    "sub": "Pehli *reel* aaj hi banao. *Phone hai?* Bas itna kaafi hai.",
+    "lifetime": "Lifetime Access"
   },
   "stickyBar": {
     "note": "Lifetime access • UPI",

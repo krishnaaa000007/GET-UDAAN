@@ -73,7 +73,7 @@ function Showcase({ id }: { id: string }) {
       <Block title="Colours" note="Only these tokens. Never a raw hex in a page.">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {COLORS.map(([name, cls, use]) => (
-            <div key={name} className="overflow-hidden rounded-md border border-line bg-surface-raised">
+            <div key={name} className="overflow-hidden rounded-md border border-line bg-surface-raised shadow-card">
               <div className={`${cls} h-14 border-b border-line`} />
               <div className="p-3">
                 <div className="font-semibold text-ink">{name}</div>
@@ -84,7 +84,7 @@ function Showcase({ id }: { id: string }) {
         </div>
       </Block>
 
-      <Block title="Type styles" note="Anton = headlines, prices, numbers (always UPPERCASE). Poppins = everything else.">
+      <Block title="Type styles" note="Bricolage Grotesque = headlines, prices, numbers (sentence case). Poppins = everything else.">
         <div className="flex flex-col gap-4">
           {TYPE.map(([name, cls, sample]) => (
             <div key={name} className="flex flex-col gap-1">
@@ -227,7 +227,7 @@ function Showcase({ id }: { id: string }) {
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard featured label="Total earnings" value="₹12,450" delta={{ text: "18%", direction: "up" }} spark={[2, 4, 3, 6, 5, 8, 9]} />
           <StatCard label="Clicks" value="318" delta={{ text: "4%", direction: "down" }} spark={[9, 7, 8, 6, 7, 5, 6]} />
-          <div className="flex flex-col gap-4 rounded-md border border-line bg-surface-raised p-4">
+          <div className="flex flex-col gap-4 rounded-md border border-line bg-surface-raised p-4 shadow-card">
             <ProgressBar value={45} />
             <div className="flex items-center gap-4">
               <ProgressRing value={25} />

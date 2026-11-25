@@ -3,7 +3,7 @@
     "title": "Free masterclass",
     "description": "Phone se viral AI reels banana seekho — free masterclass. Pehle 100 students ko course pe 10% off."
   },
-  "eyebrow": "FREE MASTERCLASS",
+  "eyebrow": "Free masterclass",
   "title": "Phone se *viral* reels — free mein seekho",
   "sub": "Dekho ek reel idea se final video tak kaise banti hai. Phir decide karo course lena hai ya nahi.",
   "noVideo": "Masterclass video jaldi aa raha hai. Tab tak pehla lesson free dekho.",
@@ -11,6 +11,8 @@
   "offer": {
     "chip": "Code {code}",
     "title": "Pehle 100 students ke liye {pct}% off",
+    "lead": "Pehle 100 students ke liye",
+    "highlight": "{pct}% off",
     "text": "Code apne aap lag jaayega — checkout pe kuch type nahi karna.",
     "left": "Sirf {n} bache hain",
     "cta": "{pct}% Off pe Join Karo"

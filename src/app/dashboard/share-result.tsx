@@ -19,14 +19,14 @@ export function ShareResult({ alreadySent }: { alreadySent: boolean }) {
 
   if (sent)
     return (
-      <p role="status" className="flex items-start gap-2 rounded-md border border-line bg-surface-raised p-4 text-success">
+      <p role="status" className="flex items-start gap-2 rounded-md border border-line bg-surface-raised p-4 text-success shadow-card">
         <CircleCheck aria-hidden className="mt-0.5 size-5 flex-none" />
         {s.thanks}
       </p>
     );
 
   return (
-    <details open={state ? true : undefined} className="accordion-item group rounded-md border border-line bg-surface-raised">
+    <details open={state ? true : undefined} className="accordion-item group rounded-md border border-line bg-surface-raised shadow-card">
       <summary className="flex min-h-14 cursor-pointer flex-col justify-center gap-1 rounded-md px-4 py-3">
         <span className="type-title text-ink">{s.title}</span>
         <span className="type-small text-ink-muted">{s.text}</span>

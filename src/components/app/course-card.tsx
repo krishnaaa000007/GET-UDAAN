@@ -10,8 +10,8 @@ export function CourseCard({ o, plan, primary = false }: { o: Outline; plan: str
   const h = t.home;
   const c = t.coursesPage;
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg border border-line bg-surface-raised">
-      <div aria-hidden className="relative flex h-24 items-end bg-gradient-to-br from-gold-soft to-surface-sunken p-4">
+    <article className="flex flex-col overflow-hidden rounded-lg border border-line bg-surface-raised shadow-card">
+      <div aria-hidden data-theme="night" className="relative flex h-24 items-end bg-surface p-4">
         <SpeedTrails className="absolute top-4 right-4 h-6 w-7 opacity-70" />
         {plan && <Badge tone="solid">{plan}</Badge>}
       </div>

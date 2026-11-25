@@ -92,7 +92,7 @@ export function ApplyForm() {
 
   if (state.ok)
     return (
-      <div role="status" className="flex flex-col items-center gap-3 rounded-lg border border-line bg-surface-raised p-6 text-center">
+      <div role="status" className="flex flex-col items-center gap-3 rounded-lg border border-line bg-surface-raised p-6 text-center shadow-card">
         <CircleCheck aria-hidden className="size-14 text-success" strokeWidth={1.5} />
         <h3 className="type-heading text-ink">{a.success.title}</h3>
         <p className="text-ink-muted">{a.success.text.replace("{approval}", PARTNER_RULES.approvalTargetHours)}</p>
@@ -133,7 +133,7 @@ export function ApplyForm() {
         const data = new FormData(e.currentTarget);
         start(async () => setState(await applyAction(null, data)));
       }}
-      noValidate className="flex flex-col gap-5 rounded-lg border border-line bg-surface-raised p-4 md:p-6">
+      noValidate className="flex flex-col gap-5 rounded-lg border border-line bg-surface-raised p-4 md:p-6 shadow-card">
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between gap-3">
           <span className="type-label text-gold-text">{a.step.replace("{n}", String(step + 1))}</span>

@@ -1,5 +1,5 @@
 /**
- * Share images (Open Graph, 1200×630) in the brand look: night background, gold accent, the Get Udaan mark.
+ * Share images (Open Graph, 1200×630) in the brand look: deep navy background, gold accent, the Get Udaan mark.
  * Uses the built-in font of next/og so no font files are bundled. Text only — no invented numbers or claims.
  */
 import { ImageResponse } from "next/og";
@@ -7,10 +7,12 @@ import { ImageResponse } from "next/og";
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_TYPE = "image/png";
 
-const NIGHT = "#0d0d12";
+// Mirrors the [data-theme="night"] tokens in globals.css (next/og cannot read CSS variables).
+const NIGHT = "#0f1b2d";
 const GOLD = "#ffb627";
-const INK = "#f6f1e7";
-const MUTED = "#b9b2a6";
+const GOLD_TEXT = "#ffc21a";
+const INK = "#fff8f0";
+const MUTED = "#a9b4c7";
 
 // The gold mark from public/brand/getudaan-mark-gold.svg, inlined.
 const MARK = `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -32,7 +34,7 @@ export function ogImage({ eyebrow, title, sub }: { eyebrow?: string; title: stri
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "64px 72px",
-          background: `radial-gradient(circle at 85% 110%, rgba(255,182,39,0.35), ${NIGHT} 55%)`,
+          background: NIGHT,
           color: INK,
         }}
       >
@@ -45,10 +47,10 @@ export function ogImage({ eyebrow, title, sub }: { eyebrow?: string; title: stri
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          {eyebrow && <div style={{ display: "flex", fontSize: 28, fontWeight: 700, color: GOLD, letterSpacing: 4, textTransform: "uppercase" }}>{eyebrow}</div>}
-          <div style={{ display: "flex", flexWrap: "wrap", columnGap: fontSize * 0.28, fontSize, fontWeight: 800, lineHeight: 1.08, textTransform: "uppercase", maxWidth: 1056 }}>
+          {eyebrow && <div style={{ display: "flex", fontSize: 28, fontWeight: 700, color: GOLD_TEXT }}>{eyebrow}</div>}
+          <div style={{ display: "flex", flexWrap: "wrap", columnGap: fontSize * 0.28, fontSize, fontWeight: 800, lineHeight: 1.08, letterSpacing: -1, maxWidth: 1056 }}>
             {words.map((x, i) => (
-              <span key={i} style={{ color: x.gold ? GOLD : INK }}>
+              <span key={i} style={{ color: x.gold ? GOLD_TEXT : INK }}>
                 {x.w}
               </span>
             ))}

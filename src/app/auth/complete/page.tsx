@@ -23,7 +23,7 @@ export default async function CompleteProfilePage({ searchParams }: PageProps<"/
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col px-4 py-6">
-      <Logo />
+      <Logo variant="on-light" />
       <div className="card mt-10 p-6">
         <h1 className="font-display text-3xl">Ek aur step</h1>
         <p className="mt-1 mb-6 text-sm text-ink-muted">Apna WhatsApp number daalein — course updates, receipts aur alerts isi par aayenge.</p>

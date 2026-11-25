@@ -36,7 +36,7 @@ export function PriceCard({
     <article
       className={cn(
         "relative flex flex-col gap-5 rounded-lg p-6 md:p-8",
-        featured ? "border-[1.5px] border-gold bg-surface-raised shadow-glow-gold md:-translate-y-4" : "border border-line bg-surface-raised",
+        featured ? "border-2 border-gold bg-surface-raised shadow-lift md:-translate-y-4" : "border border-line bg-surface-raised shadow-card",
         className,
       )}
     >
@@ -61,7 +61,7 @@ export function PriceCard({
         ))}
       </ul>
       <div className="mt-auto flex flex-col gap-1 border-t border-line pt-5">
-        <span className="type-stat text-gold-text">{price}</span>
+        <span className="type-price text-ink">{price}</span>
         {priceNote && <span className="type-small text-ink-muted">{priceNote}</span>}
       </div>
       {cta}
@@ -171,7 +171,7 @@ export function TestimonialCard({
   className?: string;
 }) {
   return (
-    <figure className={cn("flex w-full flex-col gap-4 rounded-lg border border-line bg-surface-raised p-6", className)}>
+    <figure className={cn("flex w-full flex-col gap-4 rounded-lg border border-line bg-surface-raised p-6 shadow-card", className)}>
       {reelThumbUrl && (
         <div className="relative aspect-[9/16] w-full overflow-hidden rounded-md bg-surface-sunken">
           <Image src={reelThumbUrl} alt="" fill sizes="(max-width: 768px) 80vw, 320px" unoptimized className="object-cover" />

@@ -1,5 +1,5 @@
 // Progress + dashboard numbers: ProgressBar, ProgressRing, StatCard.
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
 import ui from "@/content/hi-Latn/ui.json";
 import { cn } from "@/lib/cn";
 
@@ -41,7 +41,7 @@ function Sparkline({ points }: { points: number[] }) {
   const d = points.map((p, i) => `${i === 0 ? "M" : "L"}${((i / (points.length - 1)) * 100).toFixed(1)} ${(28 - ((p - min) / span) * 24).toFixed(1)}`).join(" ");
   return (
     <svg viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden className="h-8 w-full">
-      <path d={d} fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" className="stroke-gold" />
+      <path d={d} fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" className="stroke-ink-muted/50" />
     </svg>
   );
 }
@@ -55,9 +55,12 @@ export function StatCard({
   value,
   delta,
   spark,
+  icon: Icon,
   featured = false,
   className,
 }: {
+  /** Optional gold icon tile above the number (reference look). */
+  icon?: LucideIcon;
   label: string;
   /** Already formatted, e.g. "₹12,450" or "318" */
   value: string;
@@ -68,7 +71,12 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col gap-2 rounded-md p-4", featured ? "border-2 border-gold bg-gold-soft" : "border border-line bg-surface-raised", className)}>
+    <div className={cn("flex flex-col gap-2 rounded-lg p-4", featured ? "border-2 border-gold bg-gold-soft" : "border border-line bg-surface-raised shadow-card", className)}>
+      {Icon && (
+        <span aria-hidden className="mb-1 grid size-10 place-items-center rounded-pill bg-gold-chip text-on-gold">
+          <Icon className="size-5" strokeWidth={2.2} />
+        </span>
+      )}
       <span className="type-label text-ink-muted">{label}</span>
       <span className={cn(featured ? "type-price text-gold-text" : "type-heading text-ink")}>{value}</span>
       {delta && (

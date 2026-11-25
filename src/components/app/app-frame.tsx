@@ -5,7 +5,7 @@
  * Every menu item is its own page. Admin keeps its own layout; the lesson player keeps AppShell.
  */
 import Link from "next/link";
-import { BookOpen, Compass, House, LogOut, MessageCircle, MessagesSquare, ReceiptIndianRupee, Shield, Sparkles, User, Users, Wallet } from "lucide-react";
+import { BookOpen, Compass, Crown, House, LogOut, MessageCircle, MessagesSquare, ReceiptIndianRupee, Shield, Sparkles, User, Users, Wallet } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/logo";
 import t from "@/content/hi-Latn/student.json";
@@ -43,7 +43,10 @@ export function AppFrame({
   showTeam = false,
   partnerNav = true,
   supportHref,
+  progressPct,
 }: {
+  /** Student mode: overall course progress (0-100) for the "Level up" card in the sidebar. Omit to hide it. */
+  progressPct?: number;
   user: CurrentUser;
   mode: "student" | "partner";
   active?: StudentKey | PartnerKey;
@@ -89,7 +92,7 @@ export function AppFrame({
   return (
     <div className="min-h-dvh bg-surface">
       {/* ── Desktop sidebar ── */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface-raised lg:flex">
+      <aside data-theme="night" className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface lg:flex">
         <div className="flex h-16 items-center px-5">
           <Logo href={mode === "student" ? "/dashboard" : "/partner"} />
         </div>
@@ -101,8 +104,8 @@ export function AppFrame({
               href={it.href}
               aria-current={it.key === active ? "page" : undefined}
               className={cn(
-                "flex min-h-11 items-center gap-3 rounded-md px-3 font-semibold transition-colors duration-150",
-                it.key === active ? "bg-gold-soft text-gold-text" : "text-ink-muted hover:bg-surface-sunken hover:text-ink",
+                "flex min-h-12 items-center gap-3 rounded-pill px-4 font-medium transition-colors duration-150",
+                it.key === active ? "bg-gold font-bold text-on-gold shadow-glow-gold" : "text-ink-muted hover:bg-surface-raised hover:text-ink",
               )}
             >
               <it.icon aria-hidden className="size-5 flex-none" />
@@ -115,23 +118,36 @@ export function AppFrame({
               key={e.href}
               href={e.href}
               {...(e.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold text-ink-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
+              className="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-raised hover:text-ink"
             >
               <e.icon aria-hidden className="size-5 flex-none" />
               {e.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3 border-t border-line p-4">
-          <span aria-hidden className="grid size-10 flex-none place-items-center rounded-pill bg-gold-soft font-bold text-gold-text">
+        {mode === "student" && progressPct !== undefined && (
+          <div className="mx-3 mb-1 flex flex-col gap-2 rounded-lg border border-line bg-surface-raised p-4">
+            <Crown aria-hidden className="size-8 fill-gold text-gold" />
+            <p className="type-title text-ink">{a.levelUp.title}</p>
+            <p className="type-small text-ink-muted">{a.levelUp.text}</p>
+            <div className="mt-1 flex items-center gap-3">
+              <div role="progressbar" aria-label={a.levelUp.label} aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100} className="h-2.5 flex-1 overflow-hidden rounded-pill bg-surface-raised-2">
+                <div className="h-full rounded-pill bg-gold" style={{ width: `${Math.max(0, Math.min(100, progressPct))}%` }} />
+              </div>
+              <span className="type-small font-bold text-ink">{progressPct}%</span>
+            </div>
+          </div>
+        )}
+        <div className="m-3 flex items-center gap-3 rounded-lg border border-line bg-surface-raised p-3">
+          <span aria-hidden className="grid size-10 flex-none place-items-center rounded-pill bg-gold font-bold text-on-gold">
             {(firstName ?? user.email).slice(0, 1).toUpperCase()}
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="truncate font-semibold text-ink">{user.name ?? firstName ?? "Account"}</span>
-            <span className="type-small truncate text-ink-muted">{user.email}</span>
+            <span className="type-small truncate text-ink-muted">{mode === "student" ? a.student : a.partner}</span>
           </span>
           <form action="/auth/logout" method="post">
-            <button aria-label={a.logout} title={a.logout} className="grid size-10 place-items-center rounded-md text-ink-muted transition-colors duration-150 hover:bg-surface-sunken hover:text-ink">
+            <button aria-label={a.logout} title={a.logout} className="grid size-10 place-items-center rounded-md text-ink-muted transition-colors duration-150 hover:bg-surface-raised hover:text-ink">
               <LogOut aria-hidden className="size-5" />
             </button>
           </form>
@@ -139,7 +155,7 @@ export function AppFrame({
       </aside>
 
       {/* ── Phone top bar ── */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur lg:hidden">
+      <header data-theme="night" className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-line bg-surface px-4 lg:hidden">
         <Logo href={mode === "student" ? "/dashboard" : "/partner"} variant="mark" className="h-8" />
         {switcher ?? (
           <form action="/auth/logout" method="post">
@@ -164,7 +180,7 @@ export function AppFrame({
                 <Link
                   href={it.href}
                   aria-current={it.key === active ? "page" : undefined}
-                  className={cn("flex min-h-14 flex-col items-center justify-center gap-0.5", it.key === active ? "text-gold-text" : "text-ink-muted hover:text-ink")}
+                  className={cn("flex min-h-14 flex-col items-center justify-center gap-0.5", it.key === active ? "font-bold text-gold-text" : "text-ink-muted hover:text-ink")}
                 >
                   <it.icon aria-hidden className="size-6" />
                   <span className="type-small font-semibold whitespace-nowrap">{it.short ?? it.label}</span>

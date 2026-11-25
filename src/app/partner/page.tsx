@@ -5,7 +5,7 @@
  */
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Crown, Lock, Trophy } from "lucide-react";
+import { Crown, Lock, MousePointerClick, Percent, ShoppingBag, Trophy, UserPlus } from "lucide-react";
 import { AppFrame } from "@/components/app/app-frame";
 import { EarningsChart } from "@/components/charts/earnings-chart";
 import { Accordion, AccordionItem } from "@/components/ui/accordion";
@@ -134,17 +134,17 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
 
         {tab === "overview" && (
           <>
-        {/* Total earnings — the big gold number */}
-        <section className="flex flex-col gap-4 rounded-lg border-2 border-gold bg-gold-soft p-4 md:p-6">
+        {/* Total earnings — the screen's one bright moment: a navy card with the big gold number */}
+        <section data-theme="night" className="flex flex-col gap-4 rounded-lg p-4 md:p-6">
           <div className="flex flex-col gap-1">
             <span className="type-label text-ink-muted">{D.total}</span>
-            <span className="type-price text-gold-text">
+            <span className="type-display-xl text-gold-text tabular-nums">
               <CountUp paise={lifetimeEarnings} />
             </span>
           </div>
           <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {split.map(([key, paise]) => (
-              <div key={key} className="rounded-md border border-line bg-surface-raised p-3">
+              <div key={key} className="rounded-md border border-line bg-surface-raised p-3 shadow-card">
                 <dt className="type-label text-ink-muted">{D.split[key]}</dt>
                 <dd className="type-title text-ink">{formatINR(paise)}</dd>
                 <dd className="type-small text-ink-muted">{D.splitHint[key].replace("{release}", releaseLabel(settings.commissionReleaseMinutes))}</dd>
@@ -163,15 +163,15 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
                 key={r}
                 href={`/partner?range=${r}`}
                 aria-current={r === range ? "true" : undefined}
-                className={cn("type-button inline-flex min-h-12 items-center rounded-pill border-2 px-4", r === range ? "border-gold-text text-gold-text" : "border-line text-ink-muted hover:text-ink")}
+                className={cn("type-button inline-flex min-h-12 items-center rounded-pill border-2 px-4", r === range ? "border-gold bg-gold text-on-gold" : "border-line bg-surface-raised text-ink-muted hover:text-ink")}
               >
                 {D.range.replace("{n}", String(r))}
               </Link>
             ))}
           </nav>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {stats.map((s) => (
-              <StatCard key={s.label} label={s.label} value={s.value} spark={s.spark} />
+            {stats.map((s, i) => (
+              <StatCard key={s.label} icon={[MousePointerClick, UserPlus, ShoppingBag, Percent][i]} label={s.label} value={s.value} spark={s.spark} />
             ))}
           </div>
           <div className={card}>
@@ -380,7 +380,7 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
                   [D.team.pending, team.pendingPaise],
                 ] as const
               ).map(([label, paise]) => (
-                <div key={label} className="rounded-md border border-line bg-surface-raised p-3">
+                <div key={label} className="rounded-md border border-line bg-surface-raised p-3 shadow-card">
                   <dt className="type-label text-ink-muted">{label}</dt>
                   <dd className="type-title text-ink tabular-nums">{formatINR(paise)}</dd>
                 </div>
@@ -414,12 +414,12 @@ export default async function PartnerPage({ searchParams }: PageProps<"/partner"
         <section className="flex flex-col gap-3">
           <h2 className={h2}>{D.walletSplit.title}</h2>
           <dl className="grid grid-cols-2 gap-3">
-            <div className="rounded-md border border-line bg-surface-raised p-3">
+            <div className="rounded-md border border-line bg-surface-raised p-3 shadow-card">
               <dt className="type-label text-ink-muted">{D.walletSplit.sale}</dt>
               <dd className="type-title text-ink tabular-nums">{formatINR(byType.salePaise)}</dd>
             </div>
             {showTeam && (
-              <div className="rounded-md border border-line bg-surface-raised p-3">
+              <div className="rounded-md border border-line bg-surface-raised p-3 shadow-card">
                 <dt className="type-label text-ink-muted">{D.walletSplit.team}</dt>
                 <dd className="type-title text-ink tabular-nums">{formatINR(byType.teamPaise)}</dd>
               </div>

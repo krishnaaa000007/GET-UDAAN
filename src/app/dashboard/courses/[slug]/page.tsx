@@ -36,7 +36,7 @@ export default async function CoursePage({ params }: PageProps<"/dashboard/cours
           {c.back}
         </Link>
 
-        <header className="flex flex-col gap-4 rounded-lg border border-line bg-surface-raised p-4 md:flex-row md:items-center md:p-6">
+        <header className="flex flex-col gap-4 rounded-lg border border-line bg-surface-raised p-4 md:flex-row md:items-center md:p-6 shadow-card">
           <ProgressRing value={o.percent} size={72} />
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
             <Badge tone="gold">{plan}</Badge>
@@ -92,7 +92,7 @@ export default async function CoursePage({ params }: PageProps<"/dashboard/cours
                       {d.downloads.locked.replace("{title}", a.title)}
                     </span>
                   ) : (
-                    <a href={`/api/assets/${a.id}`} aria-label={d.downloads.download.replace("{title}", a.title)} className="flex min-h-14 items-center gap-3 rounded-md border border-line bg-surface-raised p-3 text-ink transition-colors duration-150 hover:border-gold">
+                    <a href={`/api/assets/${a.id}`} aria-label={d.downloads.download.replace("{title}", a.title)} className="flex min-h-14 items-center gap-3 rounded-md border border-line bg-surface-raised p-3 text-ink transition-colors duration-150 hover:border-gold shadow-card">
                       <Download aria-hidden className="size-5 flex-none text-gold-text" />
                       {a.title}
                     </a>
