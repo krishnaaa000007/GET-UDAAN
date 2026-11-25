@@ -1,4 +1,4 @@
-/** Video testimonial cards for the two-row wall, built from content/hi-Latn/video-testimonials.json. */
+/** Video testimonial cards for the one-row wall (kept in the order saved in the JSON), built from content/hi-Latn/video-testimonials.json. */
 import { SITE } from "@/config/site";
 import t from "@/content/hi-Latn/video-testimonials.json";
 import type { WallVideo } from "@/components/testimonials/video-wall";

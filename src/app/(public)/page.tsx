@@ -518,7 +518,7 @@ export default async function LandingPage() {
         </div>
       </Section>
 
-      {/* 7b. STUDENT VIDEOS — two rows sliding in opposite directions; tap to watch. Hidden until the files are live. */}
+      {/* 7b. STUDENT VIDEOS — one row in saved order, drifts slowly, swipe back anytime; tap plays in place. Hidden until the files are live. */}
       {studentWall.length > 0 && (
         <section id="student-videos" className="section-y relative scroll-mt-16 overflow-hidden">
           <div className="container-page">
