@@ -275,7 +275,7 @@ export default async function LandingPage() {
                   </span>
                 </p>
                 <p className="type-small text-ink-muted max-sm:text-[16px]">{mc.offer.text}</p>
-                <Button href={masterclass.checkoutHref} size="lg" block arrow data-cta="hero_masterclass_first100" className="mt-1 !px-5 sm:w-auto sm:!px-8">
+                <Button href={masterclass.checkoutHref} size="lg" block arrow data-cta="hero_masterclass_first100" className="mt-1 !px-5 whitespace-nowrap sm:w-auto sm:!px-7">
                   <Tag aria-hidden className="mr-1 inline size-5 -rotate-12 align-[-3px]" />
                   {mc.offer.cta.replace("{pct}", String(masterclass.offer.pct))}
                 </Button>
