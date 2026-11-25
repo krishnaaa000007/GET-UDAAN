@@ -65,7 +65,7 @@ function ProductTitle({ name }: { name: string }) {
   return (
     <>
       {m[1]}{" "}
-      <span className="relative inline-block text-saffron">
+      <span className="relative inline-block whitespace-nowrap text-saffron">
         {m[2]}
         <HandUnderline className="-bottom-1.5 h-2" />
       </span>
@@ -205,14 +205,14 @@ export function CheckoutForm({ product, bumps, initialCoupon, prefill, refundDay
       <aside className="relative rounded-lg border border-gold/50 bg-gradient-to-b from-surface-raised to-gold-soft/60 p-5 md:sticky md:top-6 md:order-last md:p-6 shadow-card">
         {/* The creator photo peeks in at the top-right, on a soft gold disc (reference look). Decorative. */}
         {heroPhoto && (
-          <div aria-hidden className="pointer-events-none absolute top-2 right-2 w-28 sm:w-36">
+          <div aria-hidden className="pointer-events-none absolute top-2 right-2 w-28 sm:w-36 md:w-24">
             <span className="absolute inset-x-[8%] top-[14%] bottom-[4%] rounded-pill bg-gold/45" />
             {/* eslint-disable-next-line @next/next/no-img-element -- small decorative image, already optimised webp */}
             <img src={heroPhoto} alt="" className="relative h-auto w-full mix-blend-multiply [mask-image:radial-gradient(closest-side,#000_70%,transparent)]" />
           </div>
         )}
         <p className="type-label relative inline-flex rounded-pill bg-gold-chip px-4 py-1.5 text-on-gold">{t.summary.eyebrow}</p>
-        <h1 className="type-heading relative mt-3 pr-24 text-ink sm:pr-32">
+        <h1 className="type-heading relative mt-3 pr-24 text-ink sm:pr-32 md:pr-20">
           <ProductTitle name={product.kind === "SERVICE" ? product.name : t.summary.product.replace("{name}", product.name)} />
         </h1>
         <ul className="mt-4 flex flex-col gap-2.5">
